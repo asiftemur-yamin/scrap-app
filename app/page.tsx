@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-// Languages, Local Price & LME Prices Dictionary
+// Languages, Local Price, LME Prices & Auth Dictionary
 const translations = {
   en: {
     appName: "SCRAP WORLD",
@@ -42,12 +42,27 @@ const translations = {
       zinc: "LME Zinc",
       lead: "LME Lead"
     },
-    // New Scrap Origin Feature Translations
     originSectionTitle: "Select Scrap Type",
     localScrap: "Local Scrap",
     localScrapDesc: "Pakistani local market material",
     importedScrap: "Imported Scrap",
     importedScrapDesc: "International container imported stock",
+    // Auth translations
+    loginBtn: "Login / Register",
+    logoutBtn: "Logout 👤",
+    authTitleLogin: "Welcome Back",
+    authTitleRegister: "Create Account",
+    authTitleForgot: "Reset Password",
+    emailLabel: "Email Address",
+    passLabel: "Password",
+    forgotLink: "Forgot Password?",
+    googleLogin: "Continue with Google",
+    appleLogin: "Continue with Apple",
+    orDivider: "OR CONTINUE WITH EMAIL",
+    noAccount: "Don't have an account? Register",
+    haveAccount: "Already have an account? Login",
+    backToLogin: "Back to Login",
+    sendResetBtn: "Send Reset Link 📩",
     // Form Translations
     chooseTypeTitle: "What do you want to do?",
     optionSellTitle: "Sell My Scrap",
@@ -112,16 +127,31 @@ const translations = {
       zinc: "زنک (Zinc)",
       lead: "لیڈ (Lead)"
     },
-    // New Scrap Origin Feature Translations
     originSectionTitle: "اسکریپ کی قسم منتخب کریں",
     localScrap: "لوکل اسکریپ",
     localScrapDesc: "پاکستانی مقامی مارکیٹ کا مال",
     importedScrap: "امپورٹڈ اسکریپ",
     importedScrapDesc: "باہر سے امپورٹڈ کنٹینر کا اسٹاک",
+    // Auth translations
+    loginBtn: "لاگ ان / رجسٹر",
+    logoutBtn: "لاگ آؤٹ 👤",
+    authTitleLogin: "خوش آمدید",
+    authTitleRegister: "نیا اکاؤنٹ بنائیں",
+    authTitleForgot: "پاس ورڈ ری سیٹ کریں",
+    emailLabel: "ای میل ایڈریس",
+    passLabel: "پاس ورڈ",
+    forgotLink: "پاس ورڈ بھول گئے؟",
+    googleLogin: "گوگل (Gmail) کے ساتھ لاگ ان کریں",
+    appleLogin: "ایپل (Apple ID) کے ساتھ لاگ ان کریں",
+    orDivider: "یا ای میل کے ذریعے لاگ ان کریں",
+    noAccount: "اکاؤنٹ نہیں ہے؟ رجسٹریشن کریں",
+    haveAccount: "پہلے سے اکاؤنٹ ہے؟ لاگ ان کریں",
+    backToLogin: "لاگ ان پیج پر واپس جائیں",
+    sendResetBtn: "ری سیٹ لنک بھیجیں 📩",
     // Form Translations
     chooseTypeTitle: "آپ کیا کرنا چاہتے ہیں؟",
     optionSellTitle: "اسکریپ بیچنا ہے",
-    optionSellDesc: "اپنا mal گاہکوں کو بیچنے کے لیے اشتہار لگائیں۔",
+    optionSellDesc: "اپنا مال گاہکوں کو بیچنے کے لیے اشتہار لگائیں۔",
     optionBuyTitle: "مال خریدنا ہے؟ (ڈیمانڈ اشتہار)",
     optionBuyDesc: "اپنی فیکٹری یا کاروبار کی ڈیمانڈ ڈالیں تاکہ لوگ آفرز دیں۔",
     formTitleSell: "بیچنے کا نیا اشتہار بنائیں",
@@ -185,6 +215,11 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
+  // Auth Smart States
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [authView, setAuthView] = useState<'login' | 'register' | 'forgot'>('login');
+
   // Post Ad States
   const [showPostAd, setShowPostAd] = useState(false);
   const [adStep, setAdStep] = useState<'select' | 'form'>('select');
@@ -192,7 +227,7 @@ export default function Home() {
   
   // Form Control States
   const [unit, setUnit] = useState('kg');
-  const [scrapOrigin, setScrapOrigin] = useState('local'); // 'local' or 'imported'
+  const [scrapOrigin, setScrapOrigin] = useState('local');
   const [isFeatured, setIsFeatured] = useState(false);
 
   const t = translations[lang];
@@ -203,6 +238,17 @@ export default function Home() {
     }, 3000);
     return () => clearTimeout(timer);
   }, []);
+
+  // SMART SECURITY TRIGGER CHECK
+  const handlePostAdTrigger = () => {
+    if (!isLoggedIn) {
+      setAuthView('login');
+      setShowAuth(true);
+    } else {
+      setAdStep('select');
+      setShowPostAd(true);
+    }
+  };
 
   const handleBackNavigation = () => {
     if (adStep === 'form') {
@@ -233,24 +279,41 @@ export default function Home() {
       
       {/* Top Header */}
       <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 gap-2">
           <div className="text-2xl font-black tracking-wider text-white">{t.appName}</div>
           
-          <button 
-            onClick={() => setLang(lang === 'en' ? 'ur' : 'en')}
-            className="bg-white/20 hover:bg-white/30 text-white font-bold text-xs px-3 py-1.5 rounded-full border border-white/30 transition-all"
-          >
-            {lang === 'en' ? 'اردو (Urdu)' : 'English'}
-          </button>
+          <div className="flex items-center space-x-2 gap-2">
+            {/* VIP AUTH BUTTON ON HOME PAGE */}
+            <button
+              onClick={() => {
+                if (isLoggedIn) {
+                  setIsLoggedIn(false);
+                } else {
+                  setAuthView('login');
+                  setShowAuth(true);
+                }
+              }}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-3 py-1.5 rounded-full shadow-sm transition-all active:scale-95"
+            >
+              {isLoggedIn ? t.logoutBtn : t.loginBtn}
+            </button>
+
+            <button 
+              onClick={() => setLang(lang === 'en' ? 'ur' : 'en')}
+              className="bg-white/20 hover:bg-white/30 text-white font-bold text-xs px-3 py-1.5 rounded-full border border-white/30 transition-all"
+            >
+              {lang === 'en' ? 'اردو' : 'English'}
+            </button>
+          </div>
         </div>
 
-        {/* Top Navigation Buttons */}
+        {/* Top Action Navigation Pills */}
         <div className="flex overflow-x-auto pb-3 scrollbar-none gap-2">
           <button className="bg-[#0066cc] text-white text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap shadow-sm">{t.sellScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.buyScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.rates}</button>
           <button 
-            onClick={() => { setShowPostAd(true); setAdStep('select'); }}
+            onClick={handlePostAdTrigger}
             className="bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-5 py-2.5 rounded-full whitespace-nowrap shadow-md transition-all active:scale-95"
           >
             📢 {t.postAd}
@@ -267,10 +330,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main UI Body Container */}
+      {/* Main Body */}
       <main className="px-4 mt-6">
         
-        {/* NEW FEATURE: 2 Big Highlight Categories (Local vs Imported) */}
+        {/* Local vs Imported Highlight Categories */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.originSectionTitle}</h2>
         </div>
@@ -291,7 +354,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Categories Grid */}
+        {/* Regular Categories Grid */}
         <div className="mb-4">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.browseTitle}</h2>
         </div>
@@ -340,7 +403,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* City Filter Selection */}
+        {/* City Filter Row Selection */}
         <div className="mb-3 mt-6">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.selectCityTitle}</h2>
         </div>
@@ -352,8 +415,8 @@ export default function Home() {
               onClick={() => setSelectedCity(cityName)}
               className={`py-2.5 px-1 text-center rounded-xl font-bold text-xs border transition-all ${
                 selectedCity === cityName
-                  ? 'bg-[#0066cc] text-white border-[#0066cc] shadow-md shadow-blue-500/20'
-                  : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 shadow-sm'
+                  ? 'bg-[#0066cc] text-white border-[#0066cc] shadow-md'
+                  : 'bg-white text-slate-600 border-slate-200 shadow-sm'
               }`}
             >
               {t.cities[cityName]}
@@ -361,7 +424,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Local Prices List View */}
+        {/* Local Prices List */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">
             {t.priceListTitle} ({t.cities[selectedCity]})
@@ -384,8 +447,106 @@ export default function Home() {
         </div>
       </main>
 
+      {/* FULL SCREEN MODAL: SIGN IN / SIGN UP / FORGOT OVERLAY (Z-INDEX 110 HIGH FIX) */}
+      {showAuth && (
+        <div className="fixed inset-0 bg-[#f2f6fa] z-[110] flex flex-col justify-center p-6 overflow-y-auto">
+          <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200/80 p-6 space-y-6 relative">
+            
+            <button 
+              onClick={() => setShowAuth(false)} 
+              className="absolute top-4 right-4 text-xs font-black bg-slate-100 hover:bg-slate-200 text-slate-500 px-3 py-1.5 rounded-full"
+            >
+              ✕
+            </button>
+
+            <div className="text-center">
+              <h2 className="text-2xl font-black text-[#1a365d]">
+                {authView === 'login' ? t.authTitleLogin : authView === 'register' ? t.authTitleRegister : t.authTitleForgot}
+              </h2>
+            </div>
+
+            {/* Social Authentication Buttons Row */}
+            {authView !== 'forgot' && (
+              <div className="space-y-2">
+                <button 
+                  onClick={() => { setIsLoggedIn(true); setShowAuth(false); if(showPostAd) setAdStep('select'); }}
+                  className="w-full bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
+                >
+                  <span className="text-base">🔴</span> {t.googleLogin}
+                </button>
+                <button 
+                  onClick={() => { setIsLoggedIn(true); setShowAuth(false); if(showPostAd) setAdStep('select'); }}
+                  className="w-full bg-black hover:bg-slate-900 text-white font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
+                >
+                  <span className="text-base">🍏</span> {t.appleLogin}
+                </button>
+
+                <div className="flex items-center my-4 before:flex-1 before:border-t before:border-slate-200 after:flex-1 after:border-t after:border-slate-200">
+                  <p className="mx-4 text-[10px] text-slate-400 font-extrabold tracking-wider">{t.orDivider}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Credential Auth Form */}
+            <div className="space-y-4 text-left" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.emailLabel}</label>
+                <input type="email" placeholder="name@email.com" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc]" />
+              </div>
+
+              {authView !== 'forgot' && (
+                <div>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">{t.passLabel}</label>
+                    {authView === 'login' && (
+                      <button onClick={() => setAuthView('forgot')} className="text-xs font-bold text-[#0066cc] hover:underline">
+                        {t.forgotLink}
+                      </button>
+                    )}
+                  </div>
+                  <input type="password" placeholder="••••••••" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc]" />
+                </div>
+              )}
+
+              {/* Action Trigger Submit Button */}
+              <button
+                onClick={() => {
+                  if (authView === 'forgot') {
+                    alert("Password reset link sent successfully!");
+                    setAuthView('login');
+                  } else {
+                    setIsLoggedIn(true);
+                    setShowAuth(false);
+                    // Automatic open the ad creation page flow if triggered by posting request
+                    setShowPostAd(true);
+                    setAdStep('select');
+                  }
+                }}
+                className="w-full bg-[#0066cc] hover:bg-blue-600 text-white font-black text-sm py-3.5 rounded-xl shadow-md transition-all mt-2"
+              >
+                {authView === 'login' ? t.signIn : authView === 'register' ? t.signUp : t.sendResetBtn}
+              </button>
+            </div>
+
+            {/* Footer View Switch Links */}
+            <div className="text-center text-xs font-medium text-slate-500 pt-2 border-t border-slate-100">
+              {authView === 'login' && (
+                <button onClick={() => setAuthView('register')} className="text-[#0066cc] font-bold hover:underline">{t.noAccount}</button>
+              )}
+              {authView === 'register' && (
+                <button onClick={() => setAuthView('login')} className="text-[#0066cc] font-bold hover:underline">{t.haveAccount}</button>
+              )}
+              {authView === 'forgot' && (
+                <button onClick={() => setAuthView('login')} className="text-[#0066cc] font-bold hover:underline">← {t.backToLogin}</button>
+              )}
+            </div>
+
+          </div>
+        </div>
+      )}
+
       {/* FULL-SCREEN OVERLAY FOR POST AD */}
-      {showPostAd && (
+      {showPostAd && isLoggedIn && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[100] flex flex-col overflow-y-auto pb-12">
           
           <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex items-center justify-between shadow-md z-10">
@@ -432,13 +593,11 @@ export default function Home() {
           {adStep === 'form' && (
             <div className="p-5 max-w-lg mx-auto w-full space-y-5" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
               
-              {/* Title input */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.itemName}</label>
                 <input type="text" placeholder={t.itemNamePlh} className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm font-medium" />
               </div>
 
-              {/* NEW ADDITION: Scrap Category/Origin Type (Local vs Imported) Select field inside form */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.originSectionTitle}</label>
                 <div className="grid grid-cols-2 gap-2">
@@ -457,7 +616,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Unit Weight Selector */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.selectUnit}</label>
                 <div className="grid grid-cols-3 gap-2">
@@ -476,7 +634,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Rate field */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                   {adType === 'sell' ? t.rateLabelSell : t.rateLabelBuy}
@@ -484,13 +641,11 @@ export default function Home() {
                 <input type="number" placeholder="Rs. 0" className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm font-bold text-slate-800" />
               </div>
 
-              {/* Location field */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.locLabel}</label>
                 <input type="text" placeholder="e.g., Khiali, Gujranwala" className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm" />
               </div>
 
-              {/* Pictures upload UI */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.picLabel}</label>
                 <div className="border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center bg-white cursor-pointer hover:bg-slate-50 transition-all shadow-sm">
@@ -500,13 +655,11 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Description Details textarea */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.detailsLabel}</label>
                 <textarea rows={3} placeholder={t.detailsPlh} className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm resize-none"></textarea>
               </div>
 
-              {/* VIP Promotion banner box */}
               <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex justify-between items-center gap-4 shadow-sm">
                 <div className="max-w-[80%]">
                   <span className="text-sm font-black text-amber-900 block">⭐ {t.featureLabel}</span>
@@ -520,7 +673,6 @@ export default function Home() {
                 />
               </div>
 
-              {/* Clear Visible Submit Button */}
               <button 
                 type="button"
                 onClick={() => { alert("Ad Published Successfully on Scrap World!"); setShowPostAd(false); }}
@@ -549,7 +701,7 @@ export default function Home() {
         {/* Floating Center Button */}
         <div className="relative -top-5 flex flex-col items-center justify-center">
           <button 
-            onClick={() => { setShowPostAd(true); setAdStep('select'); }}
+            onClick={handlePostAdTrigger}
             className="w-14 h-14 bg-[#0066cc] hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-white transform active:scale-95 transition-all"
           >
             <span className="text-3xl font-light text-white">+</span>
