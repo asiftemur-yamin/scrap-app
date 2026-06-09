@@ -42,6 +42,12 @@ const translations = {
       zinc: "LME Zinc",
       lead: "LME Lead"
     },
+    // New Scrap Origin Feature Translations
+    originSectionTitle: "Select Scrap Type",
+    localScrap: "Local Scrap",
+    localScrapDesc: "Pakistani local market material",
+    importedScrap: "Imported Scrap",
+    importedScrapDesc: "International container imported stock",
     // Form Translations
     chooseTypeTitle: "What do you want to do?",
     optionSellTitle: "Sell My Scrap",
@@ -106,10 +112,16 @@ const translations = {
       zinc: "زنک (Zinc)",
       lead: "لیڈ (Lead)"
     },
+    // New Scrap Origin Feature Translations
+    originSectionTitle: "اسکریپ کی قسم منتخب کریں",
+    localScrap: "لوکل اسکریپ",
+    localScrapDesc: "پاکستانی مقامی مارکیٹ کا مال",
+    importedScrap: "امپورٹڈ اسکریپ",
+    importedScrapDesc: "باہر سے امپورٹڈ کنٹینر کا اسٹاک",
     // Form Translations
     chooseTypeTitle: "آپ کیا کرنا چاہتے ہیں؟",
     optionSellTitle: "اسکریپ بیچنا ہے",
-    optionSellDesc: "اپنا مال گاہکوں کو بیچنے کے لیے اشتہار لگائیں۔",
+    optionSellDesc: "اپنا mal گاہکوں کو بیچنے کے لیے اشتہار لگائیں۔",
     optionBuyTitle: "مال خریدنا ہے؟ (ڈیمانڈ اشتہار)",
     optionBuyDesc: "اپنی فیکٹری یا کاروبار کی ڈیمانڈ ڈالیں تاکہ لوگ آفرز دیں۔",
     formTitleSell: "بیچنے کا نیا اشتہار بنائیں",
@@ -134,7 +146,6 @@ const translations = {
   }
 };
 
-// Hardcoded LME Live Market Data (USD per Ton)
 const lmeData = [
   { id: "cop", key: "copper", icon: "🔴", price: "9,645", change: "+1.4%", up: true },
   { id: "alu", key: "aluminum", icon: "⚪", price: "2,520", change: "-0.3%", up: false },
@@ -179,7 +190,9 @@ export default function Home() {
   const [adStep, setAdStep] = useState<'select' | 'form'>('select');
   const [adType, setAdType] = useState<'sell' | 'buy'>('sell');
   
+  // Form Control States
   const [unit, setUnit] = useState('kg');
+  const [scrapOrigin, setScrapOrigin] = useState('local'); // 'local' or 'imported'
   const [isFeatured, setIsFeatured] = useState(false);
 
   const t = translations[lang];
@@ -231,7 +244,7 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Top Pills */}
+        {/* Top Navigation Buttons */}
         <div className="flex overflow-x-auto pb-3 scrollbar-none gap-2">
           <button className="bg-[#0066cc] text-white text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap shadow-sm">{t.sellScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.buyScrap}</button>
@@ -254,9 +267,30 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Container */}
+      {/* Main UI Body Container */}
       <main className="px-4 mt-6">
         
+        {/* NEW FEATURE: 2 Big Highlight Categories (Local vs Imported) */}
+        <div className="mb-3">
+          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.originSectionTitle}</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="bg-white border-2 border-blue-500/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-all cursor-pointer">
+            <div>
+              <span className="font-black text-sm text-[#1a365d] block">{t.localScrap}</span>
+              <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.localScrapDesc}</span>
+            </div>
+            <span className="text-3xl">🇵🇰</span>
+          </div>
+          <div className="bg-white border-2 border-green-600/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-all cursor-pointer">
+            <div>
+              <span className="font-black text-sm text-[#1a365d] block">{t.importedScrap}</span>
+              <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.importedScrapDesc}</span>
+            </div>
+            <span className="text-3xl">🚢</span>
+          </div>
+        </div>
+
         {/* Categories Grid */}
         <div className="mb-4">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.browseTitle}</h2>
@@ -280,7 +314,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* NEW FEATURE: LME LIVE COMMODITY TICKER ROW */}
+        {/* LME International Ticker */}
         <div className="mb-3 mt-6">
           <div className="flex justify-between items-center">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2>
@@ -306,7 +340,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* City Filter */}
+        {/* City Filter Selection */}
         <div className="mb-3 mt-6">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.selectCityTitle}</h2>
         </div>
@@ -327,7 +361,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Local Prices List */}
+        {/* Local Prices List View */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">
             {t.priceListTitle} ({t.cities[selectedCity]})
@@ -398,11 +432,32 @@ export default function Home() {
           {adStep === 'form' && (
             <div className="p-5 max-w-lg mx-auto w-full space-y-5" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
               
+              {/* Title input */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.itemName}</label>
                 <input type="text" placeholder={t.itemNamePlh} className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm font-medium" />
               </div>
 
+              {/* NEW ADDITION: Scrap Category/Origin Type (Local vs Imported) Select field inside form */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.originSectionTitle}</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {['local', 'imported'].map((originType) => (
+                    <button
+                      key={originType}
+                      type="button"
+                      onClick={() => setScrapOrigin(originType)}
+                      className={`py-3 text-xs font-black rounded-xl border transition-all ${
+                        scrapOrigin === originType ? 'bg-[#0066cc] text-white border-[#0066cc] shadow-md' : 'bg-white text-slate-600 border-slate-200 shadow-sm'
+                      }`}
+                    >
+                      {originType === 'local' ? `🇵🇰 ${t.localScrap}` : `🚢 ${t.importedScrap}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Unit Weight Selector */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.selectUnit}</label>
                 <div className="grid grid-cols-3 gap-2">
@@ -421,6 +476,7 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Rate field */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                   {adType === 'sell' ? t.rateLabelSell : t.rateLabelBuy}
@@ -428,11 +484,13 @@ export default function Home() {
                 <input type="number" placeholder="Rs. 0" className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm font-bold text-slate-800" />
               </div>
 
+              {/* Location field */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.locLabel}</label>
                 <input type="text" placeholder="e.g., Khiali, Gujranwala" className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm" />
               </div>
 
+              {/* Pictures upload UI */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.picLabel}</label>
                 <div className="border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center bg-white cursor-pointer hover:bg-slate-50 transition-all shadow-sm">
@@ -442,11 +500,13 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* Description Details textarea */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.detailsLabel}</label>
                 <textarea rows={3} placeholder={t.detailsPlh} className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm resize-none"></textarea>
               </div>
 
+              {/* VIP Promotion banner box */}
               <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex justify-between items-center gap-4 shadow-sm">
                 <div className="max-w-[80%]">
                   <span className="text-sm font-black text-amber-900 block">⭐ {t.featureLabel}</span>
@@ -460,7 +520,7 @@ export default function Home() {
                 />
               </div>
 
-              {/* Submit Button */}
+              {/* Clear Visible Submit Button */}
               <button 
                 type="button"
                 onClick={() => { alert("Ad Published Successfully on Scrap World!"); setShowPostAd(false); }}
