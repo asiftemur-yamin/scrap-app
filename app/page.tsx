@@ -2,16 +2,19 @@
 
 import { useState, useEffect } from 'react';
 
-// Languages Dictionary (English & Urdu Script)
+// Languages & Price List Dictionary
 const translations = {
   en: {
+    appName: "SCRAP WORLD",
     sellScrap: "Sell Scrap",
     buyScrap: "Buy Scrap",
     rates: "Live Rates",
     directory: "Directory",
     searchPlaceholder: "Search scrap iron, plastic, copper...",
-    location: "Gujranwala",
     browseTitle: "Browse Scrap Categories",
+    priceListTitle: "Live Market Price List",
+    selectCityTitle: "Select City for Rates",
+    rateUnit: "Rs / Kg",
     cat1: "Iron (Loha)",
     cat2: "Plastic",
     cat3: "Copper (Tamba)",
@@ -20,27 +23,29 @@ const translations = {
     cat6: "Solar Panels",
     cat7: "Mix Scrap",
     cat8: "Electronic",
-    servicesTitle: "Explore R-H-A-F Services",
-    s1Title: "Scrap Inspection",
-    s1Desc: "Get accurate weight & live market rates safely.",
-    s2Title: "Sell It For Me",
-    s2Desc: "Hassle-free heavy machinery & factory clearance.",
-    s3Title: "R-H-A-F Wallet",
-    s3Desc: "Manage your digital recycling payments instantly.",
     navHome: "Home",
     navAds: "My Ads",
     navSell: "Sell Now",
     navChat: "Chat",
-    navMore: "More"
+    navMore: "More",
+    cities: {
+      gujranwala: "Gujranwala",
+      lahore: "Lahore",
+      karachi: "Karachi",
+      multan: "Multan"
+    }
   },
   ur: {
+    appName: "اسکریپ ورلڈ",
     sellScrap: "اسکریپ بیچیں",
     buyScrap: "اسکریپ خریدیں",
     rates: "لائیو ریٹس",
     directory: "ڈائریکٹری",
     searchPlaceholder: "لوہا، پلاسٹک، تانبا تلاش کریں...",
-    location: "گوجرانوالہ",
     browseTitle: "اسکریپ کیٹیگریز تلاش کریں",
+    priceListTitle: "مارکیٹ کی لائیو ریٹ لسٹ",
+    selectCityTitle: "شہر کا انتخاب کریں",
+    rateUnit: "روپے / کلو",
     cat1: "لوہا (Iron)",
     cat2: "پلاسٹک (Plastic)",
     cat3: "تانبا (Copper)",
@@ -49,24 +54,53 @@ const translations = {
     cat6: "سولر پینل",
     cat7: "مکس اسکریپ",
     cat8: "الیکٹرانک",
-    servicesTitle: "آر-ایچ-اے-ایف سروسز",
-    s1Title: "اسکریپ کا معائنہ",
-    s1Desc: "صحیح وزن اور مارکیٹ کے لائیو ریٹس جانیں۔",
-    s2Title: "ہمارے ذریعے بیچیں",
-    s2Desc: "فیکٹری اور بھاری مشینری کا اسکریپ خود اٹھوائیں۔",
-    s3Title: "آر-ایچ-اے-ایف والٹ",
-    s3Desc: "اپنی ری سائیکلنگ پیمنٹ فوری یہاں مینج کریں۔",
     navHome: "ہوم",
     navAds: "اشتہارات",
     navSell: "ابھی بیچیں",
     navChat: "چیٹ",
-    navMore: "مزید"
+    navMore: "مزید",
+    cities: {
+      gujranwala: "گوجرانوالہ",
+      lahore: "لاہور",
+      karachi: "کراچی",
+      multan: "ملتان"
+    }
   }
+};
+
+// Cities Live Scrap Rates Data
+const scrapRates = {
+  gujranwala: [
+    { id: "iron", nameKey: "cat1", icon: "🔩", price: "120" },
+    { id: "copper", nameKey: "cat3", icon: "🔌", price: "1,850" },
+    { id: "aluminum", nameKey: "cat4", icon: "🥫", price: "450" },
+    { id: "plastic", nameKey: "cat2", icon: "🛢️", price: "95" }
+  ],
+  lahore: [
+    { id: "iron", nameKey: "cat1", icon: "🔩", price: "124" },
+    { id: "copper", nameKey: "cat3", icon: "🔌", price: "1,880" },
+    { id: "aluminum", nameKey: "cat4", icon: "🥫", price: "465" },
+    { id: "plastic", nameKey: "cat2", icon: "🛢️", price: "98" }
+  ],
+  karachi: [
+    { id: "iron", nameKey: "cat1", icon: "🔩", price: "130" },
+    { id: "copper", nameKey: "cat3", icon: "🔌", price: "1,920" },
+    { id: "aluminum", nameKey: "cat4", icon: "🥫", price: "480" },
+    { id: "plastic", nameKey: "cat2", icon: "🛢️", price: "105" }
+  ],
+  multan: [
+    { id: "iron", nameKey: "cat1", icon: "🔩", price: "118" },
+    { id: "copper", nameKey: "cat3", icon: "🔌", price: "1,820" },
+    { id: "aluminum", nameKey: "cat4", icon: "🥫", price: "440" },
+    { id: "plastic", nameKey: "cat2", icon: "🛢️", price: "90" }
+  ]
 };
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [lang, setLang] = useState<'en' | 'ur'>('en');
+  const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
+  
   const t = translations[lang];
 
   useEffect(() => {
@@ -76,7 +110,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // 1. Splash Screen (3 Seconds)
+  // 1. Splash Screen
   if (showSplash) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-[#1a365d] text-white">
@@ -84,7 +118,7 @@ export default function Home() {
           <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl">
             <span className="text-5xl">♻️</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-wider text-white">R-H-A-F RECYCLING</h1>
+          <h1 className="text-4xl font-black tracking-widest text-white">SCRAP WORLD</h1>
           <div className="w-16 h-1 bg-blue-400 rounded-full overflow-hidden">
             <div className="w-full h-full bg-white animate-infinite origin-left"></div>
           </div>
@@ -93,33 +127,32 @@ export default function Home() {
     );
   }
 
-  // 2. Main App Interface (PakWheels Style Layout)
   return (
     <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 font-sans pb-24 ${lang === 'ur' ? 'text-right' : 'text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
       
-      {/* Top Main Dark Blue Header */}
+      {/* Header Container */}
       <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
         <div className="flex justify-between items-center mb-4">
-          <div className="text-xl font-bold tracking-tight text-white">R-H-A-F</div>
+          <div className="text-2xl font-black tracking-wider text-white">{t.appName}</div>
           
-          {/* Language Toggle Button */}
+          {/* Language Switching Button */}
           <button 
             onClick={() => setLang(lang === 'en' ? 'ur' : 'en')}
-            className="bg-white/20 hover:bg-white/30 text-white font-medium text-xs px-3 py-1.5 rounded-full border border-white/30 transition-all active:scale-95"
+            className="bg-white/20 hover:bg-white/30 text-white font-bold text-xs px-3 py-1.5 rounded-full border border-white/30 transition-all active:scale-95"
           >
             {lang === 'en' ? 'اردو (Urdu)' : 'English'}
           </button>
         </div>
 
-        {/* Top Horizontal Pill Navigation Grid */}
-        <div className="flex space-x-2 overflow-x-auto pb-3 scrollbar-none gap-2">
+        {/* Top Horizontal Navigation */}
+        <div className="flex overflow-x-auto pb-3 scrollbar-none gap-2">
           <button className="bg-[#0066cc] text-white text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap shadow-sm">{t.sellScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.buyScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.rates}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.directory}</button>
         </div>
 
-        {/* Search Bar matching PakWheels layout */}
+        {/* Search Bar Layout */}
         <div className="mt-2 bg-white rounded-lg p-3 flex items-center shadow-inner text-slate-700">
           <span className="text-slate-400 mx-2">🔍</span>
           <input 
@@ -127,23 +160,18 @@ export default function Home() {
             placeholder={t.searchPlaceholder}
             className="w-full bg-transparent outline-none text-sm placeholder-slate-400 font-medium"
           />
-          <div className="flex items-center text-xs text-slate-400 border-l border-slate-200 pl-2 ml-2 whitespace-nowrap gap-1">
-            <span>📍</span>
-            <span className="font-semibold text-slate-600">{t.location}</span>
-          </div>
         </div>
       </header>
 
-      {/* Main Container Body */}
+      {/* Main Body Grid content */}
       <main className="px-4 mt-6">
         
-        {/* Browse Section Title */}
+        {/* Category Browsing */}
         <div className="mb-4">
-          <h2 className="text-lg font-bold text-slate-800">{t.browseTitle}</h2>
+          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.browseTitle}</h2>
         </div>
 
-        {/* Categories 2x4 Grid with Emojis */}
-        <div className="grid grid-cols-4 gap-2.5 mb-8">
+        <div className="grid grid-cols-4 gap-2.5 mb-6">
           {[
             { label: t.cat1, icon: "🔩" },
             { label: t.cat2, icon: "🛢️" },
@@ -161,34 +189,52 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Explore Services Grid Cards */}
-        <div className="mb-4">
-          <h2 className="text-lg font-bold text-slate-800">{t.servicesTitle}</h2>
+        {/* NEW VIP FEATURE: 4 City Select Boxes */}
+        <div className="mb-3 mt-6">
+          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.selectCityTitle}</h2>
         </div>
 
-        {/* Big Services Featured Row Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-          {/* Card 1 */}
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm flex justify-between items-center relative overflow-hidden">
-            <div className="space-y-1 max-w-[70%]">
-              <h3 className="font-bold text-base text-slate-800">{t.s1Title}</h3>
-              <p className="text-xs text-slate-400 leading-normal">{t.s1Desc}</p>
-            </div>
-            <span className="text-5xl opacity-80">⚖️</span>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm flex justify-between items-center relative overflow-hidden">
-            <div className="space-y-1 max-w-[70%]">
-              <h3 className="font-bold text-base text-slate-800">{t.s2Title}</h3>
-              <p className="text-xs text-slate-400 leading-normal">{t.s2Desc}</p>
-            </div>
-            <span className="text-5xl opacity-80">🚛</span>
-          </div>
+        <div className="grid grid-cols-4 gap-2 mb-6">
+          {(['gujranwala', 'lahore', 'karachi', 'multan'] as const).map((cityName) => (
+            <button
+              key={cityName}
+              onClick={() => setSelectedCity(cityName)}
+              className={`py-2.5 px-1 text-center rounded-xl font-bold text-xs border transition-all active:scale-95 ${
+                selectedCity === cityName
+                  ? 'bg-[#0066cc] text-white border-[#0066cc] shadow-md shadow-blue-500/20'
+                  : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 shadow-sm'
+              }`}
+            >
+              {t.cities[cityName]}
+            </button>
+          ))}
         </div>
+
+        {/* NEW VIP FEATURE: Dynamic Price List Card Grid Row */}
+        <div className="mb-3">
+          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">
+            {t.priceListTitle} ({t.cities[selectedCity]})
+          </h2>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-2 divide-y divide-slate-100 mb-12">
+          {scrapRates[selectedCity].map((item) => (
+            <div key={item.id} className="flex justify-between items-center p-3.5 hover:bg-slate-50/50 transition-all">
+              <div className="flex items-center space-x-3 gap-2">
+                <span className="text-2xl bg-slate-100 p-1.5 rounded-lg">{item.icon}</span>
+                <span className="font-bold text-slate-700 text-sm">{(t as any)[item.nameKey]}</span>
+              </div>
+              <div className="text-right">
+                <span className="text-base font-black text-green-600 block">{item.price}</span>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{t.rateUnit}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
       </main>
 
-      {/* Sticky Bottom Navigation Bar with Floating Center "+" Button */}
+      {/* Fixed Sticky Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
         <button className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14">
           <span className="text-xl">🏠</span>
@@ -199,7 +245,7 @@ export default function Home() {
           <span className="mt-0.5">{t.navAds}</span>
         </button>
         
-        {/* Floating Big Blue "+" Sell Now Center Button */}
+        {/* Floating Center Button */}
         <div className="relative -top-5 flex flex-col items-center justify-center">
           <button className="w-14 h-14 bg-[#0066cc] hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-white transform active:scale-95 transition-all">
             <span className="text-3xl font-light text-white">+</span>
