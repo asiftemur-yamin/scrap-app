@@ -2,20 +2,73 @@
 
 import { useState, useEffect } from 'react';
 
+// Languages Dictionary (English & Urdu Script)
+const translations = {
+  en: {
+    sellScrap: "Sell Scrap",
+    buyScrap: "Buy Scrap",
+    rates: "Live Rates",
+    directory: "Directory",
+    searchPlaceholder: "Search scrap iron, plastic, copper...",
+    location: "Gujranwala",
+    browseTitle: "Browse Scrap Categories",
+    cat1: "Iron (Loha)",
+    cat2: "Plastic",
+    cat3: "Copper (Tamba)",
+    cat4: "Aluminum",
+    cat5: "Batteries",
+    cat6: "Solar Panels",
+    cat7: "Mix Scrap",
+    cat8: "Electronic",
+    servicesTitle: "Explore R-H-A-F Services",
+    s1Title: "Scrap Inspection",
+    s1Desc: "Get accurate weight & live market rates safely.",
+    s2Title: "Sell It For Me",
+    s2Desc: "Hassle-free heavy machinery & factory clearance.",
+    s3Title: "R-H-A-F Wallet",
+    s3Desc: "Manage your digital recycling payments instantly.",
+    navHome: "Home",
+    navAds: "My Ads",
+    navSell: "Sell Now",
+    navChat: "Chat",
+    navMore: "More"
+  },
+  ur: {
+    sellScrap: "اسکریپ بیچیں",
+    buyScrap: "اسکریپ خریدیں",
+    rates: "لائیو ریٹس",
+    directory: "ڈائریکٹری",
+    searchPlaceholder: "لوہا، پلاسٹک، تانبا تلاش کریں...",
+    location: "گوجرانوالہ",
+    browseTitle: "اسکریپ کیٹیگریز تلاش کریں",
+    cat1: "لوہا (Iron)",
+    cat2: "پلاسٹک (Plastic)",
+    cat3: "تانبا (Copper)",
+    cat4: "ایلومینیم",
+    cat5: "بیٹریاں",
+    cat6: "سولر پینل",
+    cat7: "مکس اسکریپ",
+    cat8: "الیکٹرانک",
+    servicesTitle: "آر-ایچ-اے-ایف سروسز",
+    s1Title: "اسکریپ کا معائنہ",
+    s1Desc: "صحیح وزن اور مارکیٹ کے لائیو ریٹس جانیں۔",
+    s2Title: "ہمارے ذریعے بیچیں",
+    s2Desc: "فیکٹری اور بھاری مشینری کا اسکریپ خود اٹھوائیں۔",
+    s3Title: "آر-ایچ-اے-ایف والٹ",
+    s3Desc: "اپنی ری سائیکلنگ پیمنٹ فوری یہاں مینج کریں۔",
+    navHome: "ہوم",
+    navAds: "اشتہارات",
+    navSell: "ابھی بیچیں",
+    navChat: "چیٹ",
+    navMore: "مزید"
+  }
+};
+
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
-  const [currentView, setCurrentView] = useState('home'); // views: 'home', 'prices', 'auth', 'post-ad'
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [authMode, setAuthMode] = useState('login'); // 'login' ya 'signup'
+  const [lang, setLang] = useState<'en' | 'ur'>('en');
+  const t = translations[lang];
 
-  // Post Ad Form State
-  const [adItemName, setAdItemName] = useState('');
-  const [adRate, setAdRate] = useState('');
-  const [adQuantity, setAdQuantity] = useState('');
-  const [adCity, setAdCity] = useState('');
-  const [adPhone, setAdPhone] = useState('');
-
-  // 3 Second Timer for Splash Screen
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
@@ -23,361 +76,147 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // خریداری فہرست (Buyer Demands Data)
-  const [buyerItems] = useState([
-    { id: 1, item: 'لوہا اسکریپ / Iron Scrap', rate: 'Rs. 180 / kg', quantity: '5 Tons', city: 'گوجرانوالہ / Gujranwala' },
-    { id: 2, item: 'تانبا اسکریپ / Copper Scrap', rate: 'Rs. 2,100 / kg', quantity: '800 kg', city: 'لاہور / Lahore' },
-    { id: 3, item: 'ایلومینیم پيک / Aluminum Pack', rate: 'Rs. 350 / kg', quantity: '1.5 Tons', city: 'سیالکوٹ / Sialkot' },
-  ]);
-
-  // فروخت فہرست (Seller Stock Data)
-  const [sellItems, setSellItems] = useState([
-    { id: 1, item: 'پرانی گاڑیاں کی بیٹریاں / Car Batteries', rate: 'Rs. 4,500 / pc', quantity: '40 Pcs', city: 'گوجرانوالہ / Gujranwala' },
-    { id: 2, item: 'پلاسٹک بوتلیں / PET Bottles', rate: 'Rs. 85 / kg', quantity: '1,200 kg', city: 'فیصل آباد / Faisalabad' },
-  ]);
-
-  // شہروں کے ریٹس (City Wise Live Price List)
-  const [cityRates] = useState([
-    {
-      city: 'گوجرانوالہ (Gujranwala)',
-      rates: [
-        { name: 'لوہا اسکریپ / Iron', price: 'Rs. 180 / kg' },
-        { name: 'تانبا اسکریپ / Copper', price: 'Rs. 2,090 / kg' },
-        { name: 'گاڑیوں کی بیٹری / Battery', price: 'Rs. 4,500 / pc' }
-      ]
-    },
-    {
-      city: 'لاہور (Lahore)',
-      rates: [
-        { name: 'لوہا اسکریپ / Iron', price: 'Rs. 183 / kg' },
-        { name: 'تانبا اسکریپ / Copper', price: 'Rs. 2,120 / kg' },
-        { name: 'پلاسٹک دانہ / PET Plastic', price: 'Rs. 88 / kg' }
-      ]
-    }
-  ]);
-
-  // Handle Post Ad Button Click
-  const handlePostAdClick = () => {
-    if (!isLoggedIn) {
-      setCurrentView('auth');
-    } else {
-      setCurrentView('post-ad');
-    }
-  };
-
-  // Handle Form Submission
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!adItemName || !adRate || !adQuantity || !adCity) {
-      alert('براہ کرم تمام خانے پر کریں / Please fill all fields');
-      return;
-    }
-    const newAd = {
-      id: sellItems.length + 1,
-      item: adItemName,
-      rate: `Rs. ${adRate} / kg`,
-      quantity: adQuantity,
-      city: adCity
-    };
-    setSellItems([newAd, ...sellItems]);
-    alert('اشتہار کامیابی سے پوسٹ ہو گیا! / Ad Posted Successfully!');
-    // Reset Form
-    setAdItemName(''); setAdRate(''); setAdQuantity(''); setAdCity(''); setAdPhone('');
-    setCurrentView('home');
-  };
-
-  // ========================================================
-  // 1. SPLASH SCREEN VIEW
-  // ========================================================
+  // 1. Splash Screen (3 Seconds)
   if (showSplash) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#F9FAFB] text-slate-800">
-        <div className="flex flex-col items-center space-y-6 text-center animate-pulse">
-          <div className="w-24 h-24 bg-gradient-to-tr from-emerald-500 to-green-600 rounded-3xl flex items-center justify-center shadow-xl shadow-emerald-500/20">
-            <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17m-.5 1l3.5 3.5L23.5 9" />
-            </svg>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-[#1a365d] text-white">
+        <div className="flex flex-col items-center space-y-4 animate-pulse">
+          <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl">
+            <span className="text-5xl">♻️</span>
           </div>
-          <div className="space-y-1">
-            <h1 className="text-4xl font-black tracking-tight text-slate-900">SCRAP<span className="text-emerald-600">APP</span></h1>
-            <h2 className="text-sm font-bold text-slate-400">پریمیم مارکیٹ / Premium Marketplace</h2>
-          </div>
-          <div className="w-20 h-1 bg-slate-200 rounded-full overflow-hidden">
-            <div className="w-full h-full bg-emerald-500 rounded-full animate-bounce"></div>
+          <h1 className="text-3xl font-extrabold tracking-wider text-white">R-H-A-F RECYCLING</h1>
+          <div className="w-16 h-1 bg-blue-400 rounded-full overflow-hidden">
+            <div className="w-full h-full bg-white animate-infinite origin-left"></div>
           </div>
         </div>
       </div>
     );
   }
 
+  // 2. Main App Interface (PakWheels Style Layout)
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-slate-800 font-sans selection:bg-emerald-100">
+    <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 font-sans pb-24 ${lang === 'ur' ? 'text-right' : 'text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
       
-      {/* --- GLOBAL NAVBAR --- */}
-      <header className="border-b border-slate-200/80 bg-white/80 backdrop-blur sticky top-0 z-50 px-4 py-3.5 shadow-sm">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setCurrentView('home')}>
-            <div className="w-10 h-10 bg-gradient-to-tr from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-md">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17m-.5 1l3.5 3.5L23.5 9" />
-              </svg>
-            </div>
-            <span className="text-xl font-black tracking-tight text-slate-900">SCRAP<span className="text-emerald-600 font-extrabold">APP</span></span>
-          </div>
+      {/* Top Main Dark Blue Header */}
+      <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-xl font-bold tracking-tight text-white">R-H-A-F</div>
           
+          {/* Language Toggle Button */}
           <button 
-            onClick={() => { if(isLoggedIn) { setIsLoggedIn(false); setCurrentView('home'); } else { setCurrentView('auth'); } }}
-            className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1.5"
+            onClick={() => setLang(lang === 'en' ? 'ur' : 'en')}
+            className="bg-white/20 hover:bg-white/30 text-white font-medium text-xs px-3 py-1.5 rounded-full border border-white/30 transition-all active:scale-95"
           >
-            <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            {isLoggedIn ? 'لاگ آؤٹ / Logout' : 'لاگ ان / Login'}
+            {lang === 'en' ? 'اردو (Urdu)' : 'English'}
           </button>
+        </div>
+
+        {/* Top Horizontal Pill Navigation Grid */}
+        <div className="flex space-x-2 overflow-x-auto pb-3 scrollbar-none gap-2">
+          <button className="bg-[#0066cc] text-white text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap shadow-sm">{t.sellScrap}</button>
+          <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.buyScrap}</button>
+          <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.rates}</button>
+          <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.directory}</button>
+        </div>
+
+        {/* Search Bar matching PakWheels layout */}
+        <div className="mt-2 bg-white rounded-lg p-3 flex items-center shadow-inner text-slate-700">
+          <span className="text-slate-400 mx-2">🔍</span>
+          <input 
+            type="text" 
+            placeholder={t.searchPlaceholder}
+            className="w-full bg-transparent outline-none text-sm placeholder-slate-400 font-medium"
+          />
+          <div className="flex items-center text-xs text-slate-400 border-l border-slate-200 pl-2 ml-2 whitespace-nowrap gap-1">
+            <span>📍</span>
+            <span className="font-semibold text-slate-600">{t.location}</span>
+          </div>
         </div>
       </header>
 
-      {/* ========================================================
-          VIEW 1: HOME PAGE (MARKETPLACE)
-          ======================================================== */}
-      {currentView === 'home' && (
-        <main className="max-w-6xl mx-auto px-4 py-8">
-          
-          {/* ACTION BUTTONS WITH DUAL LANGUAGE */}
-          <div className="grid grid-cols-2 gap-4 mb-10">
-            <button 
-              onClick={() => setCurrentView('prices')}
-              className="bg-white hover:bg-amber-50/40 border border-slate-200 text-amber-600 font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all shadow-sm group"
-            >
-              <span className="text-lg font-black">📊 لائیو پرائس لسٹ</span>
-              <span className="text-xs text-slate-400 font-medium font-sans">Live Price List</span>
-            </button>
-            
-            <button 
-              onClick={handlePostAdClick}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl flex flex-col items-center justify-center gap-1 transition-all shadow-md shadow-emerald-600/10"
-            >
-              <span className="text-lg font-black">📢 اشتہار لگائیں</span>
-              <span className="text-xs text-emerald-100 font-medium font-sans">Post New Ad</span>
-            </button>
+      {/* Main Container Body */}
+      <main className="px-4 mt-6">
+        
+        {/* Browse Section Title */}
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-slate-800">{t.browseTitle}</h2>
+        </div>
+
+        {/* Categories 2x4 Grid with Emojis */}
+        <div className="grid grid-cols-4 gap-2.5 mb-8">
+          {[
+            { label: t.cat1, icon: "🔩" },
+            { label: t.cat2, icon: "🛢️" },
+            { label: t.cat3, icon: "🔌" },
+            { label: t.cat4, icon: "🥫" },
+            { label: t.cat5, icon: "🔋" },
+            { label: t.cat6, icon: "☀️" },
+            { label: t.cat7, icon: "📦" },
+            { label: t.cat8, icon: "💻" }
+          ].map((item, idx) => (
+            <div key={idx} className="bg-white border border-slate-100 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition-all cursor-pointer aspect-square">
+              <span className="text-2xl mb-2">{item.icon}</span>
+              <span className="text-[11px] font-bold text-slate-600 leading-tight">{item.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Explore Services Grid Cards */}
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-slate-800">{t.servicesTitle}</h2>
+        </div>
+
+        {/* Big Services Featured Row Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+          {/* Card 1 */}
+          <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm flex justify-between items-center relative overflow-hidden">
+            <div className="space-y-1 max-w-[70%]">
+              <h3 className="font-bold text-base text-slate-800">{t.s1Title}</h3>
+              <p className="text-xs text-slate-400 leading-normal">{t.s1Desc}</p>
+            </div>
+            <span className="text-5xl opacity-80">⚖️</span>
           </div>
 
-          {/* DUAL LIST LAYOUT */}
-          <div className="grid md:grid-cols-2 gap-8 text-right" style={{ direction: 'rtl' }}>
-            
-            {/* خریداری فہرست / Buyer List */}
-            <div className="space-y-4">
-              <div className="border-b border-slate-200 pb-3 flex justify-between items-center">
-                <h2 className="text-lg font-black text-slate-900 flex items-center gap-2.5">
-                  <span className="w-3 h-3 rounded-md bg-blue-500 shadow-sm"></span>
-                  خریدارى فہرست / Buyer List
-                </h2>
-                <span className="text-[11px] bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full font-bold border border-blue-100">ڈیمانڈ / Demand</span>
-              </div>
-
-              <div className="space-y-3">
-                {buyerItems.map((item) => (
-                  <div key={item.id} className="bg-white border border-slate-200/70 rounded-2xl p-4.5 flex justify-between items-center hover:shadow-md transition-all">
-                    <div className="space-y-1 text-right">
-                      <h3 className="font-bold text-slate-800 text-base">{item.item}</h3>
-                      <p className="text-xs text-slate-400">مقدار / Qty: <span className="text-slate-600 font-semibold">{item.quantity}</span> • 📍 {item.city}</p>
-                    </div>
-                    <span className="text-sm bg-slate-50 text-emerald-600 font-black px-4 py-2.5 rounded-xl border border-slate-100 shadow-sm" style={{ direction: 'ltr' }}>
-                      {item.rate}
-                    </span>
-                  </div>
-                ))}
-              </div>
+          {/* Card 2 */}
+          <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm flex justify-between items-center relative overflow-hidden">
+            <div className="space-y-1 max-w-[70%]">
+              <h3 className="font-bold text-base text-slate-800">{t.s2Title}</h3>
+              <p className="text-xs text-slate-400 leading-normal">{t.s2Desc}</p>
             </div>
-
-            {/* فروخت فہرست / Sell List */}
-            <div className="space-y-4">
-              <div className="border-b border-slate-200 pb-3 flex justify-between items-center">
-                <h2 className="text-lg font-black text-slate-900 flex items-center gap-2.5">
-                  <span className="w-3 h-3 rounded-md bg-emerald-500 shadow-sm"></span>
-                  فروخت فہرست / Sell List
-                </h2>
-                <span className="text-[11px] bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full font-bold border border-emerald-100">دستیاب / Available</span>
-              </div>
-
-              <div className="space-y-3">
-                {sellItems.map((item) => (
-                  <div key={item.id} className="bg-white border border-slate-200/70 rounded-2xl p-4.5 flex justify-between items-center hover:shadow-md transition-all">
-                    <div className="space-y-1 text-right">
-                      <h3 className="font-bold text-slate-800 text-base">{item.item}</h3>
-                      <p className="text-xs text-slate-400">اسٹاک / Stock: <span className="text-slate-600 font-semibold">{item.quantity}</span> • 📍 {item.city}</p>
-                    </div>
-                    <span className="text-sm bg-slate-50 text-emerald-600 font-black px-4 py-2.5 rounded-xl border border-slate-100 shadow-sm" style={{ direction: 'ltr' }}>
-                      {item.rate}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
+            <span className="text-5xl opacity-80">🚛</span>
           </div>
-        </main>
-      )}
+        </div>
+      </main>
 
-      {/* ========================================================
-          VIEW 2: LIVE PRICE LIST
-          ======================================================== */}
-      {currentView === 'prices' && (
-        <main className="max-w-4xl mx-auto px-4 py-8 text-right" style={{ direction: 'rtl' }}>
-          <button onClick={() => setCurrentView('home')} className="bg-white border border-slate-200 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs shadow-sm mb-6 flex items-center gap-1.5 ml-auto">
-            ← واپس ہوم پیج / Back to Home
+      {/* Sticky Bottom Navigation Bar with Floating Center "+" Button */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
+        <button className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14">
+          <span className="text-xl">🏠</span>
+          <span className="mt-0.5">{t.navHome}</span>
+        </button>
+        <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14">
+          <span className="text-xl">📋</span>
+          <span className="mt-0.5">{t.navAds}</span>
+        </button>
+        
+        {/* Floating Big Blue "+" Sell Now Center Button */}
+        <div className="relative -top-5 flex flex-col items-center justify-center">
+          <button className="w-14 h-14 bg-[#0066cc] hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-white transform active:scale-95 transition-all">
+            <span className="text-3xl font-light text-white">+</span>
           </button>
+          <span className="text-[11px] font-bold text-[#0066cc] mt-1 whitespace-nowrap">{t.navSell}</span>
+        </div>
 
-          <div className="border-b border-slate-200 pb-3 mb-8 text-center">
-            <h2 className="text-2xl font-black text-slate-900">📊 لائیو پرائس لسٹ / Live Price List</h2>
-            <p className="text-slate-400 text-xs mt-1">شہروں کے مطابق تازہ ترین ریٹس / City Wise Scrap Rates</p>
-          </div>
+        <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14">
+          <span className="text-xl">💬</span>
+          <span className="mt-0.5">{t.navChat}</span>
+        </button>
+        <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14">
+          <span className="text-xl">⣿</span>
+          <span className="mt-0.5">{t.navMore}</span>
+        </button>
+      </nav>
 
-          <div className="space-y-6">
-            {cityRates.map((cityGroup, index) => (
-              <div key={index} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                <h3 className="text-lg font-black text-slate-900 border-b border-slate-100 pb-2 mb-4 text-right">📍 {cityGroup.city}</h3>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {cityGroup.rates.map((rateItem, idx) => (
-                    <div key={idx} className="bg-slate-50 border border-slate-200/60 rounded-xl p-4 flex justify-between items-center">
-                      <span className="font-bold text-slate-700 text-sm">{rateItem.name}</span>
-                      <span className="text-sm text-amber-700 font-black bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-100" style={{ direction: 'ltr' }}>
-                        {rateItem.price}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </main>
-      )}
-
-      {/* ========================================================
-          VIEW 3: AUTH PAGE (LOGIN / REGISTER WITH GMAIL & APPLE)
-          ======================================================== */}
-      {currentView === 'auth' && (
-        <main className="max-w-md mx-auto px-4 py-12">
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm text-center">
-            
-            <h2 className="text-2xl font-black text-slate-900">
-              {authMode === 'login' ? 'لاگ ان کریں / Login' : 'اکاؤنٹ بنائیں / Sign Up'}
-            </h2>
-            <p className="text-slate-400 text-xs mt-1 mb-6">اشتہار پوسٹ کرنے کے لیے اکاؤنٹ ضروری ہے / Account required to post ads</p>
-
-            {/* SOCIAL LOGIN BUTTONS */}
-            <div className="space-y-3 mb-6">
-              {/* Google Button */}
-              <button 
-                onClick={() => { setIsLoggedIn(true); setCurrentView('post-ad'); }}
-                className="w-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition-all"
-              >
-                <span className="text-base">📧</span> گوگل (Gmail) سے لاگ ان کریں / Continue with Google
-              </button>
-
-              {/* Apple Button */}
-              <button 
-                onClick={() => { setIsLoggedIn(true); setCurrentView('post-ad'); }}
-                className="w-full bg-black hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 transition-all"
-              >
-                <span className="text-base">🍏</span> ایپل (Apple ID) سے لاگ ان کریں / Continue with Apple
-              </button>
-            </div>
-
-            <div className="relative flex py-2 items-center text-xs text-slate-300 uppercase font-bold my-4">
-              <div className="flex-grow border-t border-slate-200"></div>
-              <span className="flex-shrink mx-4 text-slate-400">یا / OR</span>
-              <div className="flex-grow border-t border-slate-200"></div>
-            </div>
-
-            {/* EMAIL LOGIN FORM */}
-            <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); setCurrentView('post-ad'); }} className="space-y-4 text-right">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1">ای میل ایڈریس / Email Address</label>
-                <input type="email" required placeholder="name@example.com" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-emerald-500 text-left font-sans" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1">پاس ورڈ / Password</label>
-                <input type="password" required placeholder="••••••••" className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-emerald-500 text-left font-sans" />
-              </div>
-
-              <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-sm shadow-md mt-2">
-                {authMode === 'login' ? 'جاری رکھیں / Continue' : 'رجسٹریشن مکمل کریں / Register'}
-              </button>
-            </form>
-
-            {/* Toggle Login/Signup */}
-            <p className="text-xs text-slate-500 mt-6 cursor-pointer hover:text-emerald-600 font-bold" onClick={() => setAuthMode(authMode === 'login' ? 'signup' : 'login')}>
-              {authMode === 'login' ? 'نیا اکاؤنٹ بنائیں؟ / Create an account' : 'پہلے سے اکاؤنٹ موجود ہے؟ / Already have an account?'}
-            </p>
-
-          </div>
-        </main>
-      )}
-
-      {/* ========================================================
-          VIEW 4: POST AD FORM PAGE
-          ======================================================== */}
-      {currentView === 'post-ad' && (
-        <main className="max-w-lg mx-auto px-4 py-8">
-          <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
-            
-            <div className="border-b border-slate-100 pb-3 mb-6 text-center">
-              <h2 className="text-xl font-black text-slate-900">📢 نیا اشتہار لگائیں / Post New Ad</h2>
-              <p className="text-slate-400 text-xs mt-0.5">اپنا اسکریپ بیچنے کے لیے معلومات درج کریں / Sell your scrap items</p>
-            </div>
-
-            <form onSubmit={handleFormSubmit} className="space-y-4 text-right">
-              {/* Item Name */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">آئٹم کا نام / Item Name</label>
-                <input type="text" value={adItemName} onChange={(e) => setAdItemName(e.target.value)} placeholder="مثال: لودہا اسکریپ، کاپر تار" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-emerald-500" />
-              </div>
-
-              {/* Rate */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">قیمت (فی کلوگرام) / Rate (Rs / kg)</label>
-                <input type="number" value={adRate} onChange={(e) => setAdRate(e.target.value)} placeholder="مثال: 180" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-emerald-500 text-left font-sans" />
-              </div>
-
-              {/* Quantity */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">مقدار (ٹنز یا کلوگرام) / Total Quantity</label>
-                <input type="text" value={adQuantity} onChange={(e) => setAdQuantity(e.target.value)} placeholder="مثال: 2 Tons یا 500 kg" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-emerald-500" />
-              </div>
-
-              {/* City */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">آپ کا شہر / Your City</label>
-                <input type="text" value={adCity} onChange={(e) => setAdCity(e.target.value)} placeholder="مثال: گوجرانوالہ، لاہور" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-emerald-500" />
-              </div>
-
-              {/* Phone Number */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 mb-1">فون نمبر / Phone Number</label>
-                <input type="tel" value={adPhone} onChange={(e) => setAdPhone(e.target.value)} placeholder="03001234567" className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-emerald-500 text-left font-sans" />
-              </div>
-
-              {/* Buttons */}
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setCurrentView('home')} className="w-1/3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 rounded-xl text-xs text-center transition-all">
-                  منسوخ کریں / Cancel
-                </button>
-                <button type="submit" className="w-2/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs shadow-md shadow-emerald-600/10 transition-all">
-                  اشتہار لائیو کریں / Submit Ad
-                </button>
-              </div>
-
-            </form>
-
-          </div>
-        </main>
-      )}
-
-      {/* --- GLOBAL FOOTER --- */}
-      <footer className="text-center py-10 text-slate-400 text-xs border-t border-slate-200/60 bg-white mt-20">
-        © 2026 اسکریپ ایپ کارپوریشن۔ تمام حقوق محفوظ ہیں۔ / Scrap App Corp.
-      </footer>
     </div>
   );
 }
