@@ -233,14 +233,13 @@ export default function Home() {
   };
 
   const handlePostAdTrigger = () => {
-    if (!isLoggedIn) { setAuthView('login'); setShowAuth(true); } 
-    else { setAdStep('select'); setShowPostAd(true); }
-  };
-
-  const sendNewChatMessage = () => {
-    if (!typedMessage.trim()) return;
-    setChatMessages([...chatMessages, { id: Date.now(), text: typedMessage, isMe: true }]);
-    setTypedMessage('');
+    if (!isLoggedIn) { 
+      setAuthView('login'); 
+      setShowAuth(true); 
+    } else { 
+      setAdStep('form'); 
+      setShowPostAd(true); 
+    }
   };
 
   const sortedFeedAds = getSortedAdsByRadius().slice(0, visibleAdsCount);
@@ -255,7 +254,7 @@ export default function Home() {
 
       {/* 👑 FULL SCREEN SPLASH SCREEN WITH LOGO ANIMATION */}
       {showSplash && (
-        <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6 animate-fade-in">
+        <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
           <div className="text-center space-y-4">
             <div className="text-7xl animate-bounce tracking-widest">🏭♻️</div>
             <h1 className="text-4xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">SCRAP WORLD</h1>
@@ -322,7 +321,7 @@ export default function Home() {
             { id: 'cat4', label: t.cat4, icon: "🥫", trigger: null },
             { id: 'cat5', label: t.cat5, icon: "🔋", trigger: null },
             { id: 'cat6', label: t.cat6, icon: "☀️", trigger: null },
-            { id: 'cat7', label: t.cat7, icon: "⚡", trigger: () => setShowChaalooModal(true) }, // Active Trigger for Chaaloo Maal
+            { id: 'cat7', label: t.cat7, icon: "⚡", trigger: () => setShowChaalooModal(true) }, 
             { id: 'cat8', label: t.cat8, icon: "💻", trigger: null }
           ].map((item, idx) => (
             <div key={idx} onClick={() => { if(item.trigger) item.trigger(); }} className={`bg-white border rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-sm aspect-square cursor-pointer transition-transform active:scale-95 ${item.trigger ? 'border-amber-400 bg-amber-50/30' : 'border-slate-100'}`}>
@@ -332,7 +331,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* CHAALOO MAAL SUB-CATEGORIES DIRECT POPUP LIST */}
+        {/* CHAALOO MAAL POPUP */}
         {showChaalooModal && (
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4">
             <div className="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 shadow-2xl space-y-4">
@@ -356,133 +355,65 @@ export default function Home() {
           </div>
         )}
 
-        {/* VERIFIED FACTORIES */}
-        <div className="mb-4 mt-8 border-t border-slate-200 pt-5">
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="text-sm font-black text-slate-900 uppercase tracking-tight">{t.b2bTitle}</h2>
-            <button onClick={() => { if(!isLoggedIn) { setAuthView('login'); setShowAuth(true); } else { setShowVerificationPortal(true); } }} className="text-[10px] bg-amber-500 text-white px-3 py-1.5 rounded-xl font-extrabold shadow-sm">⭐ {t.verifyActionBtn}</button>
-          </div>
-          <div className="flex overflow-x-auto pb-3 gap-3.5 scrollbar-none snap-x">
-            {initialVerifiedStores.map((store) => (
-              <div key={store.id} onClick={() => setSelectedFactoryCatalog(store)} className="bg-white border-2 border-amber-400/40 rounded-2xl p-4 min-w-[240px] shadow-sm snap-center relative overflow-hidden cursor-pointer flex flex-col justify-between">
-                <div className="absolute top-0 right-0 bg-gradient-to-l from-amber-500 to-amber-600 text-white text-[8px] font-black uppercase px-3 py-1 rounded-bl-xl tracking-wider">👑 Verified Store</div>
-                <div className="flex items-center gap-2.5 mt-2">
-                  <span className="text-3xl bg-slate-50 p-2 rounded-xl border">{store.icon}</span>
-                  <div>
-                    <h4 className="font-black text-sm text-slate-800 line-clamp-1">{lang === 'en' ? store.nameEn : store.nameUr}</h4>
-                    <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 inline-block mt-0.5">{store.badge}</span>
-                  </div>
-                </div>
-                <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-slate-400">📍 {t.cities[store.city as any] || store.city}</span>
-                  <span className="text-[11px] font-black text-indigo-600">View Live Catalog →</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* LME Live Ticker Row */}
-        <div className="mb-3 mt-6"><div className="flex justify-between items-center"><h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2><span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-md font-black animate-pulse">● LIVE TICKER</span></div></div>
-        <div className="flex overflow-x-auto pb-3 gap-3 scrollbar-none snap-x">
-          {lmeRates.map((metal) => (
-            <div key={metal.id} className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 min-w-[140px] shadow-md snap-center flex flex-col justify-between border border-slate-700/50">
-              <div className="flex justify-between items-center gap-2"><span className="text-xl bg-white/10 p-1 rounded-lg">{metal.icon}</span><span className={`text-[11px] font-black px-1.5 py-0.5 rounded-md ${metal.up ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>{metal.change}</span></div>
-              <div className="mt-4"><span className="text-[11px] font-bold text-slate-400 block truncate">{(t.lmeMetals as any)[metal.key]}</span><span className="text-lg font-black text-white block mt-0.5">${metal.price.toLocaleString()}</span><span className="text-[9px] text-slate-500 font-bold tracking-tight block">{t.lmeUnit}</span></div>
-            </div>
-          ))}
-        </div>
-
-        {/* Marketplace Standard Feed */}
+        {/* FEED MARKETPLACE */}
         <div className="mb-4 mt-8 border-t border-slate-200 pt-6">
           <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center justify-between">
             <span>📋 {t.feedTitle} {activeSubCatFilter !== 'all' && `(${t.subCats[activeSubCatFilter]})`}</span>
-            {activeSubCatFilter !== 'all' && <button onClick={() => setActiveSubCatFilter('all')} className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-bold">Reset Filter ✕</button>}
+            {activeSubCatFilter !== 'all' && <button onClick={() => setActiveSubCatFilter('all')} className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full font-bold">Reset ✕</button>}
           </h2>
         </div>
 
         <div className="space-y-3.5 mb-6">
           {sortedFeedAds.map((ad) => (
-            <div key={ad.id} onClick={() => setSelectedAd(ad)} className={`bg-white rounded-2xl p-4 border flex justify-between items-center shadow-sm hover:shadow-md cursor-pointer relative overflow-hidden ${ad.isFeatured ? 'border-amber-300 ring-2 ring-amber-500/10' : 'border-slate-200/80'}`}>
-              <span className={`absolute top-0 right-0 text-[9px] font-black uppercase px-2.5 py-0.5 rounded-bl-xl text-white ${ad.radiusLevel === 'local' ? 'bg-blue-600' : ad.radiusLevel === 'nearby' ? 'bg-orange-500' : 'bg-slate-500'}`}>{ad.radiusLevel === 'local' ? t.localBadge : ad.radiusLevel === 'nearby' ? t.nearbyBadge : t.regionalBadge}</span>
+            <div key={ad.id} className="bg-white rounded-2xl p-4 border border-slate-200/80 flex justify-between items-center shadow-sm">
               <div className="flex items-start space-x-3.5 gap-3 max-w-[70%]">
-                <div className="w-16 h-16 bg-slate-100 rounded-xl border flex flex-col items-center justify-center shrink-0"><span className="text-3xl">{ad.icon}</span></div>
-                <div className="space-y-1">
-                  {ad.isFeatured && <span className="text-[10px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-black inline-block">⭐ FEATURED</span>}
+                <div className="w-16 h-16 bg-slate-100 rounded-xl border flex items-center justify-center text-3xl shrink-0">{ad.icon}</div>
+                <div>
                   <h4 className="font-extrabold text-sm text-slate-800 leading-snug line-clamp-2">{lang === 'en' ? ad.titleEn : ad.titleUr}</h4>
-                  <p className="text-[11px] font-semibold text-slate-400"><span>📍</span> {t.postedIn}: <span className="text-slate-600 capitalize">{(t.cities as any)[ad.city] || ad.city}</span></p>
-                  <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-md inline-block">📦 {ad.weight}</span>
+                  <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-md inline-block mt-1">📦 {ad.weight}</span>
                 </div>
               </div>
-              <div className="text-right shrink-0"><span className="text-lg font-black text-green-600 block">Rs.{ad.price}</span><span className="text-[9px] font-black text-slate-400 block">/{ad.unit}</span></div>
+              <div className="text-right shrink-0"><span className="text-lg font-black text-green-600 block">Rs.{ad.price}</span></div>
             </div>
           ))}
         </div>
       </main>
 
-      {/* VERIFIED STORE INDUSTRIAL CATALOG DISPLAY */}
-      {selectedFactoryCatalog && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[130] flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-[#f2f6fa] w-full max-w-xl rounded-t-3xl sm:rounded-2xl max-h-[88vh] overflow-y-auto shadow-2xl relative flex flex-col pb-6">
-            <div className="bg-gradient-to-r from-amber-600 to-amber-700 text-white p-4 sticky top-0 flex justify-between items-center shadow-md">
-              <div className="flex items-center gap-2"><span className="text-2xl">{selectedFactoryCatalog.icon}</span><div><h3 className="text-base font-black">{lang === 'en' ? selectedFactoryCatalog.nameEn : selectedFactoryCatalog.nameUr}</h3><span className="text-[9px] font-bold bg-white/20 text-white px-2 py-0.5 rounded">👑 Verified Factory Store</span></div></div>
-              <button onClick={() => setSelectedFactoryCatalog(null)} className="bg-slate-900/40 text-white text-xs font-black px-3 py-1.5 rounded-full">✕</button>
-            </div>
-            <div className="p-5 space-y-4" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
-              <h4 className="text-xs font-black text-slate-400 uppercase tracking-wider">📋 {t.catalogTitle}</h4>
-              <div className="space-y-3">
-                {selectedFactoryCatalog.catalog.map((cat: any, i: number) => (
-                  <div key={i} className="bg-white border rounded-2xl p-4 shadow-sm flex flex-col justify-between gap-3">
-                    <div className="flex justify-between items-center border-b pb-2"><span className="font-black text-sm text-slate-800">⚙️ {cat.item}</span><span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">{cat.cycle}</span></div>
-                    <div className="grid grid-cols-2 gap-4 text-center">
-                      <div className="bg-green-50/50 p-2.5 rounded-xl border border-green-200"><span className="text-[10px] text-green-700 font-bold block">{t.buyPriceLabel}</span><span className="text-base font-black text-green-600">Rs.{cat.buy} <span className="text-[9px] font-bold text-slate-400">/Kg</span></span></div>
-                      <div className="bg-blue-50/50 p-2.5 rounded-xl border border-blue-200"><span className="text-[10px] text-blue-700 font-bold block">{t.sellPriceLabel}</span><span className="text-base font-black text-blue-600">Rs.{cat.sell} <span className="text-[9px] font-bold text-slate-400">/Kg</span></span></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* FULL SCREEN MODAL: AUTHENTICATION OVERLAY */}
+      {/* 🔐 FULL SCREEN AUTH OVERLAY (Fixed execution flow) */}
       {showAuth && (
-        <div className="fixed inset-0 bg-[#f2f6fa] z-[150] flex flex-col justify-center p-4">
+        <div className="fixed inset-0 bg-[#f2f6fa] z-[300] flex flex-col justify-center p-4">
           <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-2xl border p-6 space-y-6 relative">
             <button onClick={() => setShowAuth(false)} className="absolute top-4 right-4 text-xs font-black bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full">✕</button>
-            <div className="text-center"><h2 className="text-xl font-black text-[#1a365d]">{authView === 'login' ? t.authTitleLogin : authView === 'register' ? t.authTitleRegister : t.authTitleForgot}</h2></div>
+            <div className="text-center"><h2 className="text-xl font-black text-[#1a365d]">{t.authTitleLogin}</h2></div>
             <div className="space-y-4 text-left" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
               <div><label className="block text-xs font-black text-slate-700 mb-1">{t.emailLabel}</label><input type="email" placeholder="name@email.com" className="w-full bg-slate-50 border rounded-xl p-3.5 text-xs outline-none focus:border-[#0066cc]" /></div>
-              <input type="password" placeholder="••••••••" className="w-full bg-slate-50 border rounded-xl p-3.5 text-xs outline-none focus:border-[#0066cc]" />
-              <button onClick={() => { setIsLoggedIn(true); setShowAuth(false); }} className="w-full bg-[#0066cc] text-white font-black text-sm py-3.5 rounded-xl shadow-md mt-2">{t.signIn}</button>
+              <div><label className="block text-xs font-black text-slate-700 mb-1">{t.passLabel}</label><input type="password" placeholder="••••••••" className="w-full bg-slate-50 border rounded-xl p-3.5 text-xs outline-none focus:border-[#0066cc]" /></div>
+              <button onClick={() => { setIsLoggedIn(true); setShowAuth(false); setShowPostAd(true); setFormMainCat('chaaloo'); }} className="w-full bg-[#0066cc] text-white font-black text-sm py-3.5 rounded-xl shadow-md mt-2">Sign In & Post Ad 🔑</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 📢 DYNAMIC POST AD FORM OVERLAY (With Category & Sub-Category Logic Fitted) */}
+      {/* 📢 100% VISIBLE POST AD FORM OVERLAY */}
       {showPostAd && isLoggedIn && (
-        <div className="fixed inset-0 bg-[#f2f6fa] z-[160] flex flex-col overflow-y-auto pb-12">
-          <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex items-center justify-between shadow-md z-10">
-            <button onClick={() => setAdStep('select')} className="text-white bg-white/10 font-bold px-3 py-2 rounded-xl">← Back</button>
+        <div className="fixed inset-0 bg-[#f2f6fa] z-[400] flex flex-col overflow-y-auto pb-12">
+          <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex items-center justify-between shadow-md">
+            <button onClick={() => setShowPostAd(false)} className="text-white bg-white/10 font-bold px-3 py-2 rounded-xl">← Back</button>
             <h3 className="text-sm font-black uppercase">Post Advertisement</h3>
             <button onClick={() => setShowPostAd(false)} className="text-xs bg-red-600 text-white px-3 py-2 rounded-xl font-bold">✕</button>
           </div>
           
           <div className="p-5 max-w-lg mx-auto w-full space-y-5" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
-            {/* Title Selection */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Item Title / Product Name</label>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Product Title</label>
               <input type="text" placeholder="e.g., Useable Copper Compressor 2Ton" className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc]" />
             </div>
 
-            {/* Main Category Dynamic Select Selector */}
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Main Category</label>
               <select 
                 value={formMainCat} 
-                onChange={(e) => { setFormMainCat(e.target.value); setFormSubCat('scrap'); }}
+                onChange={(e) => { setFormMainCat(e.target.value); if(e.target.value !== 'chaaloo') setFormSubCat('scrap'); }}
                 className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] font-bold text-slate-700"
               >
                 <option value="iron">{t.cat1}</option>
@@ -492,37 +423,35 @@ export default function Home() {
               </select>
             </div>
 
-            {/* Sub-Category Render Box Condition Matrix */}
             {formMainCat === 'chaaloo' && (
-              <div>
+              <div className="animate-fade-in">
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.itemTypeLabel}</label>
                 <select 
                   value={formSubCat} 
                   onChange={(e) => setFormSubCat(e.target.value)}
-                  className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none focus:border-amber-500 font-bold text-slate-800 bg-amber-50"
+                  className="w-full bg-amber-50 border border-amber-300 rounded-xl p-3.5 text-sm outline-none focus:border-amber-500 font-bold text-slate-800"
                 >
                   <option value="compressor">Chaaloo Compressor 💨</option>
                   <option value="motor">Chaaloo Motor ⚙️</option>
                   <option value="generator">Chaaloo Generator ⚡</option>
-                  <option value="other">Other Useable Items / Miscellaneous 📦</option> {/* Built-in Other Option Attached */}
+                  <option value="other">Other Useable Items / Miscellaneous 📦</option>
                 </select>
               </div>
             )}
 
-            {/* Rest of standard operational fields */}
             <div className="grid grid-cols-2 gap-2">
-              <div><label className="block text-xs font-bold text-slate-700 mb-1">Weight</label><input type="text" placeholder="e.g., 500 Kg / 3 Ton" className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none" /></div>
+              <div><label className="block text-xs font-bold text-slate-700 mb-1">Weight</label><input type="text" placeholder="e.g., 500 Kg" className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none" /></div>
               <div><label className="block text-xs font-bold text-slate-700 mb-1">Rate Demanded</label><input type="number" placeholder="Rs." className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none font-bold text-green-600" /></div>
             </div>
 
-            <button type="button" onClick={() => { alert("Ad Published Successfully on Scrap World Grid!"); setShowPostAd(false); }} className="w-full bg-green-600 text-white font-black text-sm py-4 rounded-xl shadow-lg mt-6">Publish Advertisement 📢</button>
+            <button type="button" onClick={() => { alert("Ad Published Successfully!"); setShowPostAd(false); }} className="w-full bg-green-600 text-white font-black text-sm py-4 rounded-xl shadow-lg mt-6">Publish Advertisement 📢</button>
           </div>
         </div>
       )}
 
       {/* Sticky Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
-        <button onClick={() => { setShowInbox(false); }} className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14"><span className="text-xl">🏠</span><span className="mt-0.5">{t.navHome}</span></button>
+        <button onClick={() => { setShowInbox(false); setShowPostAd(false); }} className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14"><span className="text-xl">🏠</span><span className="mt-0.5">{t.navHome}</span></button>
         <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">📋</span><span className="mt-0.5">{t.navAds}</span></button>
         <div className="relative -top-5 flex flex-col items-center justify-center">
           <button onClick={handlePostAdTrigger} className="w-14 h-14 bg-[#0066cc] text-white rounded-full flex items-center justify-center shadow-lg border-4 border-white transform active:scale-95 transition-all"><span className="text-3xl font-light">+</span></button>
