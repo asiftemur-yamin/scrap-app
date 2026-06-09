@@ -1,29 +1,4 @@
-{/* Top Main Header */}
-<header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
-  <div className="flex justify-between items-center mb-4 gap-2">
-    <div>
-      <div className="text-2xl font-black tracking-wider">{t.appName}</div>
-      <div className="text-xs font-medium text-blue-200 mt-1">{currentDate}</div> {/* Date Yahan Aaegi */}
-    </div>
-    
-    <div className="flex items-center space-x-2 gap-2">
-      {/* ... baaki buttons ... */}
-    </div>
-  </div>
-  {/* ... baaki header code ... */}
-</header>{/* Header ke andar yahan add karein */}
-<div className="text-xs font-medium text-blue-200 mt-1">
-  {currentDate}
-</div>const [currentDate, setCurrentDate] = useState('');
-
-useEffect(() => {
-  const date = new Date().toLocaleDateString('en-GB', { 
-    day: 'numeric', 
-    month: 'long', 
-    year: 'numeric' 
-  });
-  setCurrentDate(date);
-}, []);'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 
