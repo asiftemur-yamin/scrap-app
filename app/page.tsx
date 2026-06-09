@@ -1,6 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Noto_Nastaliq_Urdu } from 'next/font/google';
+
+// iPhone Style Urdu Font Setup
+const notoUrdu = Noto_Nastaliq_Urdu({
+  subsets: ['arabic'],
+  weight: ['400', '700'],
+  display: 'swap',
+});
 
 // Languages, Local Price, LME Prices & Auth Dictionary
 const translations = {
@@ -278,7 +286,8 @@ export default function Home() {
   }
 
   return (
-    <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 font-sans pb-24 ${lang === 'ur' ? 'text-right' : 'text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
+    // DYNAMIC FONT SWITCHING: Applying iPhone style Noto Urdu class globally when language is 'ur'
+    <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 pb-24 ${lang === 'ur' ? `${notoUrdu.className} text-right` : 'font-sans text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
       
       {/* Top Header */}
       <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
@@ -335,7 +344,7 @@ export default function Home() {
       {/* Main Body */}
       <main className="px-4 mt-6">
         
-        {/* Local vs Imported Switch Boxes */}
+        {/* Local vs Imported Origin */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.originSectionTitle}</h2>
         </div>
@@ -379,7 +388,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* LME International Rates */}
+        {/* LME Ticker */}
         <div className="mb-3 mt-6">
           <div className="flex justify-between items-center">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2>
@@ -405,7 +414,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Cities Selector */}
+        {/* Cities */}
         <div className="mb-3 mt-6">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.selectCityTitle}</h2>
         </div>
@@ -426,7 +435,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Rates Table */}
+        {/* Price List */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">
             {t.priceListTitle} ({t.cities[selectedCity]})
@@ -449,7 +458,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* FULL SCREEN MODAL: AUTHENTICATION CONTAINER (FIXED BUILD ERROR HERE) */}
+      {/* FULL SCREEN MODAL: AUTHENTICATION CONTAINER */}
       {showAuth && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[110] flex flex-col justify-center p-6 overflow-y-auto">
           <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200/80 p-6 space-y-6 relative">
