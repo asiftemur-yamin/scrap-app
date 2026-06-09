@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-// 1. ALL SCRAP ADS DATABASE (Top-level declaration for safe build)
+// 1. ALL SCRAP ADS DATABASE (Declared Exactly Once at the Very Top)
 const initialAdsData = [
   { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", city: "gujranwala", price: "125", unit: "kg", weight: "12 Ton", isFeatured: true, origin: "local", icon: "🔩", desc: "Factory clearance raw structural steel iron scrap available immediately near Khiali Gate." },
   { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", city: "gujranwala", price: "1,870", unit: "kg", weight: "450 Kg", isFeatured: false, origin: "imported", icon: "🔌", desc: "High quality stripped electrical copper wire scrap. Clean shining stock, ready for delivery." },
@@ -14,7 +14,7 @@ const initialAdsData = [
   { id: 8, titleEn: "Mixed Electronic PCB Motherboard Waste", titleUr: "مکس الیکٹرانک پی سی بی مدر بورڈ کچرا", city: "karachi", price: "550", unit: "kg", weight: "500 Kg", isFeatured: false, origin: "imported", icon: "💻", desc: "Computer and mobile scrap circuit green boards. Great potential for gold/silver/copper chemical refining." }
 ];
 
-// 2. Translation Dictionary
+// 2. Complete Languages Translation Dictionary
 const translations = {
   en: {
     appName: "SCRAP WORLD",
@@ -40,7 +40,7 @@ const translations = {
     navHome: "Home",
     navAds: "My Ads",
     navSell: "Sell Now",
-    navChat: "Chat Inbox",
+    navChat: "App Chat",
     navMore: "More",
     cities: {
       gujranwala: "Gujranwala",
@@ -72,6 +72,45 @@ const translations = {
     typeLabel: "Stock Type",
     loginBtn: "Login / Register",
     logoutBtn: "Logout 👤",
+    authTitleLogin: "Welcome Back",
+    authTitleRegister: "Create Account",
+    authTitleForgot: "Reset Password",
+    emailLabel: "Email Address",
+    passLabel: "Password",
+    forgotLink: "Forgot Password?",
+    googleLogin: "Continue with Google",
+    appleLogin: "Continue with Apple",
+    orDivider: "OR CONTINUE WITH EMAIL",
+    noAccount: "Don't have an account? Register",
+    haveAccount: "Already have an account? Login",
+    backToLogin: "Back to Login",
+    sendResetBtn: "Send Reset Link 📩",
+    signIn: "Login",
+    signUp: "Register Account",
+    chooseTypeTitle: "What do you want to do?",
+    optionSellTitle: "Sell My Scrap",
+    optionSellDesc: "Post an ad to sell your scrap material to buyers.",
+    optionBuyTitle: "Do You Want to Buy? (Demand)",
+    optionBuyDesc: "Post your business requirement / demand to get offers.",
+    formTitleSell: "Create Sell Advertisement",
+    formTitleBuy: "Create Buy Demand Advertisement",
+    itemName: "Item Name / Title",
+    itemNamePlh: "e.g., Heavy Industrial Melting Iron",
+    selectUnit: "Select Weight Unit",
+    perKg: "Per Kg",
+    perTon: "Per Ton",
+    perMund: "Per Mund (37.324 Kg)",
+    rateLabelSell: "Your Selling Price (Rs)",
+    rateLabelBuy: "Your Buying Budget Price (Rs)",
+    locLabel: "Ad Location / City",
+    picLabel: "Upload Scrap Pictures",
+    picDesc: "Add up to 5 clear photos of your material",
+    detailsLabel: "Scrap Details / Description",
+    detailsPlh: "Mention total weight, quality, and pickup availability...",
+    featureLabel: "Feature This Ad (VIP)",
+    featureDesc: "Get 10x more direct calls from premium clients",
+    submitBtnSell: "Publish Sell Ad 🚀",
+    submitBtnBuy: "Publish Demand Ad 📢",
     inboxTitle: "Your App Messages",
     noChats: "No in-app chats yet. Start chat from any advertisement!",
     chatPlaceholder: "Type your scrap offer here...",
@@ -133,6 +172,45 @@ const translations = {
     typeLabel: "مال کی قسم",
     loginBtn: "لاگ ان / رجسٹر",
     logoutBtn: "لاگ آؤٹ 👤",
+    authTitleLogin: "خوش آمدید",
+    authTitleRegister: "نیا اکاؤنٹ بنائیں",
+    authTitleForgot: "پاس ورڈ ری سیٹ کریں",
+    emailLabel: "ای میل ایڈریس",
+    passLabel: "پاس ورڈ",
+    forgotLink: "پاس ورڈ بھول گئے؟",
+    googleLogin: "گوگل (Gmail) کے ساتھ لاگ ان کریں",
+    appleLogin: "ایپل (Apple ID) کے ساتھ لاگ ان کریں",
+    orDivider: "یا ای میل کے ذریعے لاگ ان کریں",
+    noAccount: "اکاؤنٹ نہیں ہے؟ رجسٹریشن کریں",
+    haveAccount: "پہلے سے اکاؤنٹ ہے؟ لاگ ان کریں",
+    backToLogin: "لاگ ان پیج پر واپس جائیں",
+    sendResetBtn: "ری سیٹ لنک بھیجیں 📩",
+    signIn: "لاگ ان کریں",
+    signUp: "نیا اکاؤنٹ بنائیں",
+    chooseTypeTitle: "آپ کیا کرنا چاہتے ہیں؟",
+    optionSellTitle: "اسکریپ بیچنا ہے",
+    optionSellDesc: "اپنا مال گاہکوں کو بیچنے کے لیے اشتہار لگائیں۔",
+    optionBuyTitle: "مال خریدنا ہے؟ (ڈیمانڈ اشتہار)",
+    optionBuyDesc: "اپنی فیکٹری یا کاروبار کی ڈیمانڈ ڈالیں تاکہ لوگ آفرز دیں۔",
+    formTitleSell: "بیچنے کا نیا اشتہار بنائیں",
+    formTitleBuy: "خریداری کی نئی ڈیمانڈ کا اشتہار بنائیں",
+    itemName: "چیز کا نام / ٹائٹل",
+    itemNamePlh: "مثال کے طور پر: فیکٹری کا پگھلنے والا لوہا",
+    selectUnit: "وزن کی اکائی (Unit) منتخب کریں",
+    perKg: "فی کلو (Per Kg)",
+    perTon: "فی ٹن (Per Ton)",
+    perMund: "فی من (37.324 Kg)",
+    rateLabelSell: "بیچنے کی قیمت (روپے)",
+    rateLabelBuy: "خریدنے کا بجٹ / ریٹ (روپے)",
+    locLabel: "شہر / لوکیشن",
+    picLabel: "اسکریپ کی تصاویر اپلوڈ کریں",
+    picDesc: "اپنے مال کی صاف اور واضح تصاویر شامل کریں",
+    detailsLabel: "مال کی تفصیلات / ڈسکرپشن",
+    detailsPlh: "کل وزن، کوالٹی اور مال اٹھانے کی تفصیلات لکھیں...",
+    featureLabel: "اشتہار کو فیچرڈ کریں (VIP)",
+    featureDesc: "بڑے ڈیلرز سے 10 گنا زیادہ فون کالز حاصل کریں",
+    submitBtnSell: "بیچنے کا اشتہار لگائیں 🚀",
+    submitBtnBuy: "خریداری کی ڈیمانڈ پوسٹ کریں 📢",
     inboxTitle: "آپ کے ان ایپ پیغامات",
     noChats: "ابھی تک کوئی چیٹ موجود نہیں ہے۔ کسی بھی اشتہار سے چیٹ شروع کریں!",
     chatPlaceholder: "یہاں اپنا پیغام لکھیں...",
@@ -140,6 +218,7 @@ const translations = {
   }
 };
 
+// 3. LME Live Stock Exchange Data
 const lmeData = [
   { id: "cop", key: "copper", icon: "🔴", price: "9,645", change: "+1.4%", up: true },
   { id: "alu", key: "aluminum", icon: "⚪", price: "2,520", change: "-0.3%", up: false },
@@ -147,6 +226,7 @@ const lmeData = [
   { id: "pb", key: "lead", icon: "🔋", price: "2,140", change: "+0.2%", up: true }
 ];
 
+// 4. Local Pakistani Scrap Rates Data
 const scrapRates = {
   gujranwala: [
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "120" },
@@ -179,10 +259,12 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
-  // Auth & Posting States
+  // Auth States
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [authView, setAuthView] = useState<'login' | 'register' | 'forgot'>('login');
+
+  // Ad Creation States
   const [showPostAd, setShowPostAd] = useState(false);
   const [adStep, setAdStep] = useState<'select' | 'form'>('select');
   const [adType, setAdType] = useState<'sell' | 'buy'>('sell');
@@ -190,20 +272,16 @@ export default function Home() {
   const [scrapOrigin, setScrapOrigin] = useState('local');
   const [isFeatured, setIsFeatured] = useState(false);
 
-  // Feed & Infinite Scrolling States
-  const [ads, setAds] = useState(initialAdsData);
+  // Infinite Scroll States
   const [visibleAdsCount, setVisibleAdsCount] = useState(4);
   const [isScrollingLoading, setIsScrollingLoading] = useState(false);
   const [selectedAd, setSelectedAd] = useState<any | null>(null);
 
-  // NEW DYNAMIC IN-APP CHAT STATES
+  // In-App Chat Messenger States
   const [showInbox, setShowInbox] = useState(false);
   const [activeChatSession, setActiveChatSession] = useState<any | null>(null);
-  const [chatInboxList, setChatInboxList] = useState<any[]>([
-    { id: 101, titleEn: "HMS 1 Iron Deal", titleUr: "لوہا اسکریپ سودا", lastMessage: "Bhai final rate kya hai?", time: "2m ago" }
-  ]);
   const [chatMessages, setChatMessages] = useState<any[]>([
-    { id: 1, text: "Assalam o Alaikum, is scrap material ka kya rate miley ga?", isMe: false }
+    { id: 1, text: "Assalam o Alaikum, is scrap material ka final rate kya miley ga?", isMe: false }
   ]);
   const [typedMessage, setTypedMessage] = useState('');
 
@@ -220,29 +298,29 @@ export default function Home() {
   useEffect(() => {
     const handleInfiniteScroll = () => {
       if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 150) {
-        if (visibleAdsCount < ads.length && !isScrollingLoading) {
+        if (visibleAdsCount < initialAdsData.length && !isScrollingLoading) {
           setIsScrollingLoading(true);
           setTimeout(() => {
             setVisibleAdsCount(prev => prev + 2);
             setIsScrollingLoading(false);
-          }, 1000); // 1 second mock loading delay
+          }, 1000);
         }
       }
     };
     window.addEventListener('scroll', handleInfiniteScroll);
     return () => window.removeEventListener('scroll', handleInfiniteScroll);
-  }, [visibleAdsCount, ads.length, isScrollingLoading]);
+  }, [visibleAdsCount, isScrollingLoading]);
 
   const getSortedAdsByRadius = () => {
-    const localAds = ads.filter(ad => ad.city === selectedCity);
+    const localAds = initialAdsData.filter(ad => ad.city === selectedCity);
     let nearbyCitiesOrder: string[] = [];
     if (selectedCity === 'gujranwala') nearbyCitiesOrder = ['lahore', 'multan', 'karachi'];
     else if (selectedCity === 'lahore') nearbyCitiesOrder = ['gujranwala', 'multan', 'karachi'];
     else if (selectedCity === 'multan') nearbyCitiesOrder = ['lahore', 'gujranwala', 'karachi'];
     else if (selectedCity === 'karachi') nearbyCitiesOrder = ['multan', 'lahore', 'gujranwala'];
 
-    const nearbyAds = ads.filter(ad => ad.city === nearbyCitiesOrder[0]);
-    const regionalAds = ads.filter(ad => ad.city !== selectedCity && ad.city !== nearbyCitiesOrder[0]);
+    const nearbyAds = initialAdsData.filter(ad => ad.city === nearbyCitiesOrder[0]);
+    const regionalAds = initialAdsData.filter(ad => ad.city !== selectedCity && ad.city !== nearbyCitiesOrder[0]);
 
     const localized = localAds.map(a => ({ ...a, radiusLevel: 'local' }));
     const neared = nearbyAds.map(a => ({ ...a, radiusLevel: 'nearby' }));
@@ -261,6 +339,14 @@ export default function Home() {
     }
   };
 
+  const handleBackNavigation = () => {
+    if (adStep === 'form') {
+      setAdStep('select');
+    } else {
+      setShowPostAd(false);
+    }
+  };
+
   const sendNewChatMessage = () => {
     if (!typedMessage.trim()) return;
     const newMsg = { id: Date.now(), text: typedMessage, isMe: true };
@@ -268,34 +354,18 @@ export default function Home() {
     setTypedMessage('');
   };
 
-  if (showSplash) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#1a365d] text-white">
-        <div className="flex flex-col items-center space-y-4 animate-pulse">
-          <div className="w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center shadow-2xl">
-            <span className="text-5xl">♻️</span>
-          </div>
-          <h1 className="text-4xl font-black tracking-widest text-white">SCRAP WORLD</h1>
-          <div className="w-16 h-1 bg-blue-400 rounded-full overflow-hidden">
-            <div className="w-full h-full bg-white animate-infinite origin-left"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const sortedFeedAds = getSortedAdsByRadius().slice(0, visibleAdsCount);
 
   return (
-    <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 pb-24 ${lang === 'ur' ? 'iphone-urdu text-right' : 'font-sans text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
+    <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 pb-24 iphone-style-global ${lang === 'ur' ? 'text-right' : 'text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
       
-      {/* BRAND NEW SYSTEM AGNOSTIC PREMIUM URDU FONT CSS INJECTION */}
+      {/* UNIVERSAL CLEAN SYSTEM FONT STYLE INJECTION */}
       <style dangerouslySetInnerHTML={{ __html: `
-        .iphone-urdu {
+        .iphone-style-global {
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
         }
-        .iphone-urdu h2, .iphone-urdu h3, .iphone-urdu h4, .iphone-urdu button {
-          font-family: -apple-system, BlinkMacSystemFont, "Noto Nastaliq Urdu", "Segoe UI", sans-serif !important;
+        .iphone-style-global h2, .iphone-style-global h3, .iphone-style-global h4, .iphone-style-global button, .iphone-style-global span {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple Color Emoji", sans-serif !important;
         }
       `}} />
 
@@ -343,19 +413,22 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content Body */}
+      {/* Main Container */}
       <main className="px-4 mt-6">
         
-        {/* Origin Switch */}
+        {/* Origin Grid */}
+        <div className="mb-3">
+          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.originSectionTitle}</h2>
+        </div>
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="bg-white border-2 border-blue-500/20 rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer">
+          <div className="bg-white border-2 border-blue-500/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md cursor-pointer">
             <div>
               <span className="font-black text-sm text-[#1a365d] block">{t.localScrap}</span>
               <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.localScrapDesc}</span>
             </div>
             <span className="text-3xl">🇵🇰</span>
           </div>
-          <div className="bg-white border-2 border-green-600/20 rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer">
+          <div className="bg-white border-2 border-green-600/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md cursor-pointer">
             <div>
               <span className="font-black text-sm text-[#1a365d] block">{t.importedScrap}</span>
               <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.importedScrapDesc}</span>
@@ -364,7 +437,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Categories */}
+        {/* Categories Grid */}
         <div className="mb-4">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.browseTitle}</h2>
         </div>
@@ -382,7 +455,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* LME Live Section */}
+        {/* LME Prices */}
         <div className="mb-3 mt-6">
           <div className="flex justify-between items-center">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2>
@@ -407,7 +480,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* City Filter */}
+        {/* Cities */}
         <div className="mb-3 mt-6">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.selectCityTitle}</h2>
         </div>
@@ -425,7 +498,10 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Local Rate List */}
+        {/* Price List */}
+        <div className="mb-3">
+          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.priceListTitle} ({(t.cities as any)[selectedCity]})</h2>
+        </div>
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-2 divide-y divide-slate-100 mb-8">
           {(scrapRates as any)[selectedCity].map((item: any) => (
             <div key={item.id} className="flex justify-between items-center p-3.5">
@@ -451,7 +527,7 @@ export default function Home() {
           </h2>
         </div>
 
-        {/* AUTOMATIC CONTINUOUS AD FEED RENDERING */}
+        {/* Infinite Feed Render Block */}
         <div className="space-y-3.5 mb-6">
           {sortedFeedAds.map((ad) => (
             <div 
@@ -493,7 +569,7 @@ export default function Home() {
             </div>
           ))}
 
-          {/* Scrolling Spinner Indicator */}
+          {/* Automatic Scrolling Indicator */}
           {isScrollingLoading && (
             <div className="py-4 text-center text-xs font-bold text-slate-400 animate-pulse flex items-center justify-center gap-2">
               <span className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
@@ -503,11 +579,11 @@ export default function Home() {
         </div>
       </main>
 
-      {/* FULL VIEW AD OVERLAY WITH INTEGRATED IN-APP CHAT TRIGGER */}
+      {/* DETAILED AD POPUP MODAL (Z-INDEX 120) */}
       {selectedAd && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-[#f2f6fa] w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[92vh] overflow-y-auto shadow-2xl relative flex flex-col pb-6">
-            <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex justify-between items-center shadow-md z-10">
+            <div className="bg-[#1a365d] text-white p-4 top-0 flex justify-between items-center shadow-md z-10">
               <span className="text-sm font-black uppercase tracking-wider">📦 {t.appName} Mandi</span>
               <button onClick={() => setSelectedAd(null)} className="bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full">✕</button>
             </div>
@@ -545,13 +621,12 @@ export default function Home() {
                 <p className="text-sm font-medium text-slate-600 leading-relaxed">{selectedAd.desc}</p>
               </div>
 
-              {/* THREE BUTTON ROW: Call, WhatsApp, and IN-APP CHAT FOR PRIVACY HIDING */}
+              {/* THREE BUTTON ROW WITH IN-APP PRIVACY CHAT */}
               <div className="grid grid-cols-3 gap-2 pt-4 border-t">
                 <a href="tel:+923000000000" className="bg-[#0066cc] text-white text-center font-black text-[11px] py-3.5 rounded-xl shadow-sm flex items-center justify-center">{t.callSeller}</a>
                 <a href="https://wa.me/923000000000" target="_blank" className="bg-emerald-600 text-white text-center font-black text-[11px] py-3.5 rounded-xl shadow-sm flex items-center justify-center">{t.whatsappSeller}</a>
                 <button 
                   onClick={() => {
-                    // Open direct app chat window for this ad
                     setActiveChatSession({ id: selectedAd.id, name: lang === 'en' ? selectedAd.titleEn : selectedAd.titleUr });
                     setSelectedAd(null);
                     setShowInbox(true);
@@ -566,84 +641,44 @@ export default function Home() {
         </div>
       )}
 
-      {/* DYNAMIC CHAT INBOX OVERLAY SYSTEM (Z-INDEX 105) */}
+      {/* INTERNAL CHAT MESSENGER INBOX SCREEN (Z-INDEX 105) */}
       {showInbox && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[105] flex flex-col">
           <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex justify-between items-center shadow-md">
             <button 
-              onClick={() => {
-                if (activeChatSession) setActiveChatSession(null);
-                else setShowInbox(false);
-              }}
+              onClick={() => { if (activeChatSession) setActiveChatSession(null); else setShowInbox(false); }}
               className="bg-white/10 px-3 py-1.5 rounded-xl font-bold text-xs"
             >
               ← {activeChatSession ? "Inbox" : "Home"}
             </button>
-            <h3 className="text-base font-black">
-              {activeChatSession ? activeChatSession.name : t.inboxTitle}
-            </h3>
+            <h3 className="text-base font-black">{activeChatSession ? activeChatSession.name : t.inboxTitle}</h3>
             <button onClick={() => { setActiveChatSession(null); setShowInbox(false); }} className="text-xs bg-red-600 text-white px-3 py-1.5 rounded-xl font-bold">✕</button>
           </div>
 
-          {/* VIEW A: MESSAGE CHAT CONVERSATION SCREEN */}
           {activeChatSession ? (
             <div className="flex-1 flex flex-col justify-between bg-slate-50 overflow-hidden">
               <div className="flex-1 p-4 overflow-y-auto space-y-3 flex flex-col">
                 {chatMessages.map((msg) => (
-                  <div 
-                    key={msg.id}
-                    className={`max-w-[75%] p-3.5 rounded-2xl text-sm font-semibold shadow-sm ${
-                      msg.isMe 
-                        ? 'bg-indigo-600 text-white rounded-br-none self-end text-left' 
-                        : 'bg-white text-slate-800 rounded-bl-none self-start text-left'
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
+                  <div key={msg.id} className={`max-w-[75%] p-3.5 rounded-2xl text-sm font-semibold shadow-sm ${msg.isMe ? 'bg-indigo-600 text-white rounded-br-none self-end' : 'bg-white text-slate-800 rounded-bl-none self-start'}`}>{msg.text}</div>
                 ))}
               </div>
-
-              {/* Chat Text Input Field Bar */}
               <div className="p-3 bg-white border-t flex gap-2 items-center">
-                <input 
-                  type="text" 
-                  value={typedMessage}
-                  onChange={(e) => setTypedMessage(e.target.value)}
-                  placeholder={t.chatPlaceholder}
-                  className="w-full bg-slate-100 border border-slate-200 rounded-xl p-3 outline-none text-sm font-medium"
-                  onKeyDown={(e) => { if(e.key === 'Enter') sendNewChatMessage(); }}
-                />
-                <button 
-                  onClick={sendNewChatMessage}
-                  className="bg-indigo-600 text-white font-black px-5 py-3 rounded-xl text-sm active:scale-95 transition-all"
-                >
-                  {t.sendChatBtn}
-                </button>
+                <input type="text" value={typedMessage} onChange={(e) => setTypedMessage(e.target.value)} placeholder={t.chatPlaceholder} className="w-full bg-slate-100 border rounded-xl p-3 outline-none text-sm font-medium" onKeyDown={(e) => { if(e.key === 'Enter') sendNewChatMessage(); }} />
+                <button onClick={sendNewChatMessage} className="bg-indigo-600 text-white font-black px-5 py-3 rounded-xl text-sm">{t.sendChatBtn}</button>
               </div>
             </div>
           ) : (
-            // VIEW B: INBOX LIST SCREEN
             <div className="p-4 space-y-3 flex-1 overflow-y-auto">
-              {chatInboxList.length === 0 ? (
-                <p className="text-center text-sm font-bold text-slate-400 mt-12 px-6">{t.noChats}</p>
-              ) : (
-                chatInboxList.map((chat) => (
-                  <div 
-                    key={chat.id}
-                    onClick={() => setActiveChatSession({ id: chat.id, name: lang === 'en' ? chat.titleEn : chat.titleUr })}
-                    className="bg-white border rounded-2xl p-4 shadow-sm flex justify-between items-center cursor-pointer hover:border-indigo-400 transition-all"
-                  >
-                    <div className="flex items-center space-x-3 gap-3">
-                      <div className="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl font-bold">💬</div>
-                      <div>
-                        <h4 className="font-black text-sm text-slate-800">{lang === 'en' ? chat.titleEn : chat.titleUr}</h4>
-                        <p className="text-xs text-slate-400 font-medium mt-0.5">{chat.lastMessage}</p>
-                      </div>
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-400">{chat.time}</span>
+              <div onClick={() => setActiveChatSession({ id: 99, name: "HMS 1 Iron Lot" })} className="bg-white border rounded-2xl p-4 shadow-sm flex justify-between items-center cursor-pointer">
+                <div className="flex items-center space-x-3 gap-3">
+                  <div className="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl font-bold">💬</div>
+                  <div>
+                    <h4 className="font-black text-sm text-slate-800">HMS 1 Iron Deal</h4>
+                    <p className="text-xs text-slate-400 font-medium mt-0.5">Bhai final weight loading kab hai?</p>
                   </div>
-                ))
-              )}
+                </div>
+                <span className="text-[10px] font-bold text-slate-400">2m ago</span>
+              </div>
             </div>
           )}
         </div>
@@ -714,21 +749,11 @@ export default function Home() {
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
         <button onClick={() => { setShowInbox(false); setActiveChatSession(null); }} className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14"><span className="text-xl">🏠</span><span className="mt-0.5">{t.navHome}</span></button>
         <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">📋</span><span className="mt-0.5">{t.navAds}</span></button>
-        
-        {/* Floating Center '+' Button */}
         <div className="relative -top-5 flex flex-col items-center justify-center">
           <button onClick={handlePostAdTrigger} className="w-14 h-14 bg-[#0066cc] text-white rounded-full flex items-center justify-center shadow-lg border-4 border-white transform active:scale-95 transition-all"><span className="text-3xl font-light">+</span></button>
           <span className="text-[11px] font-bold text-[#0066cc] mt-1">{t.navSell}</span>
         </div>
-
-        {/* CLICKING CHAT INSTICKY BOTTOM NAV OPENS COMPLETE INBOX LIST */}
-        <button 
-          onClick={() => { setActiveChatSession(null); setShowInbox(true); }}
-          className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"
-        >
-          <span className="text-xl">💬</span>
-          <span className="mt-0.5">{t.navChat}</span>
-        </button>
+        <button onClick={() => { setActiveChatSession(null); setShowInbox(true); }} className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">💬</span><span className="mt-0.5">{t.navChat}</span></button>
         <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">⣿</span><span className="mt-0.5">{t.navMore}</span></button>
       </nav>
 
