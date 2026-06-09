@@ -222,7 +222,8 @@ const scrapRates = {
 };
 
 export default function Home() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(true);// 🟢 Isay state wale section mein add karen:
+const [currentDate, setCurrentDate] = useState('');
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
