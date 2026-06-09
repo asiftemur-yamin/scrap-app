@@ -63,6 +63,8 @@ const translations = {
     haveAccount: "Already have an account? Login",
     backToLogin: "Back to Login",
     sendResetBtn: "Send Reset Link 📩",
+    signIn: "Login",
+    signUp: "Register Account",
     // Form Translations
     chooseTypeTitle: "What do you want to do?",
     optionSellTitle: "Sell My Scrap",
@@ -148,6 +150,8 @@ const translations = {
     haveAccount: "پہلے سے اکاؤنٹ ہے؟ لاگ ان کریں",
     backToLogin: "لاگ ان پیج پر واپس جائیں",
     sendResetBtn: "ری سیٹ لنک بھیجیں 📩",
+    signIn: "لاگ ان کریں",
+    signUp: "نیا اکاؤنٹ بنائیں",
     // Form Translations
     chooseTypeTitle: "آپ کیا کرنا چاہتے ہیں؟",
     optionSellTitle: "اسکریپ بیچنا ہے",
@@ -239,7 +243,6 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // SMART SECURITY TRIGGER CHECK
   const handlePostAdTrigger = () => {
     if (!isLoggedIn) {
       setAuthView('login');
@@ -283,7 +286,6 @@ export default function Home() {
           <div className="text-2xl font-black tracking-wider text-white">{t.appName}</div>
           
           <div className="flex items-center space-x-2 gap-2">
-            {/* VIP AUTH BUTTON ON HOME PAGE */}
             <button
               onClick={() => {
                 if (isLoggedIn) {
@@ -307,7 +309,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Top Action Navigation Pills */}
+        {/* Top Pills */}
         <div className="flex overflow-x-auto pb-3 scrollbar-none gap-2">
           <button className="bg-[#0066cc] text-white text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap shadow-sm">{t.sellScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.buyScrap}</button>
@@ -333,7 +335,7 @@ export default function Home() {
       {/* Main Body */}
       <main className="px-4 mt-6">
         
-        {/* Local vs Imported Highlight Categories */}
+        {/* Local vs Imported Switch Boxes */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.originSectionTitle}</h2>
         </div>
@@ -354,7 +356,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Regular Categories Grid */}
+        {/* Categories Grid */}
         <div className="mb-4">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.browseTitle}</h2>
         </div>
@@ -377,7 +379,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* LME International Ticker */}
+        {/* LME International Rates */}
         <div className="mb-3 mt-6">
           <div className="flex justify-between items-center">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2>
@@ -403,7 +405,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* City Filter Row Selection */}
+        {/* Cities Selector */}
         <div className="mb-3 mt-6">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.selectCityTitle}</h2>
         </div>
@@ -424,7 +426,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Local Prices List */}
+        {/* Rates Table */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">
             {t.priceListTitle} ({t.cities[selectedCity]})
@@ -447,7 +449,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* FULL SCREEN MODAL: SIGN IN / SIGN UP / FORGOT OVERLAY (Z-INDEX 110 HIGH FIX) */}
+      {/* FULL SCREEN MODAL: AUTHENTICATION CONTAINER (FIXED BUILD ERROR HERE) */}
       {showAuth && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[110] flex flex-col justify-center p-6 overflow-y-auto">
           <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-xl border border-slate-200/80 p-6 space-y-6 relative">
@@ -465,18 +467,17 @@ export default function Home() {
               </h2>
             </div>
 
-            {/* Social Authentication Buttons Row */}
             {authView !== 'forgot' && (
               <div className="space-y-2">
                 <button 
                   onClick={() => { setIsLoggedIn(true); setShowAuth(false); if(showPostAd) setAdStep('select'); }}
-                  className="w-full bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
+                  className="w-full bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm"
                 >
                   <span className="text-base">🔴</span> {t.googleLogin}
                 </button>
                 <button 
                   onClick={() => { setIsLoggedIn(true); setShowAuth(false); if(showPostAd) setAdStep('select'); }}
-                  className="w-full bg-black hover:bg-slate-900 text-white font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-sm"
+                  className="w-full bg-black hover:bg-slate-900 text-white font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm"
                 >
                   <span className="text-base">🍏</span> {t.appleLogin}
                 </button>
@@ -487,7 +488,6 @@ export default function Home() {
               </div>
             )}
 
-            {/* Credential Auth Form */}
             <div className="space-y-4 text-left" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.emailLabel}</label>
@@ -508,7 +508,6 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Action Trigger Submit Button */}
               <button
                 onClick={() => {
                   if (authView === 'forgot') {
@@ -517,7 +516,6 @@ export default function Home() {
                   } else {
                     setIsLoggedIn(true);
                     setShowAuth(false);
-                    // Automatic open the ad creation page flow if triggered by posting request
                     setShowPostAd(true);
                     setAdStep('select');
                   }
@@ -528,7 +526,6 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Footer View Switch Links */}
             <div className="text-center text-xs font-medium text-slate-500 pt-2 border-t border-slate-100">
               {authView === 'login' && (
                 <button onClick={() => setAuthView('register')} className="text-[#0066cc] font-bold hover:underline">{t.noAccount}</button>
