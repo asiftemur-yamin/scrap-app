@@ -1,0 +1,10 @@
+const [currentDate, setCurrentDate] = useState('');
+
+useEffect(() => {
+  const date = new Date().toLocaleDateString('en-GB', { 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric' 
+  });
+  setCurrentDate(date);
+}, []);
