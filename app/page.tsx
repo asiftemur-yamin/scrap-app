@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-// 1. ALL SCRAP ADS DATABASE (Moved to Top for Perfect Build Execution)
+// 1. STATIC DATABASE INITIALIZED AT THE VERY TOP FOR TS COMPLIANCE
 const initialAdsData = [
   { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", city: "gujranwala", price: "125", unit: "kg", weight: "12 Ton", isFeatured: true, origin: "local", icon: "🔩", desc: "Factory clearance raw structural steel iron scrap available immediately near Khiali Gate." },
   { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", city: "gujranwala", price: "1,870", unit: "kg", weight: "450 Kg", isFeatured: false, origin: "imported", icon: "🔌", desc: "High quality stripped electrical copper wire scrap. Clean shining stock, ready for delivery." },
@@ -14,7 +14,7 @@ const initialAdsData = [
   { id: 8, titleEn: "Mixed Electronic PCB Motherboard Waste", titleUr: "مکس الیکٹرانک پی سی بی مدر بورڈ کچرا", city: "karachi", price: "550", unit: "kg", weight: "500 Kg", isFeatured: false, origin: "imported", icon: "💻", desc: "Computer and mobile scrap circuit green boards. Great potential for gold/silver/copper chemical refining." }
 ];
 
-// 2. Languages Translation Dictionary
+// 2. DICTIONARIES WITH ALL KEYS DECLARED COMPLETELY
 const translations = {
   en: {
     appName: "SCRAP WORLD",
@@ -208,7 +208,6 @@ const translations = {
   }
 };
 
-// 3. LME Prices Data
 const lmeData = [
   { id: "cop", key: "copper", icon: "🔴", price: "9,645", change: "+1.4%", up: true },
   { id: "alu", key: "aluminum", icon: "⚪", price: "2,520", change: "-0.3%", up: false },
@@ -216,7 +215,6 @@ const lmeData = [
   { id: "pb", key: "lead", icon: "🔋", price: "2,140", change: "+0.2%", up: true }
 ];
 
-// 4. Local Scrap Rates Data
 const scrapRates = {
   gujranwala: [
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "120" },
@@ -249,26 +247,22 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
-  // Auth Smart States
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [authView, setAuthView] = useState<'login' | 'register' | 'forgot'>('login');
 
-  // Post Ad States
   const [showPostAd, setShowPostAd] = useState(false);
   const [adStep, setAdStep] = useState<'select' | 'form'>('select');
   const [adType, setAdType] = useState<'sell' | 'buy'>('sell');
   
-  // Form Control
   const [unit, setUnit] = useState('kg');
   const [scrapOrigin, setScrapOrigin] = useState('local');
   const [isFeatured, setIsFeatured] = useState(false);
 
-  // Marketplace Feed States
   const [ads] = useState(initialAdsData);
   const [selectedAd, setSelectedAd] = useState<any | null>(null);
 
-  const t = translations[lang];
+  const t: any = translations[lang];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -334,11 +328,12 @@ export default function Home() {
   return (
     <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 pb-24 ${lang === 'ur' ? 'iphone-urdu text-right' : 'font-sans text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
       
-      <style>{`
+      {/* COMPILER COMPLIANT NATIVE STYLE REGISTRATION */}
+      <style dangerouslySetInnerHTML={{ __html: `
         .iphone-urdu {
-          font-family: -apple-system, BlinkMacSystemFont, "Noto Nastaliq Urdu", "Urdu Typesetting", "Segoe UI", Tahoma, sans-serif !important;
+          font-family: -apple-system, BlinkMacSystemFont, "Noto Nastaliq Urdu", "Urdu Typesetting", "Segoe UI", Roboto, sans-serif !important;
         }
-      `}</style>
+      `}} />
 
       {/* Top Header */}
       <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
@@ -365,7 +360,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Action Pills */}
+        {/* Action Navigation Pills */}
         <div className="flex overflow-x-auto pb-3 scrollbar-none gap-2">
           <button className="bg-[#0066cc] text-white text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap shadow-sm">{t.sellScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.buyScrap}</button>
@@ -384,22 +379,22 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Container Body */}
       <main className="px-4 mt-6">
         
-        {/* Origin Switch */}
+        {/* Origin Type Grid */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.originSectionTitle}</h2>
         </div>
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="bg-white border-2 border-blue-500/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md cursor-pointer">
+          <div className="bg-white border-2 border-blue-500/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-all cursor-pointer">
             <div>
               <span className="font-black text-sm text-[#1a365d] block">{t.localScrap}</span>
               <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.localScrapDesc}</span>
             </div>
             <span className="text-3xl">🇵🇰</span>
           </div>
-          <div className="bg-white border-2 border-green-600/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md cursor-pointer">
+          <div className="bg-white border-2 border-green-600/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-all cursor-pointer">
             <div>
               <span className="font-black text-sm text-[#1a365d] block">{t.importedScrap}</span>
               <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.importedScrapDesc}</span>
@@ -426,7 +421,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* LME International Rates */}
+        {/* LME Live Section */}
         <div className="mb-3 mt-6">
           <div className="flex justify-between items-center">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2>
@@ -443,7 +438,7 @@ export default function Home() {
                 </span>
               </div>
               <div className="mt-4">
-                <span className="text-[11px] font-bold text-slate-400 block truncate">{(t as any).lmeMetals[metal.key]}</span>
+                <span className="text-[11px] font-bold text-slate-400 block truncate">{(t.lmeMetals as any)[metal.key]}</span>
                 <span className="text-lg font-black text-white block mt-0.5">${metal.price}</span>
                 <span className="text-[9px] text-slate-500 font-bold tracking-tight uppercase block">{t.lmeUnit}</span>
               </div>
@@ -451,7 +446,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* City Filter */}
+        {/* Cities Section */}
         <div className="mb-3 mt-6">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.selectCityTitle}</h2>
         </div>
@@ -464,17 +459,17 @@ export default function Home() {
                 selectedCity === cityName ? 'bg-[#0066cc] text-white border-[#0066cc] shadow-md' : 'bg-white text-slate-600 border-slate-200'
               }`}
             >
-              {t.cities[cityName]}
+              {(t.cities as any)[cityName]}
             </button>
           ))}
         </div>
 
-        {/* Local Rate List */}
+        {/* Local Market Prices */}
         <div className="mb-3">
-          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.priceListTitle} ({t.cities[selectedCity]})</h2>
+          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.priceListTitle} ({(t.cities as any)[selectedCity]})</h2>
         </div>
         <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-2 divide-y divide-slate-100 mb-8">
-          {scrapRates[selectedCity].map((item) => (
+          {(scrapRates as any)[selectedCity].map((item: any) => (
             <div key={item.id} className="flex justify-between items-center p-3.5">
               <div className="flex items-center space-x-3 gap-2">
                 <span className="text-2xl bg-slate-100 p-1.5 rounded-lg">{item.icon}</span>
@@ -493,12 +488,12 @@ export default function Home() {
           <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center justify-between">
             <span>📋 {t.feedTitle}</span>
             <span className="text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-bold">
-              📍 {t.cities[selectedCity]} First
+              📍 {(t.cities as any)[selectedCity]} First
             </span>
           </h2>
         </div>
 
-        {/* Continuous List Feed Render */}
+        {/* Continuous Infinite List Feed Feed cards */}
         <div className="space-y-3.5 mb-12">
           {sortedFeedAds.map((ad) => (
             <div 
@@ -515,7 +510,7 @@ export default function Home() {
               </span>
 
               <div className="flex items-start space-x-3.5 gap-3 max-w-[70%]">
-                <div className="w-16 h-16 bg-slate-100 rounded-xl border border-slate-200 flex flex-col items-center justify-center relative shrink-0">
+                <div className="w-16 h-16 bg-slate-100 rounded-xl border flex flex-col items-center justify-center relative shrink-0">
                   <span className="text-3xl">{ad.icon}</span>
                   {ad.origin === 'imported' && <span className="absolute bottom-0 right-0 text-xs">🚢</span>}
                 </div>
@@ -526,7 +521,7 @@ export default function Home() {
                     {lang === 'en' ? ad.titleEn : ad.titleUr}
                   </h4>
                   <p className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
-                    <span>📍</span> {t.postedIn}: <span className="text-slate-600 capitalize">{t.cities[ad.city as any] || ad.city}</span>
+                    <span>📍</span> {t.postedIn}: <span className="text-slate-600 capitalize">{(t.cities as any)[ad.city] || ad.city}</span>
                   </p>
                   <span className="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded-md inline-block">
                     📦 {ad.weight}
@@ -550,7 +545,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* FULL VIEW DETAILED OVERLAY (Z-INDEX 120) */}
+      {/* FULL AD CARD DETAILED OVERLAY POPUP */}
       {selectedAd && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-[#f2f6fa] w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[92vh] overflow-y-auto shadow-2xl relative flex flex-col pb-6">
@@ -563,7 +558,7 @@ export default function Home() {
               <div className="w-full h-44 bg-gradient-to-br from-slate-200 to-slate-100 rounded-2xl border flex flex-col items-center justify-center relative">
                 <span className="text-6xl animate-bounce">{selectedAd.icon}</span>
                 <span className="absolute bottom-3 right-3 bg-slate-900/40 text-white text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-sm">
-                  📍 {t.cities[selectedAd.city as any] || selectedAd.city}
+                  📍 {(t.cities as any)[selectedAd.city] || selectedAd.city}
                 </span>
               </div>
 
@@ -605,7 +600,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* FULL SCREEN MODAL: AUTHENTICATION OVERLAY (Z-INDEX 110) */}
+      {/* FULL SCREEN MODAL: AUTHENTICATION OVERLAY */}
       {showAuth && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[110] flex flex-col justify-center p-6 overflow-y-auto">
           <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-xl border p-6 space-y-6 relative">
@@ -640,7 +635,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* FULL-SCREEN OVERLAY FOR POST AD (Z-INDEX 100) */}
+      {/* FULL-SCREEN OVERLAY FOR POST AD */}
       {showPostAd && isLoggedIn && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[100] flex flex-col overflow-y-auto pb-12">
           <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex items-center justify-between shadow-md z-10">
@@ -671,7 +666,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Sticky Bottom Navigation Bar (Z-INDEX 50) */}
+      {/* Sticky Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
         <button className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14"><span className="text-xl">🏠</span><span className="mt-0.5">{t.navHome}</span></button>
         <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">📋</span><span className="mt-0.5">{t.navAds}</span></button>
