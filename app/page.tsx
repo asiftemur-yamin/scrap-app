@@ -2,17 +2,19 @@
 
 import { useState, useEffect } from 'react';
 
-// 1. ALL SCRAP ADS DATABASE (Top level execution alignment)
+// 1. ALL SCRAP & USEABLE ADS DATABASE (Chaaloo Maal Included)
 const initialAdsData: any[] = [
   { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", city: "gujranwala", price: "125", unit: "kg", weight: "12 Ton", isFeatured: true, origin: "local", icon: "🔩", desc: "Factory clearance raw structural steel iron scrap available immediately near Khiali Gate." },
   { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", city: "gujranwala", price: "1,870", unit: "kg", weight: "450 Kg", isFeatured: false, origin: "imported", icon: "🔌", desc: "High quality stripped electrical copper wire scrap. Clean shining stock, ready for delivery." },
-  { id: 3, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", city: "lahore", price: "465", unit: "kg", weight: "35 Mund", isFeatured: true, origin: "local", icon: "🥫", desc: "Compressed aluminum drink beverage can bundles. Total weight 35 munds loaded in Lahore Badami Bagh." },
-  { id: 4, titleEn: "Mixed Crushed Plastic Drums Scrap", titleUr: "مکس کرشڈ پلاسٹک ڈرم اسکریپ اسٹاک", city: "lahore", price: "98", unit: "kg", weight: "3 Ton", isFeatured: false, origin: "local", icon: "🛢️", desc: "Blue and white HDPE industrial crushed plastic flakes ready for recycling plants injection molding." },
-  { id: 5, titleEn: "Imported Scrap Solar Cells for Silver Recovery", titleUr: "امپورٹڈ سولر سیل اسکریپ سلور نکالنے کیلئے", city: "karachi", price: "320", unit: "kg", weight: "8 Ton", isFeatured: true, origin: "imported", icon: "☀️", desc: "Premium imported damaged solar panel cell waste. High concentration material directly available from Karachi Port containers." },
-  { id: 6, titleEn: "Decommissioned Telecom Lead Acid Batteries", titleUr: "ٹیلی کام پاور لیڈ ایسڈ بیٹریاں اسکریپ", city: "multan", price: "240", unit: "kg", weight: "85 units", isFeatured: false, origin: "local", icon: "🔋", desc: "Scrap heavy backup dry battery units collected from telecom towers. Selling on per kg scale weight." }
+  { id: 3, titleEn: "Useable Industrial Electric Motor 5HP (Chaaloo)", titleUr: "صنعتی الیکٹرک موٹر 5HP (چالو مال)", city: "gujranwala", price: "16,500", unit: "piece", weight: "2 units", isFeatured: true, origin: "local", icon: "⚙️", desc: "Working condition 5HP copper winding motors removed from textile plant clearance." },
+  { id: 4, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", city: "lahore", price: "465", unit: "kg", weight: "35 Mund", isFeatured: true, origin: "local", icon: "🥫", desc: "Compressed aluminum drink beverage can bundles. Total weight 35 munds loaded in Lahore Badami Bagh." },
+  { id: 5, titleEn: "Mixed Crushed Plastic Drums Scrap", titleUr: "مکس کرشڈ پلاسٹک ڈرم اسکریپ اسٹاک", city: "lahore", price: "98", unit: "kg", weight: "3 Ton", isFeatured: false, origin: "local", icon: "🛢️", desc: "Blue and white HDPE industrial crushed plastic flakes ready for recycling plants injection molding." },
+  { id: 6, titleEn: "Heavy Duty Iron Gate & Grills (Useable)", titleUr: "لوہے کا بھاری گیٹ اور گرل (استعمال کے قابل)", city: "lahore", price: "145", unit: "kg", weight: "450 Kg", isFeatured: false, origin: "local", icon: "🚪", desc: "Excellent condition useable scrap iron gate, no rusting, ready for direct re-installation." },
+  { id: 7, titleEn: "Imported Scrap Solar Cells for Silver Recovery", titleUr: "امپورٹڈ سولر سیل اسکریپ سلور نکالنے کیلئے", city: "karachi", price: "320", unit: "kg", weight: "8 Ton", isFeatured: true, origin: "imported", icon: "☀️", desc: "Premium imported damaged solar panel cell waste. High concentration material directly available from Karachi Port containers." },
+  { id: 8, titleEn: "Decommissioned Telecom Lead Acid Batteries", titleUr: "ٹیلی کام پاور لیڈ ایسڈ بیٹریاں اسکریپ", city: "multan", price: "240", unit: "kg", weight: "85 units", isFeatured: false, origin: "local", icon: "🔋", desc: "Scrap heavy backup dry battery units collected from telecom towers. Selling on per kg scale weight." }
 ];
 
-// 2. NEW B2B VERIFIED FACTORIES & YARDS DIRECTORY DATABASE
+// 2. NEW B2B VERIFIED FACTORIES & YARDS DIRECTORY DATABASE (Chaaloo Maal Catalog Included)
 const initialVerifiedStores: any[] = [
   { 
     id: 501, 
@@ -25,7 +27,7 @@ const initialVerifiedStores: any[] = [
     catalog: [
       { item: "HMS 1 Industrial Iron", buy: "124", sell: "128", cycle: "Daily Stock Availability" },
       { item: "Pure Copper Stripped Wire", buy: "1,850", sell: "1,890", cycle: "Weekly Bulk Lot" },
-      { item: "Alumina Smelting Scrap Lot", buy: "450", sell: "475", cycle: "Monthly Container" }
+      { item: "Useable Motors / Machinery", buy: "14,500", sell: "16,000", cycle: "As Per Stock Lot" }
     ]
   },
   { 
@@ -64,25 +66,15 @@ const translations: any = {
     cat4: "Aluminum",
     cat5: "Batteries",
     cat6: "Solar Panels",
-    cat7: "Mix Scrap",
+    cat7: "Chaaloo Maal",
     cat8: "Electronic",
     navHome: "Home",
     navAds: "My Ads",
     navSell: "Sell Now",
     navChat: "Chat Inbox",
     navMore: "More",
-    cities: {
-      gujranwala: "Gujranwala",
-      lahore: "Lahore",
-      karachi: "Karachi",
-      multan: "Multan"
-    },
-    lmeMetals: {
-      copper: "LME Copper",
-      aluminum: "LME Aluminum",
-      zinc: "LME Zinc",
-      lead: "LME Lead"
-    },
+    cities: { gujranwala: "Gujranwala", lahore: "Lahore", karachi: "Karachi", multan: "Multan" },
+    lmeMetals: { copper: "LME Copper", aluminum: "LME Aluminum", zinc: "LME Zinc", lead: "LME Lead" },
     originSectionTitle: "Select Scrap Type",
     localScrap: "Local Scrap",
     localScrapDesc: "Pakistani local market material",
@@ -134,25 +126,15 @@ const translations: any = {
     cat4: "ایلومینیم",
     cat5: "بیٹریاں",
     cat6: "سولر پینل",
-    cat7: "مکس اسکریپ",
+    cat7: "چالو مال (Useable)",
     cat8: "الیکٹرانک",
     navHome: "ہوم",
     navAds: "اشتہارات",
     navSell: "ابھی بیچیں",
     navChat: "چیٹ ان باکس",
     navMore: "مزید",
-    cities: {
-      gujranwala: "گوجرانوالہ",
-      lahore: "لاہور",
-      karachi: "کراچی",
-      multan: "ملتان"
-    },
-    lmeMetals: {
-      copper: "تانبا (Copper)",
-      aluminum: "ایلومینیم",
-      zinc: "زنک (Zinc)",
-      lead: "لیڈ (Lead)"
-    },
+    cities: { gujranwala: "گوجرانوالہ", lahore: "لاہور", karachi: "کراچی", multan: "ملتان" },
+    lmeMetals: { copper: "تانبا (Copper)", aluminum: "ایلومینیم", zinc: "زنک (Zinc)", lead: "لیڈ (Lead)" },
     originSectionTitle: "اسکریپ کی قسم منتخب کریں",
     localScrap: "لوکل اسکریپ",
     localScrapDesc: "پاکستانی مقامی مارکیٹ کا مال",
@@ -217,12 +199,13 @@ const scrapRates = {
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "118" },
     { id: "copper", nameKey: "cat3", icon: "🔌", price: "1,820" },
     { id: "aluminum", nameKey: "cat4", icon: "🥫", price: "440" },
-    { id: "plastic", nameKey: "cat2", icon: "🛢️", price: "90" }
+    { id: "plastic", nameKey: "cat2", icon: "90" }
   ]
 };
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
+  const [currentDate, setCurrentDate] = useState('');
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
@@ -259,7 +242,14 @@ export default function Home() {
 
   const t: any = translations[lang];
 
+  // Fix for Date and Splash Sync Execution
   useEffect(() => {
+    // 1. Immediately format date on load to avoid missing it after splash
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    setCurrentDate(formattedDate);
+
+    // 2. Hide splash after 3 seconds
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 3000);
@@ -345,6 +335,17 @@ export default function Home() {
 
       {/* Top Main Header */}
       <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
+        
+        {/* Live Date Box (Always Mounted & Visible) */}
+        <div className="flex justify-between items-center mb-3 opacity-95 border-b border-white/10 pb-2">
+          <span className="text-[11px] font-black tracking-wide bg-white/10 text-white px-3 py-1 rounded-full flex items-center gap-1">
+            📅 {currentDate || "Loading Date..."}
+          </span>
+          <span className="text-[10px] bg-emerald-600 px-2 py-0.5 rounded-full font-black tracking-wider animate-pulse">
+            ● LIVE MANDI
+          </span>
+        </div>
+
         <div className="flex justify-between items-center mb-4 gap-2">
           <div className="text-2xl font-black tracking-wider">{t.appName}</div>
           
@@ -399,7 +400,7 @@ export default function Home() {
             { label: t.cat1, icon: "🔩" }, { label: t.cat2, icon: "🛢️" },
             { label: t.cat3, icon: "🔌" }, { label: t.cat4, icon: "🥫" },
             { label: t.cat5, icon: "🔋" }, { label: t.cat6, icon: "☀️" },
-            { label: t.cat7, icon: "📦" }, { label: t.cat8, icon: "💻" }
+            { label: t.cat7, icon: "⚡" }, { label: t.cat8, icon: "💻" }
           ].map((item, idx) => (
             <div key={idx} className="bg-white border border-slate-100 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-sm aspect-square">
               <span className="text-2xl mb-2">{item.icon}</span>
@@ -586,7 +587,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* B2B ACCOUNT REGISTRATION & VERIFICATION Portal BOX (Z-INDEX 125) */}
+      {/* B2B ACCOUNT REGISTRATION & VERIFICATION Portal BOX */}
       {showVerificationPortal && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[125] flex items-center justify-center p-4">
           <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl relative space-y-5">
