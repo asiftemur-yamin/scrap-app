@@ -9,7 +9,7 @@ const translations = {
     sellScrap: "Sell Scrap",
     buyScrap: "Buy Scrap",
     rates: "Live Rates",
-    directory: "Directory",
+    postAd: "Post Ad",
     searchPlaceholder: "Search scrap iron, plastic, copper...",
     browseTitle: "Browse Scrap Categories",
     priceListTitle: "Live Market Price List",
@@ -33,14 +33,32 @@ const translations = {
       lahore: "Lahore",
       karachi: "Karachi",
       multan: "Multan"
-    }
+    },
+    // Form Translations
+    formTitle: "Create Scrap Advertisement",
+    itemName: "Item Name / Title",
+    itemNamePlh: "e.g., Heavy Industrial Melting Iron",
+    selectUnit: "Select Weight Unit",
+    perKg: "Per Kg",
+    perTon: "Per Ton",
+    perMund: "Per Mund (37.324 Kg)",
+    rateLabel: "Rate / Price (Rs)",
+    locLabel: "Ad Location / City",
+    picLabel: "Upload Scrap Pictures",
+    picDesc: "Add up to 5 clear photos of your material",
+    detailsLabel: "Scrap Details / Description",
+    detailsPlh: "Mention total weight, quality, and pickup availability...",
+    featureLabel: "Feature This Ad (VIP)",
+    featureDesc: "Get 10x more direct calls from premium buyers",
+    submitBtn: "Publish My Ad 🚀",
+    closeBtn: "Close"
   },
   ur: {
     appName: "اسکریپ ورلڈ",
     sellScrap: "اسکریپ بیچیں",
     buyScrap: "اسکریپ خریدیں",
     rates: "لائیو ریٹس",
-    directory: "ڈائریکٹری",
+    postAd: "اشتہار لگائیں",
     searchPlaceholder: "لوہا، پلاسٹک، تانبا تلاش کریں...",
     browseTitle: "اسکریپ کیٹیگریز تلاش کریں",
     priceListTitle: "مارکیٹ کی لائیو ریٹ لسٹ",
@@ -64,11 +82,28 @@ const translations = {
       lahore: "لاہور",
       karachi: "کراچی",
       multan: "ملتان"
-    }
+    },
+    // Form Translations
+    formTitle: "نیا اسکریپ اشتہار بنائیں",
+    itemName: "چیز کا نام / ٹائٹل",
+    itemNamePlh: "مثال کے طور پر: فیکٹری کا پگھلنے والا لوہا",
+    selectUnit: "وزن کی اکائی (Unit) منتخب کریں",
+    perKg: "فی کلو (Per Kg)",
+    perTon: "فی ٹن (Per Ton)",
+    perMund: "فی من (37.324 Kg)",
+    rateLabel: "ریٹ / قیمت (روپے)",
+    locLabel: "شہر / لوکیشن",
+    picLabel: "اسکریپ کی تصاویر اپلوڈ کریں",
+    picDesc: "اپنے مال کی صاف اور واضح تصاویر شامل کریں",
+    detailsLabel: "مال کی تفصیلات / ڈسکرپشن",
+    detailsPlh: "کل وزن، کوالٹی اور مال اٹھانے کی تفصیلات لکھیں...",
+    featureLabel: "اشتہار کو فیچرڈ کریں (VIP)",
+    featureDesc: "بڑے خریداروں سے 10 گنا زیادہ فون کالز حاصل کریں",
+    submitBtn: "اشتہار پوسٹ کریں 🚀",
+    closeBtn: "بند کریں"
   }
 };
 
-// Cities Live Scrap Rates Data
 const scrapRates = {
   gujranwala: [
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "120" },
@@ -100,7 +135,12 @@ export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
+  const [showPostAd, setShowPostAd] = useState(false);
   
+  // Form States
+  const [unit, setUnit] = useState('kg');
+  const [isFeatured, setIsFeatured] = useState(false);
+
   const t = translations[lang];
 
   useEffect(() => {
@@ -110,7 +150,6 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // 1. Splash Screen
   if (showSplash) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-[#1a365d] text-white">
@@ -130,12 +169,11 @@ export default function Home() {
   return (
     <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 font-sans pb-24 ${lang === 'ur' ? 'text-right' : 'text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
       
-      {/* Header Container */}
+      {/* Top Header */}
       <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
         <div className="flex justify-between items-center mb-4">
           <div className="text-2xl font-black tracking-wider text-white">{t.appName}</div>
           
-          {/* Language Switching Button */}
           <button 
             onClick={() => setLang(lang === 'en' ? 'ur' : 'en')}
             className="bg-white/20 hover:bg-white/30 text-white font-bold text-xs px-3 py-1.5 rounded-full border border-white/30 transition-all active:scale-95"
@@ -144,15 +182,19 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Top Horizontal Navigation */}
+        {/* Navigation Pills (Directory removed, Post Ad added) */}
         <div className="flex overflow-x-auto pb-3 scrollbar-none gap-2">
           <button className="bg-[#0066cc] text-white text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap shadow-sm">{t.sellScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.buyScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.rates}</button>
-          <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.directory}</button>
+          <button 
+            onClick={() => setShowPostAd(true)}
+            className="bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-5 py-2.5 rounded-full whitespace-nowrap shadow-md transition-all active:scale-95"
+          >
+            📢 {t.postAd}
+          </button>
         </div>
 
-        {/* Search Bar Layout */}
         <div className="mt-2 bg-white rounded-lg p-3 flex items-center shadow-inner text-slate-700">
           <span className="text-slate-400 mx-2">🔍</span>
           <input 
@@ -163,10 +205,8 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Body Grid content */}
+      {/* Main Grid Content */}
       <main className="px-4 mt-6">
-        
-        {/* Category Browsing */}
         <div className="mb-4">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.browseTitle}</h2>
         </div>
@@ -189,7 +229,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* NEW VIP FEATURE: 4 City Select Boxes */}
+        {/* City Select */}
         <div className="mb-3 mt-6">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.selectCityTitle}</h2>
         </div>
@@ -210,7 +250,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* NEW VIP FEATURE: Dynamic Price List Card Grid Row */}
+        {/* Live Rates List */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">
             {t.priceListTitle} ({t.cities[selectedCity]})
@@ -231,10 +271,108 @@ export default function Home() {
             </div>
           ))}
         </div>
-
       </main>
 
-      {/* Fixed Sticky Bottom Navigation */}
+      {/* DYNAMIC POST AD FORM MODAL */}
+      {showPostAd && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-0 sm:p-4 transition-all">
+          <div className="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 relative animate-slide-up">
+            
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+              <h3 className="text-lg font-extrabold text-[#1a365d]">{t.formTitle}</h3>
+              <button 
+                onClick={() => setShowPostAd(false)} 
+                className="text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-100 px-3 py-1 rounded-full"
+              >
+                {t.closeBtn}
+              </button>
+            </div>
+
+            {/* Form Inputs */}
+            <div className="space-y-4 text-left" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
+              
+              {/* Item Name */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.itemName}</label>
+                <input type="text" placeholder={t.itemNamePlh} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm outline-none focus:border-[#0066cc]" />
+              </div>
+
+              {/* Unit Selection */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.selectUnit}</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['kg', 'ton', 'mund'].map((u) => (
+                    <button
+                      key={u}
+                      type="button"
+                      onClick={() => setUnit(u)}
+                      className={`py-2 text-xs font-bold rounded-lg border transition-all ${
+                        unit === u ? 'bg-[#0066cc] text-white border-[#0066cc]' : 'bg-slate-50 text-slate-600 border-slate-200'
+                      }`}
+                    >
+                      {u === 'kg' ? t.perKg : u === 'ton' ? t.perTon : t.perMund}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Rate Input */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.rateLabel}</label>
+                <input type="number" placeholder="Rs. 0" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm outline-none focus:border-[#0066cc]" />
+              </div>
+
+              {/* Location */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.locLabel}</label>
+                <input type="text" placeholder="e.g., Khiali, Gujranwala" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm outline-none focus:border-[#0066cc]" />
+              </div>
+
+              {/* Pictures Upload Slot */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.picLabel}</label>
+                <div className="border-2 border-dashed border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center bg-slate-50 cursor-pointer hover:bg-slate-100 transition-all">
+                  <span className="text-3xl mb-1">📸</span>
+                  <span className="text-xs font-bold text-slate-600">{t.picLabel}</span>
+                  <span className="text-[10px] text-slate-400 mt-0.5">{t.picDesc}</span>
+                </div>
+              </div>
+
+              {/* Description Details */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.detailsLabel}</label>
+                <textarea rows={3} placeholder={t.detailsPlh} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm outline-none focus:border-[#0066cc] resize-none"></textarea>
+              </div>
+
+              {/* FEATURED VIP SWITCH */}
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex justify-between items-center gap-4">
+                <div className="max-w-[80%]">
+                  <span className="text-xs font-black text-amber-800 block">⭐ {t.featureLabel}</span>
+                  <span className="text-[10px] text-amber-600 font-medium leading-tight block mt-0.5">{t.featureDesc}</span>
+                </div>
+                <input 
+                  type="checkbox" 
+                  checked={isFeatured}
+                  onChange={(e) => setIsFeatured(e.target.checked)}
+                  className="w-5 h-5 accent-amber-600 cursor-pointer transform scale-125"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button 
+                type="button"
+                onClick={() => { alert("Ad Post Successfully Mocked!"); setShowPostAd(false); }}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-sm py-3.5 rounded-xl shadow-lg shadow-green-600/20 active:scale-[0.98] transition-all mt-4"
+              >
+                {t.submitBtn}
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sticky Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
         <button className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14">
           <span className="text-xl">🏠</span>
@@ -245,9 +383,12 @@ export default function Home() {
           <span className="mt-0.5">{t.navAds}</span>
         </button>
         
-        {/* Floating Center Button */}
+        {/* Floating Big Blue "+" Trigger Form */}
         <div className="relative -top-5 flex flex-col items-center justify-center">
-          <button className="w-14 h-14 bg-[#0066cc] hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-white transform active:scale-95 transition-all">
+          <button 
+            onClick={() => setShowPostAd(true)}
+            className="w-14 h-14 bg-[#0066cc] hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-white transform active:scale-95 transition-all"
+          >
             <span className="text-3xl font-light text-white">+</span>
           </button>
           <span className="text-[11px] font-bold text-[#0066cc] mt-1 whitespace-nowrap">{t.navSell}</span>
