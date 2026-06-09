@@ -2,7 +2,19 @@
 
 import { useState, useEffect } from 'react';
 
-// Languages, Local Price, LME Prices & Auth Dictionary
+// 1. ALL SCRAP ADS DATABASE (Moved to Top for Perfect Build Execution)
+const initialAdsData = [
+  { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", city: "gujranwala", price: "125", unit: "kg", weight: "12 Ton", isFeatured: true, origin: "local", icon: "🔩", desc: "Factory clearance raw structural steel iron scrap available immediately near Khiali Gate." },
+  { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", city: "gujranwala", price: "1,870", unit: "kg", weight: "450 Kg", isFeatured: false, origin: "imported", icon: "🔌", desc: "High quality stripped electrical copper wire scrap. Clean shining stock, ready for delivery." },
+  { id: 3, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", city: "lahore", price: "465", unit: "kg", weight: "35 Mund", isFeatured: true, origin: "local", icon: "🥫", desc: "Compressed aluminum drink beverage can bundles. Total weight 35 munds loaded in Lahore Badami Bagh." },
+  { id: 4, titleEn: "Mixed Crushed Plastic Drums Scrap", titleUr: "مکس کرشڈ پلاسٹک ڈرم اسکریپ اسٹاک", city: "lahore", price: "98", unit: "kg", weight: "3 Ton", isFeatured: false, origin: "local", icon: "🛢️", desc: "Blue and white HDPE industrial crushed plastic flakes ready for recycling plants injection molding." },
+  { id: 5, titleEn: "Imported Scrap Solar Cells for Silver Recovery", titleUr: "امپورٹڈ سولر سیل اسکریپ سلور نکالنے کیلئے", city: "karachi", price: "320", unit: "kg", weight: "8 Ton", isFeatured: true, origin: "imported", icon: "☀️", desc: "Premium imported damaged solar panel cell waste. High concentration material directly available from Karachi Port containers." },
+  { id: 6, titleEn: "Decommissioned Telecom Lead Acid Batteries", titleUr: "ٹیلی کام پاور لیڈ ایسڈ بیٹریاں اسکریپ", city: "multan", price: "240", unit: "kg", weight: "85 units", isFeatured: false, origin: "local", icon: "🔋", desc: "Scrap heavy backup dry battery units collected from telecom towers. Selling on per kg scale weight." },
+  { id: 7, titleEn: "Shredded Radiator Copper Aluminum Mix", titleUr: "شریڈڈ ریڈی ایٹر تانبا ایلومینیم مکس", city: "gujranwala", price: "720", unit: "kg", weight: "1.5 Ton", isFeatured: false, origin: "imported", icon: "📦", desc: "Clean AC and car radiator cores shredded, separated expertly. R-H-A-F standard high yield recycling lot." },
+  { id: 8, titleEn: "Mixed Electronic PCB Motherboard Waste", titleUr: "مکس الیکٹرانک پی سی بی مدر بورڈ کچرا", city: "karachi", price: "550", unit: "kg", weight: "500 Kg", isFeatured: false, origin: "imported", icon: "💻", desc: "Computer and mobile scrap circuit green boards. Great potential for gold/silver/copper chemical refining." }
+];
+
+// 2. Languages Translation Dictionary
 const translations = {
   en: {
     appName: "SCRAP WORLD",
@@ -47,7 +59,6 @@ const translations = {
     localScrapDesc: "Pakistani local market material",
     importedScrap: "Imported Scrap",
     importedScrapDesc: "International container imported stock",
-    // Feed Translations
     feedTitle: "Scrap Marketplace Feed",
     localBadge: "Local (0-15 km)",
     nearbyBadge: "Nearby (15-80 km)",
@@ -58,7 +69,6 @@ const translations = {
     postedIn: "Posted in",
     weightLabel: "Total Weight",
     typeLabel: "Stock Type",
-    // Auth translations
     loginBtn: "Login / Register",
     logoutBtn: "Logout 👤",
     authTitleLogin: "Welcome Back",
@@ -76,7 +86,6 @@ const translations = {
     sendResetBtn: "Send Reset Link 📩",
     signIn: "Login",
     signUp: "Register Account",
-    // Form Translations
     chooseTypeTitle: "What do you want to do?",
     optionSellTitle: "Sell My Scrap",
     optionSellDesc: "Post an ad to sell your scrap material to buyers.",
@@ -145,7 +154,6 @@ const translations = {
     localScrapDesc: "پاکستانی مقامی مارکیٹ کا مال",
     importedScrap: "امپورٹڈ اسکریپ",
     importedScrapDesc: "باہر سے امپورٹڈ کنٹینر کا اسٹاک",
-    // Feed Translations
     feedTitle: "اسکریپ مارکیٹ فیڈ (اشتہارات)",
     localBadge: "مقامی اشتہار (0-15 کلومیٹر)",
     nearbyBadge: "قریبی شہر (15-80 کلومیٹر)",
@@ -156,7 +164,6 @@ const translations = {
     postedIn: "لوکیشن",
     weightLabel: "کل وزن",
     typeLabel: "مال کی قسم",
-    // Auth translations
     loginBtn: "لاگ ان / رجسٹر",
     logoutBtn: "لاگ آؤٹ 👤",
     authTitleLogin: "خوش آمدید",
@@ -174,7 +181,6 @@ const translations = {
     sendResetBtn: "ری سیٹ لنک بھیجیں 📩",
     signIn: "لاگ ان کریں",
     signUp: "نیا اکاؤنٹ بنائیں",
-    // Form Translations
     chooseTypeTitle: "آپ کیا کرنا چاہتے ہیں؟",
     optionSellTitle: "اسکریپ بیچنا ہے",
     optionSellDesc: "اپنا مال گاہکوں کو بیچنے کے لیے اشتہار لگائیں۔",
@@ -202,6 +208,7 @@ const translations = {
   }
 };
 
+// 3. LME Prices Data
 const lmeData = [
   { id: "cop", key: "copper", icon: "🔴", price: "9,645", change: "+1.4%", up: true },
   { id: "alu", key: "aluminum", icon: "⚪", price: "2,520", change: "-0.3%", up: false },
@@ -209,6 +216,7 @@ const lmeData = [
   { id: "pb", key: "lead", icon: "🔋", price: "2,140", change: "+0.2%", up: true }
 ];
 
+// 4. Local Scrap Rates Data
 const scrapRates = {
   gujranwala: [
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "120" },
@@ -241,7 +249,7 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
-  // Auth States
+  // Auth Smart States
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [authView, setAuthView] = useState<'login' | 'register' | 'forgot'>('login');
@@ -326,7 +334,6 @@ export default function Home() {
   return (
     <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 pb-24 ${lang === 'ur' ? 'iphone-urdu text-right' : 'font-sans text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
       
-      {/* NATIVE HIGH PERFORMANCE IPHONE URDU FONT CSS INJECTION */}
       <style>{`
         .iphone-urdu {
           font-family: -apple-system, BlinkMacSystemFont, "Noto Nastaliq Urdu", "Urdu Typesetting", "Segoe UI", Tahoma, sans-serif !important;
@@ -358,14 +365,14 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Top Action Navigation Pills */}
+        {/* Action Pills */}
         <div className="flex overflow-x-auto pb-3 scrollbar-none gap-2">
           <button className="bg-[#0066cc] text-white text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap shadow-sm">{t.sellScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.buyScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.rates}</button>
           <button 
             onClick={handlePostAdTrigger}
-            className="bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-5 py-2.5 rounded-full whitespace-nowrap shadow-md transition-all active:scale-95"
+            className="bg-green-600 hover:bg-green-700 text-white text-sm font-bold px-5 py-2.5 rounded-full whitespace-nowrap shadow-md transition-all"
           >
             📢 {t.postAd}
           </button>
@@ -377,10 +384,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Body Grid */}
+      {/* Main Content */}
       <main className="px-4 mt-6">
         
-        {/* Local vs Imported Switch Boxes */}
+        {/* Origin Switch */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.originSectionTitle}</h2>
         </div>
@@ -401,7 +408,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Browse Categories */}
+        {/* Categories Grid */}
         <div className="mb-4">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.browseTitle}</h2>
         </div>
@@ -419,7 +426,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* LME Live Rates */}
+        {/* LME International Rates */}
         <div className="mb-3 mt-6">
           <div className="flex justify-between items-center">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2>
@@ -481,7 +488,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Marketplace Feed */}
+        {/* Marketplace Feed Title */}
         <div className="mb-4 mt-8 border-t border-slate-200 pt-6">
           <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center justify-between">
             <span>📋 {t.feedTitle}</span>
@@ -491,13 +498,13 @@ export default function Home() {
           </h2>
         </div>
 
-        {/* Continuous List Feed */}
+        {/* Continuous List Feed Render */}
         <div className="space-y-3.5 mb-12">
           {sortedFeedAds.map((ad) => (
             <div 
               key={ad.id}
               onClick={() => setSelectedAd(ad)}
-              className={`bg-white rounded-2xl p-4 border flex justify-between items-center shadow-sm hover:shadow-md transition-all active:scale-[0.99] cursor-pointer relative overflow-hidden ${
+              className={`bg-white rounded-2xl p-4 border flex justify-between items-center shadow-sm hover:shadow-md transition-all cursor-pointer relative overflow-hidden ${
                 ad.isFeatured ? 'border-amber-300 ring-2 ring-amber-500/10' : 'border-slate-200/80'
               }`}
             >
@@ -536,14 +543,14 @@ export default function Home() {
 
           <button 
             onClick={() => alert("Loading more scrap items matching further radius circles...")}
-            className="w-full bg-white border-2 border-dashed border-slate-300 text-slate-500 font-bold text-xs py-3.5 rounded-xl text-center active:bg-slate-50 transition-all"
+            className="w-full bg-white border-2 border-dashed border-slate-300 text-slate-500 font-bold text-xs py-3.5 rounded-xl text-center"
           >
             🔄 {t.loadMore}
           </button>
         </div>
       </main>
 
-      {/* FULL VIEW DETAILED OVERLAY */}
+      {/* FULL VIEW DETAILED OVERLAY (Z-INDEX 120) */}
       {selectedAd && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-[#f2f6fa] w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[92vh] overflow-y-auto shadow-2xl relative flex flex-col pb-6">
@@ -598,7 +605,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* FULL SCREEN MODAL: AUTHENTICATION CONTAINER */}
+      {/* FULL SCREEN MODAL: AUTHENTICATION OVERLAY (Z-INDEX 110) */}
       {showAuth && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[110] flex flex-col justify-center p-6 overflow-y-auto">
           <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-xl border p-6 space-y-6 relative">
@@ -633,7 +640,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* FULL-SCREEN OVERLAY FOR POST AD */}
+      {/* FULL-SCREEN OVERLAY FOR POST AD (Z-INDEX 100) */}
       {showPostAd && isLoggedIn && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[100] flex flex-col overflow-y-auto pb-12">
           <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex items-center justify-between shadow-md z-10">
@@ -664,7 +671,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Sticky Bottom Navigation Bar */}
+      {/* Sticky Bottom Navigation Bar (Z-INDEX 50) */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
         <button className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14"><span className="text-xl">🏠</span><span className="mt-0.5">{t.navHome}</span></button>
         <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">📋</span><span className="mt-0.5">{t.navAds}</span></button>
@@ -679,15 +686,3 @@ export default function Home() {
     </div>
   );
 }
-
-// Global Static Mock Database for Radius Sorting Component Execution
-const initialAdsData = [
-  { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", city: "gujranwala", price: "125", unit: "kg", weight: "12 Ton", isFeatured: true, origin: "local", icon: "🔩", desc: "Factory clearance raw structural steel iron scrap available immediately near Khiali Gate." },
-  { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", city: "gujranwala", price: "1,870", unit: "kg", weight: "450 Kg", isFeatured: false, origin: "imported", icon: "🔌", desc: "High quality stripped electrical copper wire scrap. Clean shining stock, ready for delivery." },
-  { id: 3, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", city: "lahore", price: "465", unit: "kg", weight: "35 Mund", isFeatured: true, origin: "local", icon: "🥫", desc: "Compressed aluminum drink beverage can bundles. Total weight 35 munds loaded in Lahore Badami Bagh." },
-  { id: 4, titleEn: "Mixed Crushed Plastic Drums Scrap", titleUr: "مکس کرشڈ پلاسٹک ڈرم اسکریپ اسٹاک", city: "lahore", price: "98", unit: "kg", weight: "3 Ton", isFeatured: false, origin: "local", icon: "🛢️", desc: "Blue and white HDPE industrial crushed plastic flakes ready for recycling plants injection molding." },
-  { id: 5, titleEn: "Imported Scrap Solar Cells for Silver Recovery", titleUr: "امپورٹڈ سولر سیل اسکریپ سلور نکالنے کیلئے", city: "karachi", price: "320", unit: "kg", weight: "8 Ton", isFeatured: true, origin: "imported", icon: "☀️", desc: "Premium imported damaged solar panel cell waste. High concentration material directly available from Karachi Port containers." },
-  { id: 6, titleEn: "Decommissioned Telecom Lead Acid Batteries", titleUr: "ٹیلی کام پاور لیڈ ایسڈ بیٹریاں اسکریپ", city: "multan", price: "240", unit: "kg", weight: "85 units", isFeatured: false, origin: "local", icon: "🔋", desc: "Scrap heavy backup dry battery units collected from telecom towers. Selling on per kg scale weight." },
-  { id: 7, titleEn: "Shredded Radiator Copper Aluminum Mix", titleUr: "شریڈڈ ریڈی ایٹر تانبا ایلومینیم مکس", city: "gujranwala", price: "720", unit: "kg", weight: "1.5 Ton", isFeatured: false, origin: "imported", icon: "📦", desc: "Clean AC and car radiator cores shredded, separated expertly. R-H-A-F standard high yield recycling lot." },
-  { id: 8, titleEn: "Mixed Electronic PCB Motherboard Waste", titleUr: "مکس الیکٹرانک پی سی بی مدر بورڈ کچرا", city: "karachi", price: "550", unit: "kg", weight: "500 Kg", isFeatured: false, origin: "imported", icon: "💻", desc: "Computer and mobile scrap circuit green boards. Great potential for gold/silver/copper chemical refining." }
-];
