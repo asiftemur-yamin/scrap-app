@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-// Languages & Price List Dictionary
+// Languages, Local Price & LME Prices Dictionary
 const translations = {
   en: {
     appName: "SCRAP WORLD",
@@ -14,7 +14,9 @@ const translations = {
     browseTitle: "Browse Scrap Categories",
     priceListTitle: "Live Market Price List",
     selectCityTitle: "Select City for Rates",
+    lmeTitle: "LME Live International Rates",
     rateUnit: "Rs / Kg",
+    lmeUnit: "USD / Ton",
     cat1: "Iron (Loha)",
     cat2: "Plastic",
     cat3: "Copper (Tamba)",
@@ -34,7 +36,13 @@ const translations = {
       karachi: "Karachi",
       multan: "Multan"
     },
-    // New Flow Translations
+    lmeMetals: {
+      copper: "LME Copper",
+      aluminum: "LME Aluminum",
+      zinc: "LME Zinc",
+      lead: "LME Lead"
+    },
+    // Form Translations
     chooseTypeTitle: "What do you want to do?",
     optionSellTitle: "Sell My Scrap",
     optionSellDesc: "Post an ad to sell your scrap material to buyers.",
@@ -70,7 +78,9 @@ const translations = {
     browseTitle: "اسکریپ کیٹیگریز تلاش کریں",
     priceListTitle: "مارکیٹ کی لائیو ریٹ لسٹ",
     selectCityTitle: "شہر کا انتخاب کریں",
+    lmeTitle: "ایل ایم ای (LME) لائیو ریٹس",
     rateUnit: "روپے / کلو",
+    lmeUnit: "ڈالر / ٹن",
     cat1: "لوہا (Iron)",
     cat2: "پلاسٹک (Plastic)",
     cat3: "تانبا (Copper)",
@@ -90,7 +100,13 @@ const translations = {
       karachi: "کراچی",
       multan: "ملتان"
     },
-    // New Flow Translations
+    lmeMetals: {
+      copper: "تانبا (Copper)",
+      aluminum: "ایلومینیم",
+      zinc: "زنک (Zinc)",
+      lead: "لیڈ (Lead)"
+    },
+    // Form Translations
     chooseTypeTitle: "آپ کیا کرنا چاہتے ہیں؟",
     optionSellTitle: "اسکریپ بیچنا ہے",
     optionSellDesc: "اپنا مال گاہکوں کو بیچنے کے لیے اشتہار لگائیں۔",
@@ -118,6 +134,14 @@ const translations = {
   }
 };
 
+// Hardcoded LME Live Market Data (USD per Ton)
+const lmeData = [
+  { id: "cop", key: "copper", icon: "🔴", price: "9,645", change: "+1.4%", up: true },
+  { id: "alu", key: "aluminum", icon: "⚪", price: "2,520", change: "-0.3%", up: false },
+  { id: "zn", key: "zinc", icon: "⛓️", price: "2,890", change: "+0.8%", up: true },
+  { id: "pb", key: "lead", icon: "🔋", price: "2,140", change: "+0.2%", up: true }
+];
+
 const scrapRates = {
   gujranwala: [
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "120" },
@@ -135,7 +159,7 @@ const scrapRates = {
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "130" },
     { id: "copper", nameKey: "cat3", icon: "🔌", price: "1,920" },
     { id: "aluminum", nameKey: "cat4", icon: "🥫", price: "480" },
-    { id: "plastic", nameKey: "cat2", icon: "105" }
+    { id: "plastic", nameKey: "cat2", icon: "🛢️", price: "105" }
   ],
   multan: [
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "118" },
@@ -150,12 +174,11 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
-  // Post Ad Smart States
+  // Post Ad States
   const [showPostAd, setShowPostAd] = useState(false);
-  const [adStep, setAdStep] = useState<'select' | 'form'>('select'); // 'select' or 'form'
-  const [adType, setAdType] = useState<'sell' | 'buy'>('sell'); // 'sell' or 'buy'
+  const [adStep, setAdStep] = useState<'select' | 'form'>('select');
+  const [adType, setAdType] = useState<'sell' | 'buy'>('sell');
   
-  // Form Control States
   const [unit, setUnit] = useState('kg');
   const [isFeatured, setIsFeatured] = useState(false);
 
@@ -168,13 +191,10 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // SMART BACK BUTTON LOGIC
   const handleBackNavigation = () => {
     if (adStep === 'form') {
-      // Form se pichlay page (Select screen) par jaye ga, exit nahi karega
       setAdStep('select');
     } else {
-      // Main Select screen par close ho kar app dashboard par aa jaye ga
       setShowPostAd(false);
     }
   };
@@ -198,7 +218,7 @@ export default function Home() {
   return (
     <div className={`min-h-screen bg-[#f2f6fa] text-slate-800 font-sans pb-24 ${lang === 'ur' ? 'text-right' : 'text-left'}`} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
       
-      {/* Top Main Header */}
+      {/* Top Header */}
       <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
         <div className="flex justify-between items-center mb-4">
           <div className="text-2xl font-black tracking-wider text-white">{t.appName}</div>
@@ -211,7 +231,7 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Navigation Top Buttons */}
+        {/* Top Pills */}
         <div className="flex overflow-x-auto pb-3 scrollbar-none gap-2">
           <button className="bg-[#0066cc] text-white text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap shadow-sm">{t.sellScrap}</button>
           <button className="bg-white text-[#1a365d] text-sm font-semibold px-5 py-2.5 rounded-full whitespace-nowrap border border-slate-200">{t.buyScrap}</button>
@@ -234,8 +254,10 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Categories & Live Price List */}
+      {/* Main Container */}
       <main className="px-4 mt-6">
+        
+        {/* Categories Grid */}
         <div className="mb-4">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.browseTitle}</h2>
         </div>
@@ -258,7 +280,33 @@ export default function Home() {
           ))}
         </div>
 
-        {/* City Filter Selection */}
+        {/* NEW FEATURE: LME LIVE COMMODITY TICKER ROW */}
+        <div className="mb-3 mt-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2>
+            <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-md font-bold animate-pulse">LIVE</span>
+          </div>
+        </div>
+
+        <div className="flex overflow-x-auto pb-3 gap-3 scrollbar-none snap-x">
+          {lmeData.map((metal) => (
+            <div key={metal.id} className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 min-w-[140px] shadow-md snap-center flex flex-col justify-between border border-slate-700/50">
+              <div className="flex justify-between items-center gap-2">
+                <span className="text-xl bg-white/10 p-1 rounded-lg">{metal.icon}</span>
+                <span className={`text-[11px] font-black px-1.5 py-0.5 rounded-md ${metal.up ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                  {metal.change}
+                </span>
+              </div>
+              <div className="mt-4">
+                <span className="text-[11px] font-bold text-slate-400 block truncate">{(t as any).lmeMetals[metal.key]}</span>
+                <span className="text-lg font-black text-white block mt-0.5">${metal.price}</span>
+                <span className="text-[9px] text-slate-500 font-bold tracking-tight uppercase block">{t.lmeUnit}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* City Filter */}
         <div className="mb-3 mt-6">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.selectCityTitle}</h2>
         </div>
@@ -279,7 +327,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Dynamic Rate List Grid */}
+        {/* Local Prices List */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">
             {t.priceListTitle} ({t.cities[selectedCity]})
@@ -302,11 +350,10 @@ export default function Home() {
         </div>
       </main>
 
-      {/* FULL-SCREEN PREMIUM OVERLAY FOR POST AD (Z-INDEX 100 FIXED FIX) */}
+      {/* FULL-SCREEN OVERLAY FOR POST AD */}
       {showPostAd && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[100] flex flex-col overflow-y-auto pb-12">
           
-          {/* Custom Form Header with Integrated Smart Back Arrow */}
           <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex items-center justify-between shadow-md z-10">
             <button 
               onClick={handleBackNavigation}
@@ -322,25 +369,23 @@ export default function Home() {
             </button>
           </div>
 
-          {/* STEP 1: CHOOSE AD TYPE SCREEN (SELL VS DO YOU WANT TO BUY / DEMAND) */}
+          {/* STEP 1: CHOOSE AD TYPE */}
           {adStep === 'select' && (
             <div className="p-6 max-w-md mx-auto w-full flex flex-col justify-center space-y-6 mt-12 text-center">
               <h2 className="text-2xl font-black text-[#1a365d] mb-4">{t.chooseTypeTitle}</h2>
               
-              {/* Option A: Sell Scrap Ad Button */}
               <button
                 onClick={() => { setAdType('sell'); setAdStep('form'); }}
-                className="bg-white border-2 border-blue-500 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all text-center flex flex-col items-center space-y-2 transform active:scale-95 group"
+                className="bg-white border-2 border-blue-500 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all text-center flex flex-col items-center space-y-2 transform active:scale-95"
               >
                 <span className="text-5xl bg-blue-50 p-3 rounded-full">💰</span>
                 <span className="text-xl font-black text-blue-600 block">{t.optionSellTitle}</span>
                 <span className="text-xs text-slate-400 font-medium leading-normal">{t.optionSellDesc}</span>
               </button>
 
-              {/* Option B: Want to Buy / Demand Ad Button */}
               <button
                 onClick={() => { setAdType('buy'); setAdStep('form'); }}
-                className="bg-white border-2 border-green-600 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all text-center flex flex-col items-center space-y-2 transform active:scale-95 group"
+                className="bg-white border-2 border-green-600 rounded-2xl p-6 shadow-md hover:shadow-lg transition-all text-center flex flex-col items-center space-y-2 transform active:scale-95"
               >
                 <span className="text-5xl bg-green-50 p-3 rounded-full">📢</span>
                 <span className="text-xl font-black text-green-600 block">{t.optionBuyTitle}</span>
@@ -349,17 +394,15 @@ export default function Home() {
             </div>
           )}
 
-          {/* STEP 2: ACTUAL AD DATA FORM FILL AREA */}
+          {/* STEP 2: AD FORM AREA */}
           {adStep === 'form' && (
             <div className="p-5 max-w-lg mx-auto w-full space-y-5" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
               
-              {/* Item Title Input */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.itemName}</label>
                 <input type="text" placeholder={t.itemNamePlh} className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm font-medium" />
               </div>
 
-              {/* Advanced Unit Selector Row */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.selectUnit}</label>
                 <div className="grid grid-cols-3 gap-2">
@@ -378,7 +421,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Dynamic Rate Pricing Input Label */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
                   {adType === 'sell' ? t.rateLabelSell : t.rateLabelBuy}
@@ -386,13 +428,11 @@ export default function Home() {
                 <input type="number" placeholder="Rs. 0" className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm font-bold text-slate-800" />
               </div>
 
-              {/* Location Input Box */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.locLabel}</label>
                 <input type="text" placeholder="e.g., Khiali, Gujranwala" className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm" />
               </div>
 
-              {/* Picture Upload Container */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.picLabel}</label>
                 <div className="border-2 border-dashed border-slate-300 rounded-2xl p-6 flex flex-col items-center justify-center bg-white cursor-pointer hover:bg-slate-50 transition-all shadow-sm">
@@ -402,13 +442,11 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Scrap Description Details */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.detailsLabel}</label>
                 <textarea rows={3} placeholder={t.detailsPlh} className="w-full bg-white border border-slate-300 rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] shadow-sm resize-none"></textarea>
               </div>
 
-              {/* FEATURED VIP GOLD SWITCH ROW */}
               <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex justify-between items-center gap-4 shadow-sm">
                 <div className="max-w-[80%]">
                   <span className="text-sm font-black text-amber-900 block">⭐ {t.featureLabel}</span>
@@ -422,7 +460,7 @@ export default function Home() {
                 />
               </div>
 
-              {/* NEW CLEAR GREEN SUBMIT BUTTON - FULLY VISIBLE & NO OVERLAPS */}
+              {/* Submit Button */}
               <button 
                 type="button"
                 onClick={() => { alert("Ad Published Successfully on Scrap World!"); setShowPostAd(false); }}
@@ -437,7 +475,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* Sticky Bottom Navigation Bar (Stays safely under the overlay) */}
+      {/* Sticky Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
         <button className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14">
           <span className="text-xl">🏠</span>
@@ -448,7 +486,7 @@ export default function Home() {
           <span className="mt-0.5">{t.navAds}</span>
         </button>
         
-        {/* Floating Center Button aligned with the new flow trigger */}
+        {/* Floating Center Button */}
         <div className="relative -top-5 flex flex-col items-center justify-center">
           <button 
             onClick={() => { setShowPostAd(true); setAdStep('select'); }}
