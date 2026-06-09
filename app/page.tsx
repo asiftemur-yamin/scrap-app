@@ -222,8 +222,8 @@ const scrapRates = {
 };
 
 export default function Home() {
-  const [showSplash, setShowSplash] = useState(true);// 🟢 Isay state wale section mein add karen:
-const [currentDate, setCurrentDate] = useState('');
+  const [showSplash, setShowSplash] = useState(true);
+  const [currentDate, setCurrentDate] = useState('');
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
@@ -261,6 +261,9 @@ const [currentDate, setCurrentDate] = useState('');
   const t: any = translations[lang];
 
   useEffect(() => {
+    // Current Live Date Logic Setup
+    setCurrentDate(new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
+
     const timer = setTimeout(() => {
       setShowSplash(false);
     }, 3000);
@@ -346,6 +349,13 @@ const [currentDate, setCurrentDate] = useState('');
 
       {/* Top Main Header */}
       <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
+        
+        {/* Live System Date Bar */}
+        <div className="flex justify-between items-center mb-3 opacity-80 border-b border-white/10 pb-1.5">
+          <span className="text-[11px] font-bold tracking-wide flex items-center gap-1">📅 {currentDate}</span>
+          <span className="text-[10px] bg-emerald-600 px-2 py-0.5 rounded-full font-black tracking-wider animate-pulse">● LIVE RATES</span>
+        </div>
+
         <div className="flex justify-between items-center mb-4 gap-2">
           <div className="text-2xl font-black tracking-wider">{t.appName}</div>
           
