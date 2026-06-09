@@ -2,19 +2,19 @@
 
 import { useState, useEffect } from 'react';
 
-// 1. GLOBAL DATABASE DEFINED AT THE VERY TOP
-const initialAdsData: any[] = [
+// 1. ALL SCRAP ADS DATABASE (Top level declaration with updated icons)
+const initialAdsData = [
   { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", city: "gujranwala", price: "125", unit: "kg", weight: "12 Ton", isFeatured: true, origin: "local", icon: "🔩", desc: "Factory clearance raw structural steel iron scrap available immediately near Khiali Gate." },
   { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", city: "gujranwala", price: "1,870", unit: "kg", weight: "450 Kg", isFeatured: false, origin: "imported", icon: "🔌", desc: "High quality stripped electrical copper wire scrap. Clean shining stock, ready for delivery." },
   { id: 3, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", city: "lahore", price: "465", unit: "kg", weight: "35 Mund", isFeatured: true, origin: "local", icon: "🥫", desc: "Compressed aluminum drink beverage can bundles. Total weight 35 munds loaded in Lahore Badami Bagh." },
   { id: 4, titleEn: "Mixed Crushed Plastic Drums Scrap", titleUr: "مکس کرشڈ پلاسٹک ڈرم اسکریپ اسٹاک", city: "lahore", price: "98", unit: "kg", weight: "3 Ton", isFeatured: false, origin: "local", icon: "🛢️", desc: "Blue and white HDPE industrial crushed plastic flakes ready for recycling plants injection molding." },
-  { id: 5, titleEn: "Imported Scrap Solar Cells for Silver Recovery", titleUr: "امپورٹڈ سولر سیل اسکریپ سلور نکالنے کیلئے", city: "karachi", price: "320", unit: "kg", weight: "8 Ton", isFeatured: true, origin: "imported", icon: "☀️", desc: "Premium imported damaged solar panel cell waste. High concentration material directly available from Karachi Port containers." },
+  { id: 5, titleEn: "Imported Scrap Solar Cells for Silver Recovery", titleUr: "امپورٹڈ سولر سیل اسکریپ سلور نکالنے کیلئے", city: "karachi", price: "320", unit: "kg", weight: "8 Ton", isFeatured: true, origin: "imported", icon: " solar panel", desc: "Premium imported damaged solar panel cell waste. High concentration material directly available from Karachi Port containers." },
   { id: 6, titleEn: "Decommissioned Telecom Lead Acid Batteries", titleUr: "ٹیلی کام پاور لیڈ ایسڈ بیٹریاں اسکریپ", city: "multan", price: "240", unit: "kg", weight: "85 units", isFeatured: false, origin: "local", icon: "🔋", desc: "Scrap heavy backup dry battery units collected from telecom towers. Selling on per kg scale weight." },
   { id: 7, titleEn: "Shredded Radiator Copper Aluminum Mix", titleUr: "شریڈڈ ریڈی ایٹر تانبا ایلومینیم مکس", city: "gujranwala", price: "720", unit: "kg", weight: "1.5 Ton", isFeatured: false, origin: "imported", icon: "📦", desc: "Clean AC and car radiator cores shredded, separated expertly. R-H-A-F standard high yield recycling lot." },
   { id: 8, titleEn: "Mixed Electronic PCB Motherboard Waste", titleUr: "مکس الیکٹرانک پی سی بی مدر بورڈ کچرا", city: "karachi", price: "550", unit: "kg", weight: "500 Kg", isFeatured: false, origin: "imported", icon: "💻", desc: "Computer and mobile scrap circuit green boards. Great potential for gold/silver/copper chemical refining." }
 ];
 
-// 2. TRANSLATION DICTIONARY
+// 2. Complete Translation Dictionary
 const translations: any = {
   en: {
     appName: "SCRAP WORLD",
@@ -218,13 +218,15 @@ const translations: any = {
   }
 };
 
-const lmeData = [
-  { id: "cop", key: "copper", icon: "🔴", price: "9,645", change: "+1.4%", up: true },
-  { id: "alu", key: "aluminum", icon: "⚪", price: "2,520", change: "-0.3%", up: false },
-  { id: "zn", key: "zinc", icon: "⛓️", price: "2,890", change: "+0.8%", up: true },
-  { id: "pb", key: "lead", icon: "🔋", price: "2,140", change: "+0.2%", up: true }
+// 3. INITIAL HARDCODED BASE DATA FOR LME SEEDING
+const initialLmeData = [
+  { id: "cop", key: "copper", icon: "🔌", price: 9645, change: "+1.4%", up: true }, // Updated icon to Copper Wire
+  { id: "alu", key: "aluminum", icon: "⚪", price: 2520, change: "-0.3%", up: false },
+  { id: "zn", key: "zinc", icon: "⛓️", price: 2890, change: "+0.8%", up: true },
+  { id: "pb", key: "lead", icon: "🔋", price: 2140, change: "+0.2%", up: true }
 ];
 
+// 4. Local Pakistani Scrap Rates Data
 const scrapRates = {
   gujranwala: [
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "120" },
@@ -257,6 +259,7 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
+  // Auth & UI States
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [authView, setAuthView] = useState<'login' | 'register' | 'forgot'>('login');
@@ -273,13 +276,16 @@ export default function Home() {
   const [isScrollingLoading, setIsScrollingLoading] = useState(false);
   const [selectedAd, setSelectedAd] = useState<any | null>(null);
 
-  // Chat Messenger States
+  // In-App Chat States
   const [showInbox, setShowInbox] = useState(false);
   const [activeChatSession, setActiveChatSession] = useState<any | null>(null);
   const [chatMessages, setChatMessages] = useState<any[]>([
     { id: 1, text: "Assalam o Alaikum, is scrap material ka final rate kya miley ga?", isMe: false }
   ]);
   const [typedMessage, setTypedMessage] = useState('');
+
+  // NEW FEATURE: LME DYNAMIC REAL-TIME SIMULATOR TICKER STATE
+  const [lmeRates, setLmeRates] = useState(initialLmeData);
 
   const t: any = translations[lang];
 
@@ -288,6 +294,29 @@ export default function Home() {
       setShowSplash(false);
     }, 3000);
     return () => clearTimeout(timer);
+  }, []);
+
+  // REAL-TIME TICKER SIMULATOR EFFECT LOOP
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLmeRates(prevRates => 
+        prevRates.map(metal => {
+          // Generate a safe random fluctuation between -4 and +4 dollars
+          const fluctuation = Math.floor(Math.random() * 9) - 4;
+          const newPrice = Math.max(1000, metal.price + fluctuation);
+          const isUp = fluctuation >= 0;
+          const randomPercentage = (Math.random() * 1.8).toFixed(1);
+          
+          return {
+            ...metal,
+            price: newPrice,
+            change: `${isUp ? '+' : '-'}${randomPercentage}%`,
+            up: isUp
+          };
+        })
+      );
+    }, 4000); // Ticks fresh every 4 seconds for maximum live feel
+    return () => clearInterval(interval);
   }, []);
 
   // AUTOMATIC INFINITE SCROLL DETECTION
@@ -352,7 +381,7 @@ export default function Home() {
 
   const sortedFeedAds = (getSortedAdsByRadius() as any[]).slice(0, visibleAdsCount);
 
-  // PREMIUM SYSTEM-AGNOSTIC IPHONE STYLE FONT LAYOUT (React Compliant)
+  // BULLETPROOF iPHONE-STYLE CLEAN FONT LAYOUT
   const iphoneStyle = {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     textAlign: (lang === 'ur' ? 'right' : 'left') as any
@@ -413,14 +442,14 @@ export default function Home() {
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.originSectionTitle}</h2>
         </div>
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <div className="bg-white border-2 border-blue-500/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-all cursor-pointer">
+          <div className="bg-white border-2 border-blue-500/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md cursor-pointer">
             <div>
               <span className="font-black text-sm text-[#1a365d] block">{t.localScrap}</span>
               <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.localScrapDesc}</span>
             </div>
             <span className="text-3xl">🇵🇰</span>
           </div>
-          <div className="bg-white border-2 border-green-600/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md transition-all cursor-pointer">
+          <div className="bg-white border-2 border-green-600/20 rounded-2xl p-4 flex items-center justify-between shadow-sm hover:shadow-md cursor-pointer">
             <div>
               <span className="font-black text-sm text-[#1a365d] block">{t.importedScrap}</span>
               <span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.importedScrapDesc}</span>
@@ -430,14 +459,11 @@ export default function Home() {
         </div>
 
         {/* Categories Grid */}
-        <div className="mb-4">
-          <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.browseTitle}</h2>
-        </div>
         <div className="grid grid-cols-4 gap-2.5 mb-6">
           {[
             { label: t.cat1, icon: "🔩" }, { label: t.cat2, icon: "🛢️" },
             { label: t.cat3, icon: "🔌" }, { label: t.cat4, icon: "🥫" },
-            { label: t.cat5, icon: "🔋" }, { label: t.cat6, icon: "☀️" },
+            { label: t.cat5, icon: "🔋" }, { label: t.cat6, icon: " solar panel" }, // Updated to Solar Panel Icon
             { label: t.cat7, icon: "📦" }, { label: t.cat8, icon: "💻" }
           ].map((item, idx) => (
             <div key={idx} className="bg-white border border-slate-100 rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-sm aspect-square">
@@ -447,25 +473,25 @@ export default function Home() {
           ))}
         </div>
 
-        {/* LME Ticker */}
+        {/* LME Dynamic Simulator Ticker Row */}
         <div className="mb-3 mt-6">
           <div className="flex justify-between items-center">
             <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2>
-            <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-md font-bold animate-pulse">LIVE</span>
+            <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-md font-black animate-pulse">● LIVE TICKER</span>
           </div>
         </div>
         <div className="flex overflow-x-auto pb-3 gap-3 scrollbar-none snap-x">
-          {lmeData.map((metal) => (
+          {lmeRates.map((metal) => (
             <div key={metal.id} className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 min-w-[140px] shadow-md snap-center flex flex-col justify-between border border-slate-700/50">
               <div className="flex justify-between items-center gap-2">
                 <span className="text-xl bg-white/10 p-1 rounded-lg">{metal.icon}</span>
-                <span className={`text-[11px] font-black px-1.5 py-0.5 rounded-md ${metal.up ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                <span className={`text-[11px] font-black px-1.5 py-0.5 rounded-md transition-all ${metal.up ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
                   {metal.change}
                 </span>
               </div>
               <div className="mt-4">
                 <span className="text-[11px] font-bold text-slate-400 block truncate">{(t.lmeMetals as any)[metal.key]}</span>
-                <span className="text-lg font-black text-white block mt-0.5">${metal.price}</span>
+                <span className="text-lg font-black text-white block mt-0.5">${metal.price.toLocaleString()}</span>
                 <span className="text-[9px] text-slate-500 font-bold tracking-tight uppercase block">{t.lmeUnit}</span>
               </div>
             </div>
@@ -490,7 +516,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Rate List */}
+        {/* Local Rate List */}
         <div className="mb-3">
           <h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.priceListTitle} ({(t.cities as any)[selectedCity]})</h2>
         </div>
@@ -509,7 +535,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Marketplace Feed Title */}
+        {/* Marketplace Feed */}
         <div className="mb-4 mt-8 border-t border-slate-200 pt-6">
           <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center justify-between">
             <span>📋 {t.feedTitle}</span>
@@ -519,7 +545,7 @@ export default function Home() {
           </h2>
         </div>
 
-        {/* Continuous Automatic Ads Feed Cards */}
+        {/* Continuous Automatic Ads Feed */}
         <div className="space-y-3.5 mb-6">
           {sortedFeedAds.map((ad) => (
             <div 
@@ -561,7 +587,6 @@ export default function Home() {
             </div>
           ))}
 
-          {/* Scrolling spinner display */}
           {isScrollingLoading && (
             <div className="py-4 text-center text-xs font-bold text-slate-400 animate-pulse flex items-center justify-center gap-2">
               <span className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
@@ -571,7 +596,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* DETAIL AD CARD MODAL (Z-INDEX 120) */}
+      {/* DETAIL AD CARD MODAL */}
       {selectedAd && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-[#f2f6fa] w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[92vh] overflow-y-auto shadow-2xl relative flex flex-col pb-6">
@@ -613,7 +638,6 @@ export default function Home() {
                 <p className="text-sm font-medium text-slate-600 leading-relaxed">{selectedAd.desc}</p>
               </div>
 
-              {/* THREE CONTACT BUTTON ACTION ROW */}
               <div className="grid grid-cols-3 gap-2 pt-4 border-t">
                 <a href="tel:+923000000000" className="bg-[#0066cc] text-white text-center font-black text-[11px] py-3.5 rounded-xl shadow-sm flex items-center justify-center">{t.callSeller}</a>
                 <a href="https://wa.me/923000000000" target="_blank" className="bg-emerald-600 text-white text-center font-black text-[11px] py-3.5 rounded-xl shadow-sm flex items-center justify-center">{t.whatsappSeller}</a>
@@ -633,7 +657,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* INTERNAL INBOX CHAT SYSTEM OVERLAY */}
+      {/* CHAT MESSENGER INBOX */}
       {showInbox && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[105] flex flex-col">
           <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex justify-between items-center shadow-md">
@@ -741,21 +765,11 @@ export default function Home() {
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
         <button onClick={() => { setShowInbox(false); setActiveChatSession(null); }} className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14"><span className="text-xl">🏠</span><span className="mt-0.5">{t.navHome}</span></button>
         <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">📋</span><span className="mt-0.5">{t.navAds}</span></button>
-        
-        {/* Floating Center Button */}
         <div className="relative -top-5 flex flex-col items-center justify-center">
           <button onClick={handlePostAdTrigger} className="w-14 h-14 bg-[#0066cc] text-white rounded-full flex items-center justify-center shadow-lg border-4 border-white transform active:scale-95 transition-all"><span className="text-3xl font-light">+</span></button>
           <span className="text-[11px] font-bold text-[#0066cc] mt-1">{t.navSell}</span>
         </div>
-
-        {/* Bottom Nav Chat Tab Trigger */}
-        <button 
-          onClick={() => { setActiveChatSession(null); setShowInbox(true); }}
-          className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"
-        >
-          <span className="text-xl">💬</span>
-          <span className="mt-0.5">{t.navChat}</span>
-        </button>
+        <button onClick={() => { setActiveChatSession(null); setShowInbox(true); }} className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">💬</span><span className="mt-0.5">{t.navChat}</span></button>
         <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">⣿</span><span className="mt-0.5">{t.navMore}</span></button>
       </nav>
 
