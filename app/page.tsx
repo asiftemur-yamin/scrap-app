@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 
-// 1. ALL SCRAP ADS DATABASE
-const initialAdsData = [
+// 1. GLOBAL DATABASE DEFINED AT THE VERY TOP
+const initialAdsData: any[] = [
   { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", city: "gujranwala", price: "125", unit: "kg", weight: "12 Ton", isFeatured: true, origin: "local", icon: "🔩", desc: "Factory clearance raw structural steel iron scrap available immediately near Khiali Gate." },
   { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", city: "gujranwala", price: "1,870", unit: "kg", weight: "450 Kg", isFeatured: false, origin: "imported", icon: "🔌", desc: "High quality stripped electrical copper wire scrap. Clean shining stock, ready for delivery." },
   { id: 3, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", city: "lahore", price: "465", unit: "kg", weight: "35 Mund", isFeatured: true, origin: "local", icon: "🥫", desc: "Compressed aluminum drink beverage can bundles. Total weight 35 munds loaded in Lahore Badami Bagh." },
@@ -14,7 +14,7 @@ const initialAdsData = [
   { id: 8, titleEn: "Mixed Electronic PCB Motherboard Waste", titleUr: "مکس الیکٹرانک پی سی بی مدر بورڈ کچرا", city: "karachi", price: "550", unit: "kg", weight: "500 Kg", isFeatured: false, origin: "imported", icon: "💻", desc: "Computer and mobile scrap circuit green boards. Great potential for gold/silver/copper chemical refining." }
 ];
 
-// 2. Complete Translation Dictionary
+// 2. TRANSLATION DICTIONARY
 const translations: any = {
   en: {
     appName: "SCRAP WORLD",
@@ -40,7 +40,7 @@ const translations: any = {
     navHome: "Home",
     navAds: "My Ads",
     navSell: "Sell Now",
-    navChat: "App Chat",
+    navChat: "Chat Inbox",
     navMore: "More",
     cities: {
       gujranwala: "Gujranwala",
@@ -218,7 +218,6 @@ const translations: any = {
   }
 };
 
-// 3. LME Prices Data
 const lmeData = [
   { id: "cop", key: "copper", icon: "🔴", price: "9,645", change: "+1.4%", up: true },
   { id: "alu", key: "aluminum", icon: "⚪", price: "2,520", change: "-0.3%", up: false },
@@ -226,7 +225,6 @@ const lmeData = [
   { id: "pb", key: "lead", icon: "🔋", price: "2,140", change: "+0.2%", up: true }
 ];
 
-// 4. Local Scrap Rates Data
 const scrapRates = {
   gujranwala: [
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "120" },
@@ -259,7 +257,6 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en');
   const [selectedCity, setSelectedCity] = useState<'gujranwala' | 'lahore' | 'karachi' | 'multan'>('gujranwala');
   
-  // Auth & Screen Control States
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [authView, setAuthView] = useState<'login' | 'register' | 'forgot'>('login');
@@ -310,7 +307,7 @@ export default function Home() {
     return () => window.removeEventListener('scroll', handleInfiniteScroll);
   }, [visibleAdsCount, isScrollingLoading]);
 
-  const getSortedAdsByRadius = () => {
+  const getSortedAdsByRadius = (): any[] => {
     const localAds = initialAdsData.filter(ad => ad.city === selectedCity);
     let nearbyCitiesOrder: string[] = [];
     if (selectedCity === 'gujranwala') nearbyCitiesOrder = ['lahore', 'multan', 'karachi'];
@@ -325,7 +322,7 @@ export default function Home() {
     const neared = nearbyAds.map(a => ({ ...a, radiusLevel: 'nearby' }));
     const regioned = regionalAds.map(a => ({ ...a, radiusLevel: 'regional' }));
 
-    return [...localized, ...neared, ...regioned];
+    return [...localized, ...neared, ...regioned] as any[];
   };
 
   const handlePostAdTrigger = () => {
@@ -353,20 +350,16 @@ export default function Home() {
     setTypedMessage('');
   };
 
-  const sortedFeedAds = getSortedAdsByRadius().slice(0, visibleAdsCount);
+  const sortedFeedAds = (getSortedAdsByRadius() as any[]).slice(0, visibleAdsCount);
 
-  // BULLETPROOF iPHONE NASKH FONT STACK
-  const iphoneFontStack = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Nastaliq Urdu", Arial, sans-serif';
+  // PREMIUM SYSTEM-AGNOSTIC IPHONE STYLE FONT LAYOUT (React Compliant)
+  const iphoneStyle = {
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    textAlign: (lang === 'ur' ? 'right' : 'left') as any
+  };
 
   return (
-    <div 
-      className="min-h-screen bg-[#f2f6fa] text-slate-800 pb-24"
-      style={{ 
-        fontFamily: iphoneFontStack,
-        textAlign: lang === 'ur' ? 'right' : 'left' 
-      }} 
-      dir={lang === 'ur' ? 'rtl' : 'ltr'}
-    >
+    <div className="min-h-screen bg-[#f2f6fa] pb-24" style={iphoneStyle} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
 
       {/* Top Header */}
       <header className="bg-[#1a365d] text-white px-4 pt-4 pb-6 shadow-md rounded-b-3xl">
@@ -516,7 +509,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Feed Header */}
+        {/* Marketplace Feed Title */}
         <div className="mb-4 mt-8 border-t border-slate-200 pt-6">
           <h2 className="text-lg font-black text-slate-900 tracking-tight flex items-center justify-between">
             <span>📋 {t.feedTitle}</span>
@@ -526,7 +519,7 @@ export default function Home() {
           </h2>
         </div>
 
-        {/* Continuous Automatic Ads Feed */}
+        {/* Continuous Automatic Ads Feed Cards */}
         <div className="space-y-3.5 mb-6">
           {sortedFeedAds.map((ad) => (
             <div 
@@ -568,7 +561,7 @@ export default function Home() {
             </div>
           ))}
 
-          {/* Scrolling spinner loading display */}
+          {/* Scrolling spinner display */}
           {isScrollingLoading && (
             <div className="py-4 text-center text-xs font-bold text-slate-400 animate-pulse flex items-center justify-center gap-2">
               <span className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
@@ -578,7 +571,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* DETAIL AD CARD MODAL OVERLAY */}
+      {/* DETAIL AD CARD MODAL (Z-INDEX 120) */}
       {selectedAd && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-[#f2f6fa] w-full max-w-lg rounded-t-3xl sm:rounded-2xl max-h-[92vh] overflow-y-auto shadow-2xl relative flex flex-col pb-6">
@@ -620,7 +613,7 @@ export default function Home() {
                 <p className="text-sm font-medium text-slate-600 leading-relaxed">{selectedAd.desc}</p>
               </div>
 
-              {/* THREE BUTTON ROW INTEGRATION WITH APP CHAT CHANNELS */}
+              {/* THREE CONTACT BUTTON ACTION ROW */}
               <div className="grid grid-cols-3 gap-2 pt-4 border-t">
                 <a href="tel:+923000000000" className="bg-[#0066cc] text-white text-center font-black text-[11px] py-3.5 rounded-xl shadow-sm flex items-center justify-center">{t.callSeller}</a>
                 <a href="https://wa.me/923000000000" target="_blank" className="bg-emerald-600 text-white text-center font-black text-[11px] py-3.5 rounded-xl shadow-sm flex items-center justify-center">{t.whatsappSeller}</a>
@@ -640,7 +633,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* MESSENGER CHAT INBOX SCREEN OVERLAY */}
+      {/* INTERNAL INBOX CHAT SYSTEM OVERLAY */}
       {showInbox && (
         <div className="fixed inset-0 bg-[#f2f6fa] z-[105] flex flex-col">
           <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex justify-between items-center shadow-md">
@@ -668,4 +661,104 @@ export default function Home() {
             </div>
           ) : (
             <div className="p-4 space-y-3 flex-1 overflow-y-auto">
-              <div onClick={() => setActiveChatSession({ id: 99, name: "HMS 1 Iron Lot" })} className
+              <div onClick={() => setActiveChatSession({ id: 99, name: "HMS 1 Iron Lot" })} className="bg-white border rounded-2xl p-4 shadow-sm flex justify-between items-center cursor-pointer">
+                <div className="flex items-center space-x-3 gap-3">
+                  <div className="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-xl font-bold">💬</div>
+                  <div>
+                    <h4 className="font-black text-sm text-slate-800">HMS 1 Iron Deal</h4>
+                    <p className="text-xs text-slate-400 font-medium mt-0.5">Bhai final weight loading kab hai?</p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold text-slate-400">2m ago</span>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* FULL SCREEN MODAL: AUTHENTICATION OVERLAY */}
+      {showAuth && (
+        <div className="fixed inset-0 bg-[#f2f6fa] z-[110] flex flex-col justify-center p-6 overflow-y-auto">
+          <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-xl border p-6 space-y-6 relative">
+            <button onClick={() => setShowAuth(false)} className="absolute top-4 right-4 text-xs font-black bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full">✕</button>
+            <div className="text-center"><h2 className="text-2xl font-black text-[#1a365d]">{authView === 'login' ? t.authTitleLogin : authView === 'register' ? t.authTitleRegister : t.authTitleForgot}</h2></div>
+            {authView !== 'forgot' && (
+              <div className="space-y-2">
+                <button onClick={() => { setIsLoggedIn(true); setShowAuth(false); if(showPostAd) setAdStep('select'); }} className="w-full bg-white border text-slate-700 font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2"><span className="text-base">🔴</span> {t.googleLogin}</button>
+                <button onClick={() => { setIsLoggedIn(true); setShowAuth(false); if(showPostAd) setAdStep('select'); }} className="w-full bg-black text-white font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2"><span className="text-base">🍏</span> {t.appleLogin}</button>
+                <div className="flex items-center my-4 before:flex-1 before:border-t after:flex-1 after:border-t"><p className="mx-4 text-[10px] text-slate-400 font-extrabold tracking-wider">{t.orDivider}</p></div>
+              </div>
+            )}
+            <div className="space-y-4 text-left">
+              <div><label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.emailLabel}</label><input type="email" placeholder="name@email.com" className="w-full bg-slate-50 border rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc]" /></div>
+              {authView !== 'forgot' && (
+                <div>
+                  <div className="flex justify-between items-center mb-1">
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">{t.passLabel}</label>
+                    {authView === 'login' && <button onClick={() => setAuthView('forgot')} className="text-xs font-bold text-[#0066cc]">{t.forgotLink}</button>}
+                  </div>
+                  <input type="password" placeholder="••••••••" className="w-full bg-slate-50 border rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc]" />
+                </div>
+              )}
+              <button onClick={() => { if (authView === 'forgot') { alert("Reset link sent!"); setAuthView('login'); } else { setIsLoggedIn(true); setShowAuth(false); if(showPostAd) { setShowPostAd(true); setAdStep('select'); } } }} className="w-full bg-[#0066cc] text-white font-black text-sm py-3.5 rounded-xl shadow-md mt-2">{authView === 'login' ? t.signIn : authView === 'register' ? t.signUp : t.sendResetBtn}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FULL-SCREEN OVERLAY FOR POST AD */}
+      {showPostAd && isLoggedIn && (
+        <div className="fixed inset-0 bg-[#f2f6fa] z-[100] flex flex-col overflow-y-auto pb-12">
+          <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex items-center justify-between shadow-md z-10">
+            <button onClick={handleBackNavigation} className="flex items-center space-x-1 gap-1 text-white bg-white/10 font-bold px-3 py-2 rounded-xl">{lang === 'ur' ? '→' : '←'} {t.appName}</button>
+            <h3 className="text-base font-black uppercase tracking-wide">{adStep === 'select' ? t.postAd : (adType === 'sell' ? t.formTitleSell : t.formTitleBuy)}</h3>
+            <button onClick={() => setShowPostAd(false)} className="text-xs bg-red-600 text-white px-3 py-2 rounded-xl font-bold">✕</button>
+          </div>
+          {adStep === 'select' && (
+            <div className="p-6 max-w-md mx-auto w-full flex flex-col justify-center space-y-6 mt-12 text-center">
+              <h2 className="text-2xl font-black text-[#1a365d] mb-4">{t.chooseTypeTitle}</h2>
+              <button onClick={() => { setAdType('sell'); setAdStep('form'); }} className="bg-white border-2 border-blue-500 rounded-2xl p-6 shadow-md flex flex-col items-center space-y-2 transform active:scale-95"><span className="text-5xl bg-blue-50 p-3 rounded-full">💰</span><span className="text-xl font-black text-blue-600 block">{t.optionSellTitle}</span><span className="text-xs text-slate-400 font-medium leading-normal">{t.optionSellDesc}</span></button>
+              <button onClick={() => { setAdType('buy'); setAdStep('form'); }} className="bg-white border-2 border-green-600 rounded-2xl p-6 shadow-md flex flex-col items-center space-y-2 transform active:scale-95"><span className="text-5xl bg-green-50 p-3 rounded-full">📢</span><span className="text-xl font-black text-green-600 block">{t.optionBuyTitle}</span><span className="text-xs text-slate-400 font-medium leading-normal">{t.optionBuyDesc}</span></button>
+            </div>
+          )}
+          {adStep === 'form' && (
+            <div className="p-5 max-w-lg mx-auto w-full space-y-5">
+              <div><label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.itemName}</label><input type="text" placeholder={t.itemNamePlh} className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc]" /></div>
+              <div><label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.originSectionTitle}</label><div className="grid grid-cols-2 gap-2">{['local', 'imported'].map((originType) => (<button key={originType} type="button" onClick={() => setScrapOrigin(originType)} className={`py-3 text-xs font-black rounded-xl border ${scrapOrigin === originType ? 'bg-[#0066cc] text-white border-[#0066cc]' : 'bg-white text-slate-600'}`}>{originType === 'local' ? `🇵🇰 ${t.localScrap}` : `🚢 ${t.importedScrap}`}</button>))}</div></div>
+              <div><label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.selectUnit}</label><div className="grid grid-cols-3 gap-2">{['kg', 'ton', 'mund'].map((u) => (<button key={u} type="button" onClick={() => setUnit(u)} className={`py-3 text-xs font-black rounded-xl border ${unit === u ? 'bg-[#0066cc] text-white border-[#0066cc]' : 'bg-white text-slate-600'}`}>{u === 'kg' ? t.perKg : u === 'ton' ? t.perTon : t.perMund}</button>))}</div></div>
+              <div><label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{adType === 'sell' ? t.rateLabelSell : t.rateLabelBuy}</label><input type="number" placeholder="Rs. 0" className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] font-bold" /></div>
+              <div><label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.locLabel}</label><input type="text" placeholder="e.g., Khiali, Gujranwala" className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc]" /></div>
+              <div><label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.picLabel}</label><div className="border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center bg-white cursor-pointer"><span className="text-4xl mb-1">📸</span><span className="text-sm font-bold text-slate-700">{t.picLabel}</span><span className="text-[11px] text-slate-400 mt-0.5">{t.picDesc}</span></div></div>
+              <div><label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">{t.detailsLabel}</label><textarea rows={3} placeholder={t.detailsPlh} className="w-full bg-white border rounded-xl p-3.5 text-sm outline-none focus:border-[#0066cc] resize-none"></textarea></div>
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex justify-between items-center gap-4"><div className="max-w-[80%]"><span className="text-sm font-black text-amber-900 block">⭐ {t.featureLabel}</span><span className="text-xs text-amber-700 font-medium block mt-0.5">{t.featureDesc}</span></div><input type="checkbox" checked={isFeatured} onChange={(e) => setIsFeatured(e.target.checked)} className="w-5 h-5 accent-amber-600 transform scale-125" /></div>
+              <button type="button" onClick={() => { alert("Ad Published Successfully on Scrap World!"); setShowPostAd(false); }} className="w-full bg-green-600 text-white font-black text-sm py-4 rounded-xl shadow-lg mt-6">{adType === 'sell' ? t.submitBtnSell : t.submitBtnBuy}</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Sticky Bottom Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-lg">
+        <button onClick={() => { setShowInbox(false); setActiveChatSession(null); }} className="flex flex-col items-center text-[#0066cc] font-bold text-xs w-14"><span className="text-xl">🏠</span><span className="mt-0.5">{t.navHome}</span></button>
+        <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">📋</span><span className="mt-0.5">{t.navAds}</span></button>
+        
+        {/* Floating Center Button */}
+        <div className="relative -top-5 flex flex-col items-center justify-center">
+          <button onClick={handlePostAdTrigger} className="w-14 h-14 bg-[#0066cc] text-white rounded-full flex items-center justify-center shadow-lg border-4 border-white transform active:scale-95 transition-all"><span className="text-3xl font-light">+</span></button>
+          <span className="text-[11px] font-bold text-[#0066cc] mt-1">{t.navSell}</span>
+        </div>
+
+        {/* Bottom Nav Chat Tab Trigger */}
+        <button 
+          onClick={() => { setActiveChatSession(null); setShowInbox(true); }}
+          className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"
+        >
+          <span className="text-xl">💬</span>
+          <span className="mt-0.5">{t.navChat}</span>
+        </button>
+        <button className="flex flex-col items-center text-slate-400 font-medium text-xs w-14"><span className="text-xl">⣿</span><span className="mt-0.5">{t.navMore}</span></button>
+      </nav>
+
+    </div>
+  );
+}
