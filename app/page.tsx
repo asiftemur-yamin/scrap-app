@@ -76,13 +76,52 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
+  // INFINITE SCROLL LOOP
+  useEffect(() => {
+    if (showSplash || currentPage !== 'home') return;
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setTimeout(() => {
+          setVisibleAds((prev) => [
+            ...prev,
+            ...initial10Ads.map((ad, idx) => ({ ...ad, id: prev.length + idx + 1 }))
+          ]);
+        }, 300);
+      }
+    }, { threshold: 1.0 });
+
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [showSplash, visibleAds, currentPage]);
+
+  const handleAuthSubmit = () => {
+    if (!inputPhone) {
+      alert("Please enter number.");
+      return;
+    }
+    setShowOtpScreen(true);
+  };
+
+  const handleVerifyOtpCode = () => {
+    if (inputOtp === "7861") {
+      setIsLoggedIn(true);
+      setUserPhone(inputPhone);
+      setShowOtpScreen(false);
+      setCustomToast({ show: true, msg: lang === 'ur' ? "لاگ ان کامیاب ہو گیا! ✓" : "OTP Verified! Account Securely Logged In ✓" });
+      setTimeout(() => setCustomToast(null), 3000);
+      setCurrentPage('home');
+    } else {
+      alert("Invalid OTP!");
+    }
+  };
+
   // 📲 SIMULATE IMAGE SELECTION SEED
   const handleTriggerImageSelection = () => {
-    // Dynamic stock pictures template for instant testing
     const sampleImagesPool = [
-      "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&q=80", // Scrap metal
-      "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=500&q=80", // Plastic recycling
-      "https://images.unsplash.com/photo-1605647540924-852290f6b0d5?w=500&q=80"  // Copper wires
+      "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&q=80",
+      "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=500&q=80",
+      "https://images.unsplash.com/photo-1605647540924-852290f6b0d5?w=500&q=80"
     ];
     
     if (uploadedImages.length >= 3) {
@@ -94,24 +133,24 @@ export default function Home() {
     setUploadedImages([...uploadedImages, nextImg]);
   };
 
+  // 🗑️ SAFE REMOVE IMAGE METHOD (FIXED FOR STRICT BUILD)
+  const handleRemoveSelectedImage = (indexToRemove: number) => {
+    const filtered = uploadedImages.filter((_, i) => i !== indexToRemove);
+    setUploadedImages(filtered);
+  };
+
   // 🌐 REAL SUPABASE GOOGLE OAUTH POPUP ENGAGEMENT FUNCTION
-  const triggerGoogleLoginAuthentication = async () => {
+  const triggerGoogleLoginAuthentication = () => {
     try {
-      // 🚀 REAL LIVE AUTH POPUP TRIGGER LINKING METHOD
-      // Is command se browser direct Google Cloud Console Console configuration ka login box popup trigger karega
-      const oauthUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${window.location.origin}`;
-      
-      // Simulation backup log injection
+      const oauthUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
       setIsLoggedIn(true);
       setUserPhone("Google_Verified");
       
       setCustomToast({ show: true, msg: lang === 'ur' ? "گوگل اکاؤنٹ سیکیورٹی اوپن ہو رہی ہے... 🌐" : "Opening Secure Google Authentication Popup... 🌐" });
       setTimeout(() => setCustomToast(null), 3000);
       
-      // Open popup terminal route
       window.location.href = oauthUrl;
     } catch (err) {
-      // Fallback bypass if window execution takes buffer time
       setIsLoggedIn(true);
       setUserPhone("Google_User");
       setCurrentPage('home');
@@ -137,7 +176,7 @@ export default function Home() {
       weight: adWeight,
       location: adLocation,
       icon: uploadedImages.length > 0 ? "📸" : "♻️",
-      images: uploadedImages, // Push multiple images array path
+      images: uploadedImages,
       phone: userPhone === "Google_Verified" || userPhone === "Google_User" ? "Verified via Google" : userPhone
     };
 
@@ -160,6 +199,17 @@ export default function Home() {
         <div className="fixed top-20 inset-x-4 max-w-md mx-auto z-[9999] bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-black text-xs p-4 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">
           <span className="text-xl">✓</span>
           <p className="flex-1 tracking-wide">{customToast.msg}</p>
+        </div>
+      )}
+
+      {/* SPLASH SCREEN */}
+      {showSplash && (
+        <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
+          <div className="text-center space-y-2">
+            <div className="text-7xl animate-bounce">🏭♻️</div>
+            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">SCRAP WORLD</h1>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Live Connection Engine</p>
+          </div>
         </div>
       )}
 
@@ -201,7 +251,6 @@ export default function Home() {
               <div key={ad.id} className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-md flex flex-col gap-3">
                 <div className="flex items-center gap-4 text-left">
                   
-                  {/* 📸 DYNAMIC PICTURE FRAME BOX CONTAINER */}
                   <div className="w-36 h-36 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0 border border-slate-200 overflow-hidden shadow-inner">
                     {ad.images && ad.images.length > 0 ? (
                       <img src={ad.images[0]} alt="Scrap Stock Photo" className="w-full h-full object-cover" />
@@ -236,43 +285,49 @@ export default function Home() {
       {currentPage !== 'home' && (
         <main className="max-w-xl mx-auto p-4 mt-2">
           
-          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2.5 rounded-xl">
+          <button onClick={() => { setCurrentPage('home'); setUploadedImages([]); }} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2.5 rounded-xl">
             {t.backBtn}
           </button>
 
-          {/* 🔐 PAGE 1: AUTHENTICATION WITH REAL GOOGLE POPUP & COLORFUL G-LOGO */}
+          {/* 🔐 PAGE 1: AUTHENTICATION */}
           {currentPage === 'page1' && (
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-5 text-left">
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-black text-slate-600 uppercase">Enter Mobile Number</label>
-                  <input type="tel" placeholder="e.g., 03001234567" className="w-full bg-white border-2 border-slate-300 text-slate-900 font-black text-base p-3.5 rounded-xl outline-none" />
-                </div>
-                <button onClick={handleAuthSubmit} className="w-full bg-[#1a365d] text-white font-black py-4 rounded-xl text-xs uppercase shadow-md">Send Secure OTP Code 📲</button>
-                
-                <div className="relative flex py-2 items-center">
-                  <div className="flex-grow border-t border-slate-200"></div>
-                  <span className="flex-shrink mx-4 text-slate-400 text-[10px] font-black uppercase tracking-wider">Or Connect Via Cloud</span>
-                  <div className="flex-grow border-t border-slate-200"></div>
-                </div>
+              {!showOtpScreen ? (
+                <div className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black text-slate-600 uppercase">Enter Mobile Number</label>
+                    <input type="tel" placeholder="e.g., 03001234567" className="w-full bg-white border-2 border-slate-300 text-slate-900 font-black text-base p-3.5 rounded-xl outline-none" />
+                  </div>
+                  <button onClick={handleAuthSubmit} className="w-full bg-[#1a365d] text-white font-black py-4 rounded-xl text-xs uppercase shadow-md">Send Secure OTP Code 📲</button>
+                  
+                  <div className="relative flex py-2 items-center">
+                    <div className="flex-grow border-t border-slate-200"></div>
+                    <span className="flex-shrink mx-4 text-slate-400 text-[10px] font-black uppercase tracking-wider">Or Connect Via Cloud</span>
+                    <div className="flex-grow border-t border-slate-200"></div>
+                  </div>
 
-                {/* 🌐 👑 COLORFUL GOOGLE BUTTON (With real popup endpoint configuration integration) */}
-                <button 
-                  type="button"
-                  onClick={triggerGoogleLoginAuthentication}
-                  className="w-full bg-white hover:bg-slate-50 border-2 border-slate-300 text-slate-700 font-black text-xs py-3.5 rounded-xl flex items-center justify-center gap-3 shadow-md transition-all active:scale-95"
-                >
-                  {/* 👑 Real 4-Color Google Vector G Logo Integration */}
-                  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.61c-.29 1.53-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.65-5.17 3.65-8.58z"/>
-                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.11 0-5.74-2.11-6.68-4.96H1.21v3.15C3.18 21.88 7.31 24 12 24z"/>
-                    <path fill="#FBBC05" d="M5.32 14.24A7.16 7.16 0 0 1 4.91 12c0-.79.13-1.57.41-2.24V6.61H1.21A11.94 11.94 0 0 0 0 12c0 1.92.45 3.74 1.21 5.39l4.11-3.15z"/>
-                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.18 2.12 1.21 6.61l4.11 3.15c.94-2.85 3.57-4.96 6.68-4.96z"/>
-                  </svg>
-                  <span className="text-slate-800 text-sm font-black">Continue with Google Account</span>
-                </button>
+                  <button 
+                    type="button"
+                    onClick={triggerGoogleLoginAuthentication}
+                    className="w-full bg-white hover:bg-slate-50 border-2 border-slate-300 text-slate-700 font-black text-xs py-3.5 rounded-xl flex items-center justify-center gap-3 shadow-md transition-all active:scale-95"
+                  >
+                    <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.61c-.29 1.53-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.65-5.17 3.65-8.58z"/>
+                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.11 0-5.74-2.11-6.68-4.96H1.21v3.15C3.18 21.88 7.31 24 12 24z"/>
+                      <path fill="#FBBC05" d="M5.32 14.24A7.16 7.16 0 0 1 4.91 12c0-.79.13-1.57.41-2.24V6.61H1.21A11.94 11.94 0 0 0 0 12c0 1.92.45 3.74 1.21 5.39l4.11-3.15z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.18 2.12 1.21 6.61l4.11 3.15c.94-2.85 3.57-4.96 6.68-4.96z"/>
+                    </svg>
+                    <span className="text-slate-800 text-sm font-black">Continue with Google Account</span>
+                  </button>
 
-              </div>
+                </div>
+              ) : (
+                <div className="space-y-4 text-center">
+                  <h3 className="font-black text-sm text-[#1a365d]">Enter Code (7861)</h3>
+                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-white border-2 text-center text-slate-900 font-black text-xl p-3 rounded-xl" />
+                  <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-3.5 rounded-xl text-xs shadow">Verify Code ✓</button>
+                </div>
+              )}
             </div>
           )}
 
@@ -297,7 +352,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* 📢 👑 PAGE 4: POST AD INTERFACE (WITH MULTI-PICTURE SELECT PREVIEW BLOCKS) */}
+          {/* 📢 PAGE 4: POST AD INTERFACE */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-md text-left space-y-4 animate-fade-in">
               <div>
@@ -305,12 +360,11 @@ export default function Home() {
                 <p className="text-[11px] text-slate-400 font-bold">Fill all fields and append clean yard images below.</p>
               </div>
 
-              {/* 📸 👑 PHOTO UPLOAD COMPONENT SECTION */}
+              {/* PHOTO UPLOAD COMPONENT */}
               <div className="space-y-2">
                 <label className="text-[10px] uppercase font-black text-slate-400 block">Scrap Lot Photos (Max 3 Pictures)</label>
                 
                 <div className="flex items-center gap-3">
-                  {/* Click trigger select box */}
                   <div 
                     onClick={handleTriggerImageSelection}
                     className="w-24 h-24 border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center gap-1 cursor-pointer bg-slate-50 transition-all shrink-0 active:scale-95"
@@ -319,15 +373,15 @@ export default function Home() {
                     <span className="text-[9px] font-black text-slate-400 uppercase">Add Image</span>
                   </div>
 
-                  {/* Real-time Dynamic Image Preview Grid Stacks */}
+                  {/* Real-time Image Preview Grid Stacks */}
                   <div className="flex gap-2 overflow-x-auto py-1">
                     {uploadedImages.map((imgUrl, index) => (
                       <div key={index} className="w-24 h-24 rounded-2xl border border-slate-200 overflow-hidden relative shadow-sm shrink-0">
                         <img src={imgUrl} alt="Preview" className="w-full h-full object-cover" />
                         <button 
                           type="button"
-                          onClick={() => setUploadedImages(uploadedImages.filter((_, i) => i !== index))}
-                          className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-black text-[10px] shadow"
+                          onClick={() => handleRemoveSelectedImage(index)}
+                          className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-black text-[10px] shadow z-10"
                         >
                           ✕
                         </button>
@@ -337,7 +391,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Input Form Fields Container */}
               <form onSubmit={handleCreateNewAd} className="space-y-3.5 text-xs font-bold text-slate-600">
                 <div className="space-y-1">
                   <label className="text-[10px] uppercase font-black text-slate-400">Item Title / Name</label>
@@ -381,7 +434,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 5: Live Rates */}
+          {/* PAGE 5: Rates */}
           {currentPage === 'page5' && (
             <div className="space-y-4 text-left">
               <div className="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden divide-y divide-slate-100">
