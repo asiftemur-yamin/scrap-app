@@ -83,19 +83,23 @@ export default function Home() {
   // 🌍 ROUTING STATE
   const [currentPage, setCurrentPage] = useState<string>('home'); 
 
+  // 👑 BEAUTIFUL CUSTOM TOAST NOTIFICATION CONTAINER STATE
+  const [customToast, setCustomToast] = useState<{ show: boolean; msg: string } | null>(null);
+
   // 🔐 AUTH STATES
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login');
   const [inputPhone, setInputPhone] = useState('');
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [inputOtp, setInputOtp] = useState('');
 
-  // 📢 NEW AD INPUT FORM STATE FIELDS (PAGE 4)
+  // 📢 NEW AD INPUT STATE FIELDS
   const [adTitle, setAdTitle] = useState('');
   const [adCategory, setAdCategory] = useState('Iron');
   const [adPrice, setAdPrice] = useState('');
   const [adWeight, setAdWeight] = useState('');
   const [adLocation, setAdLocation] = useState('Gujranwala');
 
+  // 👑 LIVE STREAM DATA ENGINE ARRAY STATE (Allows real-time state additions)
   const [visibleAds, setVisibleAds] = useState<any[]>(initial10Ads);
   const loaderRef = useRef<HTMLDivElement>(null);
 
@@ -139,22 +143,27 @@ export default function Home() {
       setIsLoggedIn(true);
       setUserPhone(inputPhone);
       setShowOtpScreen(false);
+      
+      // Trigger Beautiful Custom Notification
+      setCustomToast({ show: true, msg: lang === 'ur' ? "لاگ ان کامیاب ہو گیا! ✓" : "OTP Verified! Account Securely Logged In ✓" });
+      setTimeout(() => setCustomToast(null), 3000);
+
       setCurrentPage('home');
     } else {
       alert("Invalid OTP!");
     }
   };
 
-  // 📢 TRIGGER CUSTOM AD SUBMISSION METHOD WITH FIXED USER LOGGED IN PHONE
+  // 📢 TASK 3 SOLUTION: REAL-TIME AD CREATION WITH LUXURY ANIMATED TOAST
   const handleCreateNewAd = (e: any) => {
     e.preventDefault();
     if (!adTitle || !adPrice || !adWeight) {
-      alert("Please fill all advertisement details form fields!");
+      alert("Please fill all details!");
       return;
     }
 
     const customAdNode = {
-      id: visibleAds.length + 1,
+      id: Date.now(), // Generate unique safe dynamic id
       titleEn: adTitle,
       titleUr: adTitle,
       categoryEn: adCategory,
@@ -165,13 +174,17 @@ export default function Home() {
       weight: adWeight,
       location: adLocation,
       icon: "♻️",
-      phone: userPhone // 👑 VERIFIED NUMBER IS AUTOMATICALLY LOCKED HERE
+      phone: userPhone // Verified number locked dynamically
     };
 
+    // 👑 RE-INFORCED ACTIVE LIVE ARRAY PUSH (Ads immediately join the feed right at the top)
     setVisibleAds([customAdNode, ...visibleAds]);
-    alert(`Success: Advertisement posted with your verified number: ${userPhone}`);
     
-    // Clear form inputs
+    // Trigger Beautiful Toast Notification
+    setCustomToast({ show: true, msg: lang === 'ur' ? "آپ کا اشتہار کامیابی سے لائیو ہو گیا ہے! 📢" : "Advertisement Successfully Posted Live on Feed! 📢" });
+    setTimeout(() => setCustomToast(null), 3500);
+
+    // Clear values and route back to marketplace stream
     setAdTitle('');
     setAdPrice('');
     setAdWeight('');
@@ -179,7 +192,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f2f6fa] text-left" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }} dir="ltr">
+    <div className="min-h-screen bg-[#f2f6fa] text-left relative overflow-x-hidden" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }} dir="ltr">
+
+      {/* 👑 PREMIUM ANIMATED IN-APP TOAST NOTIFICATION CARD SYSTEM */}
+      {customToast?.show && (
+        <div className="fixed top-20 inset-x-4 max-w-md mx-auto z-[9999] bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-black text-xs p-4 rounded-xl shadow-2xl flex items-center gap-3 border border-emerald-400/20 animate-bounce">
+          <span className="text-xl">✓</span>
+          <p className="flex-1 tracking-wide">{customToast.msg}</p>
+        </div>
+      )}
 
       {/* SPLASH SCREEN */}
       {showSplash && (
@@ -202,9 +223,6 @@ export default function Home() {
               <h1 className="text-xl font-black tracking-wide text-white">{t.appName}</h1>
               <span className="text-[8px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-black px-1.5 py-0.5 rounded-full">LIVE</span>
             </div>
-            {isLoggedIn && (
-              <span className="text-[10px] text-amber-400 font-black tracking-tight bg-white/5 px-2 py-0.5 rounded-lg border border-white/10">📱 Verified: {userPhone}</span>
-            )}
           </div>
 
           {/* BANNER 6-GRID CONTROL PANEL */}
@@ -214,6 +232,7 @@ export default function Home() {
               <span className="text-[11px] font-black text-amber-400">{t.currentLang}</span>
             </button>
 
+            {/* BUTTON 2: Login Gate */}
             <button 
               onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); } else { setCurrentPage('page1'); setAuthMode('login'); setShowOtpScreen(false); } }} 
               className={`active:scale-95 border-2 rounded-xl py-2 px-2 flex items-center justify-center gap-1.5 transition-all transform scale-[1.03] shadow-[0_0_12px_rgba(245,158,11,0.2)] ${isLoggedIn ? 'bg-amber-500/20 border-amber-400 text-amber-400' : 'bg-emerald-600/30 border-amber-400 text-white font-extrabold'}`}
@@ -232,8 +251,9 @@ export default function Home() {
               <span className="text-[11px] font-black">{t.industriesBtn}</span>
             </button>
 
+            {/* 👑 TASK 1 SOLUTION: Click intercepts if account isn't logged in, instantly routing to login screen node */}
             <button 
-              onClick={() => { if (!isLoggedIn) { alert("Please login or verify your mobile number first to post advertisements!"); setCurrentPage('page1'); setAuthMode('login'); setShowOtpScreen(false); } else { setCurrentPage('page4'); } }} 
+              onClick={() => { if (!isLoggedIn) { alert(lang === 'ur' ? "پہلے موبائل نمبر سے او ٹی پی لاگ ان کریں!" : "Please secure login via mobile OTP first to post scrap ads!"); setCurrentPage('page1'); setAuthMode('login'); setShowOtpScreen(false); } else { setCurrentPage('page4'); } }} 
               className={`col-span-1 border-2 border-amber-400 active:scale-95 rounded-xl py-2 px-2 flex items-center justify-center gap-1.5 transition-all transform scale-[1.03] shadow-[0_0_12px_rgba(245,158,11,0.2)] ${currentPage === 'page4' ? 'bg-sky-500 text-slate-950' : 'bg-sky-500/30 text-white font-extrabold'}`}
             >
               <span className="text-sm">📢</span>
@@ -279,7 +299,7 @@ export default function Home() {
                       <div className="truncate"><span className="text-slate-400 text-[10px] uppercase font-black">{t.weightLabel} </span><span className="text-slate-800">{ad.weight}</span></div>
                       <div className="truncate"><span className="text-slate-400 text-[10px] uppercase font-black">{t.locLabel} </span><span className="text-slate-800">📍 {ad.location}</span></div>
                       {ad.phone && (
-                        <div className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-black inline-block mt-1">✓ Seller Contact: {ad.phone}</div>
+                        <div className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-indigo-700 font-black inline-block mt-1 border border-indigo-100">✓ Seller Mobile: {ad.phone}</div>
                       )}
                     </div>
                   </div>
@@ -302,41 +322,48 @@ export default function Home() {
       {currentPage !== 'home' && (
         <main className="max-w-xl mx-auto p-4 mt-2 animate-fade-in">
           
-          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all">
+          <button onClick={() => { setCurrentPage('home'); setShowOtpScreen(false); }} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all">
             {t.backBtn}
           </button>
 
-          {/* PAGE 1: Auth */}
+          {/* 🔐 PAGE 1: AUTHENTICATION (TASK 2 WORKED AREA) */}
           {currentPage === 'page1' && (
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-4">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-4 text-left">
               {!showOtpScreen ? (
                 <div className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-500 uppercase">Mobile Number</label>
-                    <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-black outline-none" />
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black text-slate-600 uppercase tracking-wide">Enter Mobile Number</label>
+                    
+                    {/* 👑 TASK 2 FIXED BOX: High visibility pure slate-900 text + white crisp canvas */}
+                    <input 
+                      type="tel" 
+                      value={inputPhone} 
+                      onChange={(e) => setInputPhone(e.target.value)} 
+                      placeholder="e.g., 03001234567" 
+                      className="w-full bg-white border-2 border-slate-300 text-slate-900 font-black text-base p-3.5 rounded-xl outline-none focus:border-indigo-600 shadow-inner block placeholder-slate-400" 
+                    />
                   </div>
-                  <button onClick={handleAuthSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-xs uppercase">Send Secure OTP Code 📲</button>
+                  <button onClick={handleAuthSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-xs uppercase shadow-md active:scale-95 transition-all">Send Secure OTP Code 📲</button>
                 </div>
               ) : (
                 <div className="space-y-4 text-center">
                   <h3 className="font-black text-sm text-[#1a365d]">Enter Code (7861)</h3>
-                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-slate-50 border text-center font-black text-xl p-3 rounded-xl" />
-                  <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-3 rounded-xl text-xs">Verify Code ✓</button>
+                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-white border-2 text-center text-slate-900 font-black text-xl p-3 rounded-xl outline-none focus:border-emerald-600" />
+                  <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-3.5 rounded-xl text-xs shadow active:scale-95 transition-all">Verify Code ✓</button>
                 </div>
               )}
             </div>
           )}
 
-          {/* PAGE 2: More Drawer (WhatsApp & Email active) */}
+          {/* PAGE 2: More Drawer */}
           {currentPage === 'page2' && (
-            <div className="space-y-4 text-left animate-fade-in">
+            <div className="space-y-4 text-left">
               <div className="bg-[#1a365d] text-white p-4 rounded-xl shadow">
                 <h3 className="text-base font-black uppercase tracking-wide">⚙️ MORE OPTIONS DASHBOARD</h3>
               </div>
 
               <div className="grid grid-cols-1 gap-3">
-                {/* 💬 Active Simulation Chat Box */}
-                <div onClick={() => alert("Chat Window Active: Connected with Local Scrap Merchants Node.")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer">
+                <div onClick={() => alert("Chat Window Active.")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl bg-indigo-50 p-2 rounded-xl">💬</span>
                     <div>
@@ -346,13 +373,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* 🟢 Live WhatsApp Helpline Link */}
-                <a 
-                  href="https://wa.me/923008641994?text=Hello%20Scrap%20World%20Support" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-green-500 block"
-                >
+                <a href="https://wa.me/923008641994?text=Hello%20Scrap%20World" target="_blank" rel="noopener noreferrer" className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer block">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl bg-green-50 p-2 rounded-xl">📞</span>
                     <div>
@@ -360,14 +381,9 @@ export default function Home() {
                       <p className="text-[11px] text-slate-400 font-bold">Contact: +92 300 8641994</p>
                     </div>
                   </div>
-                  <span className="text-xs font-black text-green-600 bg-green-50 px-2 py-0.5 rounded-md">Live Link</span>
                 </a>
 
-                {/* 📧 Live Email Node Button */}
-                <a 
-                  href="mailto:worldscrap92@gmail.com?subject=Scrap%20World%20Inquiry" 
-                  className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-blue-500 block"
-                >
+                <a href="mailto:worldscrap92@gmail.com" className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer block">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl bg-blue-50 p-2 rounded-xl">📩</span>
                     <div>
@@ -375,7 +391,6 @@ export default function Home() {
                       <p className="text-[11px] text-slate-400 font-bold">worldscrap92@gmail.com</p>
                     </div>
                   </div>
-                  <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">Send Mail</span>
                 </a>
               </div>
             </div>
@@ -396,9 +411,9 @@ export default function Home() {
             </div>
           )}
 
-          {/* 📢 👑 PAGE 4: SECURE AD POSTING INTERFACE WITH AUTOMATIC PHONE LOCK SYSTEM */}
+          {/* PAGE 4: Create Advertisement Form */}
           {currentPage === 'page4' && (
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-md text-left space-y-4 animate-fade-in">
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-md text-left space-y-4">
               <div>
                 <h3 className="text-base font-black text-[#1a365d] uppercase tracking-wide">📢 Create New Advertisement</h3>
                 <p className="text-[11px] text-slate-400 font-bold">Your listing will be locked with your authenticated account credentials.</p>
@@ -407,7 +422,7 @@ export default function Home() {
               <form onSubmit={handleCreateNewAd} className="space-y-3.5 text-xs font-bold text-slate-600">
                 <div className="space-y-1">
                   <label className="text-[10px] uppercase font-black text-slate-400">Scrap Stock Title / Item Name</label>
-                  <input type="text" value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="e.g., Copper Wire Grade A Lot" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none font-black text-sm" />
+                  <input type="text" value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="e.g., Heavy Melting Steel Scrap" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none font-black text-sm" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -423,14 +438,14 @@ export default function Home() {
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-black text-slate-400">Total Weight / Quantity</label>
-                    <input type="text" value={adWeight} onChange={(e) => setAdWeight(e.target.value)} placeholder="e.g., 5 Tons" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none font-black text-sm" />
+                    <input type="text" value={adWeight} onChange={(e) => setAdWeight(e.target.value)} placeholder="e.g., 10 Tons" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none font-black text-sm" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-black text-slate-400">Price Ask (per kg/pc)</label>
-                    <input type="number" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} placeholder="e.g., 180" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none font-black text-sm" />
+                    <label className="text-[10px] uppercase font-black text-slate-400">Price Ask (per kg)</label>
+                    <input type="number" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} placeholder="e.g., 150" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none font-black text-sm" />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] uppercase font-black text-slate-400">Industrial Location / City</label>
@@ -438,15 +453,13 @@ export default function Home() {
                       <option value="Gujranwala">Gujranwala</option>
                       <option value="Lahore">Lahore</option>
                       <option value="Karachi">Karachi</option>
-                      <option value="Sialkot">Sialkot</option>
                     </select>
                   </div>
                 </div>
 
-                {/* 👑 LOCK MECHANISM DISPLAY SYSTEM RULE */}
-                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-1">
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
                   <span className="text-[9px] uppercase font-black text-amber-800 block">🔒 Verified Security Lock Active</span>
-                  <p className="text-[11px] text-slate-700 font-extrabold">This listing will permanently link to your verified network ID: <span className="text-indigo-600 font-black">{userPhone}</span></p>
+                  <p className="text-[11px] text-slate-700 font-extrabold">Automatically attaching verified number ID: <span className="text-indigo-600 font-black">{userPhone}</span></p>
                 </div>
 
                 <button type="submit" className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl shadow text-xs uppercase tracking-wide mt-2 active:scale-95 transition-all">
@@ -460,11 +473,8 @@ export default function Home() {
           {currentPage === 'page5' && (
             <div className="space-y-4 text-left">
               <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-2xl border shadow-md flex justify-between items-center">
-                <div>
-                  <h3 className="text-sm font-black text-slate-200 mt-1">Factory Buying Catalog</h3>
-                </div>
+                <h3 className="text-sm font-black text-slate-200">Factory Buying Catalog</h3>
               </div>
-
               <div className="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden divide-y divide-slate-100">
                 {marketRateItems.map((item) => (
                   <div key={item.id} className="p-4 flex justify-between items-center hover:bg-slate-50/40">
@@ -475,9 +485,7 @@ export default function Home() {
                         <span className="text-[10px] text-slate-400 font-bold block mt-0.5">⏱️ Updated: {ratesUpdateTime}</span>
                       </div>
                     </div>
-                    <div>
-                      <span className="text-xs font-black text-indigo-600 bg-indigo-50 border px-3 py-1.5 rounded-xl uppercase tracking-wider">{lang === 'ur' ? 'جلد آ رہا ہے' : 'Coming Soon'}</span>
-                    </div>
+                    <span className="text-xs font-black text-indigo-600 bg-indigo-50 border px-3 py-1.5 rounded-xl uppercase">{lang === 'ur' ? 'جلد آ رہا ہے' : 'Coming Soon'}</span>
                   </div>
                 ))}
               </div>
