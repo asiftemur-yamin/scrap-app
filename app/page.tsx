@@ -10,7 +10,7 @@ const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 const initial10Ads = [
   { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", category: "Iron / Loha", price: "125", unit: "kg", weight: "12 Ton", location: "Khiali Gate, Gujranwala", icon: "🔩" },
   { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", category: "Copper / Tamba", price: "1,870", unit: "kg", weight: "450 Kg", location: "Sialkoti Gate, Gujranwala", icon: "🔌" },
-  { id: 3, titleEn: "Chaaloo Industrial Air Compressor 200L", titleUr: "چالو انڈسٹریل ائیر کملپریسر 200L", category: "Chaaloo Maal", price: "45,000", unit: "piece", weight: "1 Unit", location: "Gondlanwala Road, Gujranwala", icon: "💨" },
+  { id: 3, titleEn: "Chaaloo Industrial Air Compressor 200L", titleUr: "چالو انڈسٹریل ائیر کمپریسر 200L", category: "Chaaloo Maal", price: "45,000", unit: "piece", weight: "1 Unit", location: "Gondlanwala Road, Gujranwala", icon: "💨" },
   { id: 4, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", category: "Aluminum", price: "465", unit: "kg", weight: "35 Mund", location: "Badami Bagh, Lahore", icon: "🥫" },
   { id: 5, titleEn: "Mixed Crushed Plastic Drums Flakes HDPE", titleUr: "مکس کرشڈ پلاسٹک ڈرم اسکریپ اسٹاک", category: "Plastic", price: "98", unit: "kg", weight: "3 Ton", location: "Sheikhupura Road, Gujranwala", icon: "🛢️" },
   { id: 6, titleEn: "Silicon Solar Panels Scrap Lot 250W", titleUr: "سولر پینل اسکریپ لاٹ 250W", category: "Solar Panels", price: "4,500", unit: "piece", weight: "85 Pieces", location: "Shahdara, Lahore", icon: "☀️" },
@@ -23,7 +23,7 @@ const initial10Ads = [
 const translations: any = {
   en: {
     appName: "SCRAP WORLD", loginBtn: "Login / Register", logoutBtn: "Logout 👤", moreBtn: "More Options ☰", currentLang: "اردو",
-    feedTitle: "Infinite Scrap Marketplace Feed 📋", priceLabel: "Price:", weightLabel: "Quantity/Weight:", locLabel: "Location:", catLabel: "Category:"
+    feedTitle: "Infinite Scrap Marketplace Feed 📋", priceLabel: "Price:", weightLabel: "Qty/Weight:", locLabel: "Loc:", catLabel: "Category:"
   },
   ur: {
     appName: "اسکریپ ورلڈ", loginBtn: "لاگ ان / رجسٹر", logoutBtn: "لاگ آؤٹ 👤", moreBtn: "مزید اختیارات ☰", currentLang: "English",
@@ -114,44 +114,49 @@ export default function Home() {
           {visibleAds.map((ad) => (
             <div 
               key={ad.id} 
-              className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-md flex flex-col gap-4 hover:border-blue-400 transition-all cursor-pointer transform active:scale-[0.99]"
+              className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-md flex flex-col gap-3 hover:border-blue-400 transition-all cursor-pointer transform active:scale-[0.99]"
               onClick={() => alert(`Opening Ad: ${lang === 'ur' ? ad.titleUr : ad.titleEn}`)}
             >
-              {/* Top Row: 50% Bigger Icon Box + 10% Bigger Title */}
-              <div className="flex items-start gap-4">
-                {/* 👑 PICTURE BOX 50% LARGER (w-14 h-14 -> w-20 h-20) */}
-                <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center text-4xl shrink-0 border border-slate-200 shadow-inner">
+              {/* 👑 HORIZONTAL SPLIT: PICTURE ON LEFT, DETAILS ON RIGHT */}
+              <div className="flex items-center gap-4">
+                
+                {/* Left Side: Picture Box (Bigger - Half Screen Se Thoda Kam Size) */}
+                <div className="w-36 h-36 bg-slate-100 rounded-2xl flex items-center justify-center text-6xl shrink-0 border border-slate-200 shadow-inner">
                   {ad.icon}
                 </div>
-                <div className="space-y-1.5 flex-1">
-                  {/* 👑 HEADING 10% LARGER (text-sm -> text-base) */}
-                  <h4 className="font-black text-base text-slate-800 leading-snug">
+
+                {/* Right Side: Details Box (Remaining Half Screen) */}
+                <div className="flex-1 space-y-2 overflow-hidden">
+                  
+                  {/* Item Name */}
+                  <h4 className="font-black text-base text-slate-800 leading-snug line-clamp-2">
                     {lang === 'ur' ? ad.titleUr : ad.titleEn}
                   </h4>
-                  {/* 👑 BADGE TEXT LARGER (text-[10px] -> text-xs) */}
-                  <div className="text-xs bg-indigo-50 text-indigo-700 font-extrabold px-2.5 py-1 rounded-md inline-block">
-                    {t.catLabel} {ad.category}
+
+                  {/* Category Badge */}
+                  <div className="text-[11px] bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded-md inline-block">
+                    {ad.category}
                   </div>
+
+                  {/* Meta Details List (Weight & Location Stacked) */}
+                  <div className="space-y-1 text-xs font-bold text-slate-600">
+                    <div className="truncate">
+                      <span className="text-slate-400 text-[10px] uppercase font-black">{t.weightLabel} </span>
+                      <span className="text-slate-800">{ad.weight}</span>
+                    </div>
+                    <div className="truncate">
+                      <span className="text-slate-400 text-[10px] uppercase font-black">{t.locLabel} </span>
+                      <span className="text-slate-800">📍 {ad.location}</span>
+                    </div>
+                  </div>
+
                 </div>
               </div>
 
-              {/* Middle Row: Meta Specs Matrix 10% Larger Writing (text-[11px] -> text-xs) */}
-              <div className="grid grid-cols-2 gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-100 text-xs font-bold text-slate-600">
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-black mb-0.5">{t.weightLabel}</span>
-                  <span className="text-slate-900 font-black text-sm">{ad.weight}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-black mb-0.5">{t.locLabel}</span>
-                  <span className="text-slate-900 font-black text-sm block truncate">📍 {ad.location}</span>
-                </div>
-              </div>
-
-              {/* Bottom Row: Cost Value Display (Writing scaled up) */}
-              <div className="flex justify-between items-center border-t border-slate-100 pt-3">
+              {/* Bottom Row: Cost Value Display Divider */}
+              <div className="flex justify-between items-center border-t border-slate-100 pt-2.5">
                 <span className="text-xs text-slate-400 font-black uppercase">{t.priceLabel}</span>
                 <div className="text-right">
-                  {/* 👑 PRICE 10% LARGER (text-base -> text-lg) */}
                   <span className="text-lg font-black text-green-600">Rs.{ad.price}</span>
                   <span className="text-xs text-slate-400 font-bold"> /{ad.unit}</span>
                 </div>
