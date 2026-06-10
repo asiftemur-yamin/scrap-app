@@ -8,13 +8,13 @@ const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 export default function AdminPortal() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState('');
-  const [activeTab, setActiveTab] = useState('categories'); // default view to category manager
+  const [activeTab, setActiveTab] = useState('categories');
 
-  // Live Database Operational States
+  // Database Systems Array States
   const [dbCategories, setDbCategories] = useState<any[]>([]);
   const [dbAds, setDbAds] = useState<any[]>([]);
 
-  // Input States for Form Addition
+  // Input States
   const [newCatEn, setNewCatEn] = useState('');
   const [newCatUr, setNewCatUr] = useState('');
   const [newCatIcon, setNewCatIcon] = useState('🔩');
@@ -30,14 +30,14 @@ export default function AdminPortal() {
 
   const fetchLiveSystemData = async () => {
     try {
-      // 1. Pull Categories from Supabase Matrix
+      // 1. Fetch Categories Matrix
       const resCats = await fetch(`${SUPABASE_URL}/rest/v1/app_categories?select=*&order=id.asc`, {
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
       });
       const dataCats = await resCats.json();
       if (Array.isArray(dataCats)) setDbCategories(dataCats);
 
-      // 2. Pull Ads for Stream Stream View
+      // 2. Fetch Active Ads Stream
       const resAds = await fetch(`${SUPABASE_URL}/rest/v1/user_ads?select=*&order=id.desc`, {
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
       });
@@ -45,11 +45,11 @@ export default function AdminPortal() {
       if (Array.isArray(dataAds)) setDbAds(dataAds);
 
     } catch (e) {
-      console.error("System connection node fault:", e);
+      console.error("System pipeline fault:", e);
     }
   };
 
-  // 👑 FUNCTION: PUSH LIVE CATEGORY LAYER
+  // 👑 ACTION: PUSH LIVE CATEGORY SLOT
   const handlePushCategory = async () => {
     if (!newCatEn || !newCatUr) {
       alert("Meherbani kar ke English aur Urdu dono Name likhein!");
@@ -77,20 +77,20 @@ export default function AdminPortal() {
       });
 
       if (res.ok) {
-        alert("🚀 Nayi Category Component Layer par kamyabi se add ho gayi!");
+        alert("🚀 Nayi Category Database Layer par kamyabi se add ho gayi!");
         setNewCatEn(''); setNewCatUr('');
         fetchLiveSystemData();
       } else {
-        alert("Fault: Category already exists in system array.");
+        alert("Fault: Category code already registered in matrix.");
       }
     } catch (e) {
-      alert("Database error pushing component.");
+      alert("Database link fault.");
     }
   };
 
-  // 👑 FUNCTION: DELETE LIVE CATEGORY LAYER
+  // 👑 ACTION: REMOVE CATEGORY LAYER
   const handleDeleteCategory = async (id: number) => {
-    if (!confirm("Kya aap waqai is category ko system se hamesha ke liye mitaana chahte hain?")) return;
+    if (!confirm("Kya aap waqai is category ko system se mitaana chahte hain?")) return;
 
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/app_categories?id=eq.${id}`, {
@@ -104,7 +104,7 @@ export default function AdminPortal() {
     }
   };
 
-  // 👑 FUNCTION: DELETE USER ADS
+  // 👑 ACTION: DELETE LIVE AD SLOTS
   const handleDeleteAd = async (id: number) => {
     if (!confirm("Kya aap is advertisement ko delete karna chahte hain?")) return;
 
@@ -127,7 +127,7 @@ export default function AdminPortal() {
           <div className="text-5xl">🔐</div>
           <h2 className="text-xl font-black text-amber-400">COMMAND CENTER ACCESS</h2>
           <input type="password" value={passcode} onChange={(e) => setPasscode(e.target.value)} placeholder="•••••" className="w-full bg-slate-950 text-center font-black text-lg p-3 rounded-xl text-white outline-none border border-slate-800 focus:border-amber-500" />
-          <button onClick={handleLogin} className="w-full bg-amber-500 text-slate-950 font-black py-3.5 rounded-xl transition-all">Secure Entry Key 🚀</button>
+          <button onClick={handleLogin} className="w-full bg-amber-500 text-slate-950 font-black py-3.5 rounded-xl">Secure Entry Key 🚀</button>
         </div>
       </div>
     );
@@ -136,7 +136,7 @@ export default function AdminPortal() {
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex" style={{ fontFamily: 'sans-serif' }}>
       
-      {/* LEFT SIDEBAR NAVIGATION BLOCK */}
+      {/* SIDEBAR BLOCK */}
       <aside className="w-64 bg-[#111c44] text-slate-400 flex flex-col justify-between shrink-0">
         <div>
           <div className="p-5 border-b border-slate-800 text-center">
@@ -151,7 +151,7 @@ export default function AdminPortal() {
         <div className="p-4"><button onClick={() => setIsAuthenticated(false)} className="w-full bg-red-950/40 text-red-400 border border-red-900/50 p-2.5 rounded-xl text-xs font-black">Lock & Logout 🔒</button></div>
       </aside>
 
-      {/* RIGHT CONTENT DISPLAY NODE */}
+      {/* CONTENT AREA */}
       <main className="flex-1 p-6 overflow-y-auto">
         <div className="max-w-5xl mx-auto space-y-6">
           
@@ -160,15 +160,12 @@ export default function AdminPortal() {
               <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
                 {activeTab === 'categories' ? 'Categories Controls' : 'User Ads Stream Manager'}
               </h2>
-              <p className="text-xs text-slate-400 font-bold tracking-wide">LIVE SYSTEM CONTROL DASHBOARD NODE</p>
             </div>
-            <span className="bg-emerald-100 text-emerald-700 text-xs font-black px-3 py-1 rounded-full border border-emerald-300">● DATABASE CONNECTED</span>
+            <span className="bg-emerald-100 text-emerald-700 text-xs font-black px-3 py-1 rounded-full border border-emerald-300">● LIVE DATABASE OK</span>
           </div>
 
-          {/* APP CATEGORY MANAGER (Matching your Screenshot Design 100%) */}
           {activeTab === 'categories' && (
             <div className="space-y-6">
-              
               <div className="border-2 border-dashed border-slate-300 bg-white p-5 rounded-2xl space-y-4">
                 <h3 className="text-sm font-black text-slate-800 uppercase">Create Nayi Scrap Category Slot</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -185,7 +182,7 @@ export default function AdminPortal() {
                     <option value="💻">💻 Electronic Scrap Hardware</option>
                   </select>
                 </div>
-                <button onClick={handlePushCategory} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs px-5 py-3 rounded-xl shadow-md transform active:scale-95 transition-all">
+                <button onClick={handlePushCategory} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">
                   Push Category Component Database Layer 🚀
                 </button>
               </div>
@@ -194,24 +191,22 @@ export default function AdminPortal() {
                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-4">Active Categories Catalog Matrix</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {dbCategories.map((item) => (
-                    <div key={item.id} className="border border-slate-200 rounded-xl p-3.5 flex items-center justify-between bg-slate-50/50 hover:border-red-400 transition-all">
+                    <div key={item.id} className="border border-slate-200 rounded-xl p-3.5 flex items-center justify-between bg-slate-50/50">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">{item.icon}</span>
                         <div>
                           <h5 className="font-black text-xs text-slate-800 leading-tight">{item.labelEn}</h5>
-                          <span className="text-[10px] font-bold text-slate-400 block mt-0.5" dir="rtl">{item.labelUr}</span>
+                          <span className="text-[10px] font-bold text-slate-400 block mt-0.5">{item.labelUr}</span>
                         </div>
                       </div>
-                      <button onClick={() => handleDeleteCategory(item.id)} className="text-red-500 hover:bg-red-50 text-xs font-bold w-6 h-6 flex items-center justify-center border rounded-full transition-all">✕</button>
+                      <button onClick={() => handleDeleteCategory(item.id)} className="text-red-500 hover:bg-red-50 text-xs font-bold w-6 h-6 flex items-center justify-center border rounded-full">✕</button>
                     </div>
                   ))}
                 </div>
               </div>
-
             </div>
           )}
 
-          {/* USER ADS MANAGEMENT STREAM */}
           {activeTab === 'ads' && (
             <div className="bg-white p-5 rounded-2xl border shadow-sm space-y-4">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider">Live Active Ads Matrix Store</h3>
@@ -222,14 +217,14 @@ export default function AdminPortal() {
                       <div>
                         <span className="text-[10px] font-black text-blue-800 uppercase tracking-wider bg-blue-50 border px-2 py-0.5 rounded">📍 {ad.city} • {ad.mainCat}</span>
                         <h4 className="font-extrabold text-sm text-slate-800 mt-1">{ad.titleEn}</h4>
-                        <p className="text-xs font-semibold text-slate-500 mt-0.5">Weight Lot: <span className="text-slate-900 font-bold">{ad.weight}</span> | Cost Demand: <span className="text-green-600 font-black">Rs.{ad.price} /{ad.unit}</span></p>
+                        <p className="text-xs font-semibold text-slate-500 mt-0.5">Weight: <span className="text-slate-900 font-bold">{ad.weight}</span> | Rate: <span className="text-green-600 font-black">Rs.{ad.price} /{ad.unit}</span></p>
                       </div>
-                      <button onClick={() => handleDeleteAd(ad.id)} className="bg-red-100 text-red-600 font-black text-xs px-4 py-2 rounded-xl border border-transparent hover:border-red-300 transition-all">Delete Ad ✕</button>
+                      <button onClick={() => handleDeleteAd(ad.id)} className="bg-red-100 text-red-600 font-black text-xs px-4 py-2 rounded-xl border border-transparent hover:border-red-300">Delete Ad ✕</button>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="p-6 text-center text-xs text-slate-400 font-black bg-slate-50 border border-dashed rounded-xl">No active advertisements found on live server stream.</div>
+                <div className="p-6 text-center text-xs text-slate-400 font-black bg-slate-50 border border-dashed rounded-xl">No active advertisements found.</div>
               )}
             </div>
           )}
