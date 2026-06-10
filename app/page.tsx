@@ -22,7 +22,7 @@ export default function Home() {
   const [adWeight, setAdWeight] = useState('');
   const [adLocation, setAdLocation] = useState('Gujranwala');
   
-  // 📸 ULTRA-SPEED CLOUDINARY ENGINE STATES
+  // 📸 TELEGRAPH UNLIMITED CLOUD ENGINE STATES
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   
@@ -32,7 +32,7 @@ export default function Home() {
 
   // Load permanent session on application mount
   useEffect(() => {
-    setRatesUpdateTime("11 Jun 2026 at 11:45 AM");
+    setRatesUpdateTime("11 Jun 2026 at 12:15 PM");
     const timer = setTimeout(() => setShowSplash(false), 1500);
 
     if (typeof window !== 'undefined') {
@@ -69,7 +69,7 @@ export default function Home() {
     }
   };
 
-  // ☁️ FASTEST ROCKET CLOUDINARY UPLOAD GATEWAY
+  // ☁️ TELEGRAPH OPEN INTERNET UPLOAD ROUTER (NO KEYS REQUIRED)
   const handleSelectAndUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -81,28 +81,27 @@ export default function Home() {
     const targetFile = files[0];
     setIsUploading(true);
 
-    // Unsigned Live Global Production Streaming Data
     const formData = new FormData();
     formData.append('file', targetFile);
-    formData.append('upload_preset', 'scrap_world_preset'); // Production open preset
 
     try {
-      const response = await fetch(`https://api.cloudinary.com/v1_1/dms6m8vxt/image/upload`, {
+      // Direct raw binary upload to global node bypassing all firewall tokens
+      const response = await fetch(`https://telegra.ph/upload`, {
         method: 'POST',
         body: formData
       });
 
       const resData = await response.json();
 
-      if (resData.secure_url) {
-        // Permanent Global Internet URL generated instantly with HTTPS encryption
-        const publicLiveUrl = resData.secure_url;
+      // Telegraph returns an array with src path directly
+      if (resData && resData[0] && resData[0].src) {
+        const publicLiveUrl = `https://telegra.ph${resData[0].src}`;
         setUploadedImages([...uploadedImages, publicLiveUrl]);
       } else {
-        alert("Server routing filter active, please retry!");
+        alert("Cloud verification filter bypass required!");
       }
     } catch (err) {
-      alert("Cloud gateway connection reset!");
+      alert("Network routing error, please try again!");
     } finally {
       setIsUploading(false);
     }
@@ -127,7 +126,7 @@ export default function Home() {
       weight: adWeight,
       location: adLocation,
       icon: "📸",
-      images: uploadedImages, // Cloud URLs safely loaded here
+      images: uploadedImages, // Array of global immutable links
       phone: userPhone || "Verified User"
     };
 
@@ -230,19 +229,19 @@ export default function Home() {
           {currentPage === 'page2' && <div className="bg-white p-4 rounded-xl border">📞 WhatsApp Support: +923008641994</div>}
           {currentPage === 'page3' && <div className="bg-white p-4 rounded-xl border">🏭 Registered Plants List Active.</div>}
 
-          {/* 📢 CLOUD IMAGE UPLOAD COMPONENT FOR FACTORY YARD PHOTOS */}
+          {/* 📢 OPEN INTERNET SEAMLESS IMAGE PICKER */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl p-5 border shadow-md space-y-4">
               <h3 className="text-sm font-black text-[#1a365d] uppercase">📢 Post New Scrap Ad</h3>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 block">Photos (Max 3 - High Speed Cloud Streaming)</label>
+                <label className="text-[10px] font-black text-slate-400 block">Photos (Max 3 - Global Cloud Upload)</label>
                 <div className="flex gap-3 items-center">
                   <input type="file" accept="image/*" ref={fileInputRef} onChange={handleSelectAndUploadImage} className="hidden" />
                   <div 
                     onClick={() => { if(!isUploading) fileInputRef.current?.click(); }} 
                     className="w-20 h-20 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer bg-slate-50 text-xl active:scale-95"
                   >
-                    {isUploading ? <span className="text-[10px] font-black text-emerald-600 animate-pulse text-center p-1">Cloud Uploading...</span> : "📷"}
+                    {isUploading ? <span className="text-[10px] font-black text-emerald-600 animate-pulse text-center p-1">Uploading...</span> : "📷"}
                   </div>
                   {uploadedImages.map((img, i) => (
                     <div key={i} className="w-20 h-20 rounded-xl border overflow-hidden relative shadow-sm">
