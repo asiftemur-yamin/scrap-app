@@ -22,14 +22,14 @@ const initial10Ads = [
 
 const translations: any = {
   en: {
-    appName: "SCRAP WORLD", loginBtn: "Login / Account", logoutBtn: "Logout 👤", moreBtn: "More Hub", currentLang: "اردو",
+    appName: "SCRAP WORLD", loginBtn: "Login", logoutBtn: "Logout 👤", moreBtn: "More", currentLang: "Urdu",
     feedTitle: "Infinite Scrap Marketplace Feed 📋", priceLabel: "Price:", weightLabel: "Qty/Weight:", locLabel: "Loc:", catLabel: "Category:",
-    sortBtn: "Sort Feed 📊", postAdBtn: "Post New Ad 📢", ratesBtn: "Live Rates 💰"
+    sortBtn: "Sort 📊", postAdBtn: "Post Ad 📢", ratesBtn: "Rates 💰"
   },
   ur: {
-    appName: "اسکریپ ورلڈ", loginBtn: "لاگ ان / رجسٹر", logoutBtn: "لاگ آؤٹ 👤", moreBtn: "مزید آپشنز", currentLang: "English",
+    appName: "اسکریپ ورلڈ", loginBtn: "لاگ ان", logoutBtn: "لاگ آؤٹ 👤", moreBtn: "مزید", currentLang: "English",
     feedTitle: "اسکریپ مارکیٹ فیڈ (انفنائٹ اسکرول) 📋", priceLabel: "قیمت / ریٹ:", weightLabel: "وزن / تعداد:", locLabel: "لوکیشن:", catLabel: "کیٹیگری:",
-    sortBtn: "ترتیب دیں 📊", postAdBtn: "اشتہار لگائیں 📢", ratesBtn: "لائیو ریٹس 💰"
+    sortBtn: "ترتیب 📊", postAdBtn: "اشتہار 📢", ratesBtn: "ریٹس 💰"
   }
 };
 
@@ -82,76 +82,74 @@ export default function Home() {
         </div>
       )}
 
-      {/* 👑 MASTER COMPACT COMMAND HEADER BANNER (6 MULTI-GRID GRAPHIC BUTTONS) */}
-      <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-6 shadow-xl rounded-b-[2rem] sticky top-0 z-50 border-b border-white/5">
-        <div className="max-w-xl mx-auto space-y-5">
+      {/* 👑 COMPACTED 15% SCREEN HEIGHT HEADER BANNER */}
+      <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 shadow-xl rounded-b-2xl sticky top-0 z-50 border-b border-white/5">
+        <div className="max-w-xl mx-auto space-y-2">
           
-          {/* Top Line: Brand Identity Display */}
+          {/* Top Row: Brand Info Minimal Heights */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="text-3xl bg-amber-400/10 text-amber-400 p-2 rounded-xl border border-amber-400/20">🏭</div>
-              <div>
-                <h1 className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-200">{t.appName}</h1>
-                <span className="text-[9px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-black px-2 py-0.5 rounded-full inline-block mt-0.5">● SERVER ACTIVE</span>
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl text-amber-400">🏭</span>
+              <h1 className="text-xl font-black tracking-wide text-white">{t.appName}</h1>
+              <span className="text-[8px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-black px-1.5 py-0.5 rounded-full">LIVE</span>
             </div>
           </div>
 
-          {/* 💎 6 GRAPHIC MASTER CONTROL INTERFACE GRID (Perfectly Symmetric & Styled) */}
-          <div className="grid grid-cols-3 gap-2.5 pt-2">
+          {/* 💎 6 INTERFACE GRAPHIC GRID - COMPACT HEIGHTS FOR 15% TOTAL RATIO */}
+          <div className="grid grid-cols-3 gap-1.5">
             
-            {/* ROW 1 - BUTTON 1: Language Toggle */}
+            {/* BUTTON 1: Language */}
             <button 
               onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} 
-              className="bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 rounded-2xl p-3 flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md group"
+              className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
             >
-              <span className="text-lg group-hover:scale-110 transition-transform">🌐</span>
-              <span className="text-xs font-black text-slate-200 tracking-tight">{t.currentLang}</span>
+              <span className="text-sm">🌐</span>
+              <span className="text-[11px] font-black text-slate-200">{t.currentLang}</span>
             </button>
 
-            {/* ROW 1 - BUTTON 2: Login Gatekeeper */}
+            {/* BUTTON 2: Login */}
             <button 
               onClick={() => { if (isLoggedIn) setIsLoggedIn(false); else setShowAuth(true); }} 
-              className={`active:scale-95 border rounded-2xl p-3 flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md group ${isLoggedIn ? 'bg-amber-500/10 border-amber-500/30' : 'bg-emerald-600/20 border-emerald-500/30'}`}
+              className={`active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${isLoggedIn ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-600/20 border-emerald-500/20'}`}
             >
-              <span className="text-lg group-hover:scale-110 transition-transform">{isLoggedIn ? '👤' : '🔐'}</span>
-              <span className={`text-xs font-black tracking-tight ${isLoggedIn ? 'text-amber-400' : 'text-emerald-400'}`}>{isLoggedIn ? t.logoutBtn : t.loginBtn}</span>
+              <span className="text-sm">{isLoggedIn ? '👤' : '🔐'}</span>
+              <span className={`text-[11px] font-black ${isLoggedIn ? 'text-amber-400' : 'text-emerald-400'}`}>{isLoggedIn ? t.logoutBtn : t.loginBtn}</span>
             </button>
 
-            {/* ROW 1 - BUTTON 3: More Dashboard Hub */}
+            {/* BUTTON 3: More Menu */}
             <button 
-              onClick={() => alert("More features integration dashboard active drawer node.")} 
-              className="bg-white/5 hover:bg-white/10 active:scale-95 border border-white/10 rounded-2xl p-3 flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md group"
+              onClick={() => alert("Dashboard options link.")} 
+              className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
             >
-              <span className="text-lg group-hover:scale-110 transition-transform">☰</span>
-              <span className="text-xs font-black text-slate-200 tracking-tight">{t.moreBtn}</span>
+              <span className="text-sm">☰</span>
+              <span className="text-[11px] font-black text-slate-200">{t.moreBtn}</span>
             </button>
 
-            {/* ROW 2 - BUTTON 4: Sort Matrix Engine */}
+            {/* BUTTON 4: Sort Matrix */}
             <button 
-              onClick={() => alert("Sorting Filter Node: Distance and Rate Parameter Activation.")} 
-              className="bg-indigo-600/20 hover:bg-indigo-600/30 active:scale-95 border border-indigo-500/30 rounded-2xl p-3 flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md group"
+              onClick={() => alert("Sorting parameters activated.")} 
+              className="bg-indigo-600/20 border border-indigo-500/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
             >
-              <span className="text-lg group-hover:scale-110 transition-transform">📊</span>
-              <span className="text-xs font-black text-indigo-400 tracking-tight">{t.sortBtn}</span>
+              <span className="text-sm">📊</span>
+              <span className="text-[11px] font-black text-indigo-400">{t.sortBtn}</span>
             </button>
 
-            {/* ROW 2 - BUTTON 5: Post Advertisement Submission Terminal */}
+            {/* BUTTON 5: Post Ad Terminal */}
             <button 
-              onClick={() => { if (!isLoggedIn) setShowAuth(true); else alert("Opening live submission stream..."); }} 
-              className="bg-sky-500/20 hover:bg-sky-500/30 active:scale-95 border border-sky-400/30 rounded-2xl p-3 flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md group"
+              onClick={() => { if (!isLoggedIn) setShowAuth(true); else alert("Live ad system triggered."); }} 
+              className="bg-sky-500/20 border border-sky-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
             >
-              <span className="text-lg group-hover:scale-110 transition-transform">📢</span>
-              <span className="text-xs font-black text-sky-400 tracking-tight">{t.postAdBtn}</span>
+              <span className="text-sm">📢</span>
+              <span className="text-[11px] font-black text-sky-400">{t.postAdBtn}</span>
             </button>
 
-            {/* ROW 2 - BUTTON 6: Mandi Broadcast Live Rates Engine */}
+            {/* BUTTON 6: Mandi Rates Engine */}
             <button 
-              onClick={() => alert("Redirecting and sliding view screen to Local Mandi Market Rates.")} 
-              className="bg-amber-500/20 hover:bg-amber-500/30 active:scale-95 border border-amber-400/30 rounded-2xl p-3 flex flex-col items-center justify-center text-center gap-1.5 transition-all shadow-md group"
+              onClick={() => alert("Sliding framework to Local Mandi Rates.")} 
+              className="bg-amber-500/20 border border-amber-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
             >
-              <span className="text-lg group-hover:scale-110 transition-transform">💰</span>
-              <span className="text-xs font-black text-amber-400 tracking-tight">{t.ratesBtn}</span>
+              <span className="text-sm">💰</span>
+              <span className="text-[11px] font-black text-amber-400">{t.ratesBtn}</span>
             </button>
 
           </div>
@@ -159,18 +157,18 @@ export default function Home() {
         </div>
       </header>
 
-      {/* INFINITE MARKETPLACE ADS FEED */}
-      <main className="max-w-xl mx-auto p-4 mt-4">
-        <h2 className="text-lg font-black text-slate-800 uppercase tracking-wide border-b pb-2 mb-4 flex items-center gap-2">
+      {/* 85% SCREEN HEIGHT REMAINING: INFINITE MARKETPLACE ADS FEED */}
+      <main className="max-w-xl mx-auto p-4 mt-2">
+        <h2 className="text-base font-black text-slate-800 uppercase tracking-wide border-b pb-1.5 mb-3 flex items-center gap-2">
           <span>📋</span> {t.feedTitle}
         </h2>
 
-        <div className="space-y-5">
+        <div className="space-y-4">
           {visibleAds.map((ad) => (
             <div 
               key={ad.id} 
               className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-md flex flex-col gap-3 hover:border-blue-400 transition-all cursor-pointer transform active:scale-[0.99]"
-              onClick={() => alert(`Opening Ad Details Node: ${lang === 'ur' ? ad.titleUr : ad.titleEn}`)}
+              onClick={() => alert(`Opening Ad Details: ${lang === 'ur' ? ad.titleUr : ad.titleEn}`)}
             >
               <div className="flex items-center gap-4">
                 {/* Left Side: Half Screen Se Thoda Kam Size Picture Box */}
@@ -178,7 +176,7 @@ export default function Home() {
                   {ad.icon}
                 </div>
 
-                {/* Right Side: Writing Details (10% Larger Layout Matrix) */}
+                {/* Right Side: Writing Details Layout Matrix */}
                 <div className="flex-1 space-y-2 overflow-hidden">
                   <h4 className="font-black text-base text-slate-800 leading-snug line-clamp-2">
                     {lang === 'ur' ? ad.titleUr : ad.titleEn}
@@ -199,8 +197,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Bottom Row: Cost Tag display */}
-              <div className="flex justify-between items-center border-t border-slate-100 pt-2.5">
+              {/* Bottom Row: Cost Tag Display */}
+              <div className="flex justify-between items-center border-t border-slate-100 pt-2">
                 <span className="text-xs text-slate-400 font-black uppercase">{t.priceLabel}</span>
                 <div className="text-right">
                   <span className="text-lg font-black text-green-600">Rs.{ad.price}</span>
@@ -212,7 +210,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* INFINITE SCROLL DETECTION TRIGGER */}
+        {/* INFINITE SCROLL DETECTION LAYER */}
         <div ref={loaderRef} className="py-6 flex items-center justify-center text-slate-400 gap-2">
           <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
           <span className="text-xs font-black uppercase tracking-wider">Loading More Scrap Stock...</span>
