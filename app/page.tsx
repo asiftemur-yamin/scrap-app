@@ -22,20 +22,21 @@ export default function Home() {
   const [adPrice, setAdPrice] = useState('');
   const [adWeight, setAdWeight] = useState('');
   const [adLocation, setAdLocation] = useState('Gujranwala');
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [visibleAds, setVisibleAds] = useState<any[]>(initial10Ads);
   
-  const loaderRef = useRef<HTMLDivElement>(null);
+  // 📸 Cloud Upload Image States
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
+  
+  const [visibleAds, setVisibleAds] = useState<any[]>(initial10Ads);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = translations[lang];
 
-  // 🔄 1. HARD COOKIE SESSION LOCK (Persists Login Even After Full Page Refresh)
+  // Load permanent session and cloud ads on start
   useEffect(() => {
     setRatesUpdateTime("10 Jun 2026 at 04:25 PM");
     const timer = setTimeout(() => setShowSplash(false), 1500);
 
     if (typeof window !== 'undefined') {
-      // Check if browser already remembers this user from last time
       const savedUser = localStorage.getItem('scrap_user_session');
       const hasToken = window.location.hash.includes('access_token') || window.location.search.includes('code');
       
@@ -43,7 +44,6 @@ export default function Home() {
         setIsLoggedIn(true);
         setUserPhone(savedUser);
       } else if (hasToken) {
-        // If coming back fresh from Google auth gateway
         setIsLoggedIn(true);
         setUserPhone("Google_Account");
         localStorage.setItem('scrap_user_session', 'Google_Account');
@@ -51,16 +51,13 @@ export default function Home() {
       }
     }
 
-    // Fetch permanent ads from database on load
     fetchLiveAdsFromSupabase();
-
     return () => clearTimeout(timer);
   }, []);
 
-  // 📥 2. FETCH REAL LIVE DATA FROM DATABASE
   const fetchLiveAdsFromSupabase = async () => {
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/ads?select=*`, {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/ads?select=*&order=id.desc`, {
         headers: {
           'Authorization': `Bearer ${SUPABASE_KEY}`,
           'apikey': SUPABASE_KEY
@@ -68,46 +65,56 @@ export default function Home() {
       });
       const data = await response.json();
       if (data && data.length > 0) {
-        // Merge real database ads on top of production initial ads
         setVisibleAds([...data, ...initial10Ads]);
       }
     } catch (err) {
-      console.log("Database loading local fallback active");
+      console.log("Error loading global ads");
     }
   };
 
-  const handleAuthSubmit = () => { if (inputPhone) setShowOtpScreen(true); };
-  const handleVerifyOtpCode = () => {
-    if (inputOtp === "7861") {
-      setIsLoggedIn(true);
-      setUserPhone(inputPhone);
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('scrap_user_session', inputPhone);
-      }
-      setShowOtpScreen(false);
-      setCurrentPage('home');
-    }
-  };
-
-  const handleSelectRealLocalImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // ☁️ REAL TIME CLOUD IMAGE UPLOAD TO SUPABASE BUCKET
+  const handleSelectAndUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     if (uploadedImages.length >= 3) {
       alert("Maximum 3 pictures allowed!");
       return;
     }
-    const localImageUrlPath = URL.createObjectURL(files[0]);
-    setUploadedImages([...uploadedImages, localImageUrlPath]);
-  };
 
-  const triggerGoogleLoginAuthentication = () => {
-    if (typeof window !== 'undefined') {
-      const target = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
-      window.location.replace(target);
+    const targetFile = files[0];
+    setIsUploading(true);
+
+    // Create unique name for image file to prevent overwriting
+    const fileExtension = targetFile.name.split('.').pop();
+    const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
+
+    try {
+      // API call to upload raw image binary directly into storage bucket
+      const uploadUrl = `${SUPABASE_URL}/storage/v1/object/scrap-images/${uniqueFileName}`;
+      const uploadResponse = await fetch(uploadUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'apikey': SUPABASE_KEY,
+          'Content-Type': targetFile.type
+        },
+        body: targetFile
+      });
+
+      if (uploadResponse.ok) {
+        // Generate Public Global Internet URL for this uploaded picture
+        const publicLiveUrl = `${SUPABASE_URL}/storage/v1/object/public/scrap-images/${uniqueFileName}`;
+        setUploadedImages([...uploadedImages, publicLiveUrl]);
+      } else {
+        alert("Upload failed! Check if bucket is created as public.");
+      }
+    } catch (err) {
+      alert("Cloud upload connectivity error");
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  // 📤 3. POST & SAVE AD PERMANENTLY INTO SUPABASE SQL TABLE
   const handleCreateNewAd = async (e: any) => {
     e.preventDefault();
     if (!adTitle || !adPrice || !adWeight) {
@@ -126,16 +133,12 @@ export default function Home() {
       weight: adWeight,
       location: adLocation,
       icon: "📸",
-      images: uploadedImages,
+      images: uploadedImages, // Array of public internet image URLs
       phone: userPhone || "Verified Asset User"
     };
 
-    // Optimistic UI updates
-    setVisibleAds([newAdNode, ...visibleAds]);
-
     try {
-      // Live API post request directly to your Database table named 'ads'
-      await fetch(`${SUPABASE_URL}/rest/v1/ads`, {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/ads`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${SUPABASE_KEY}`,
@@ -145,22 +148,24 @@ export default function Home() {
         },
         body: JSON.stringify(newAdNode)
       });
-    } catch (err) {
-      console.log("Cloud server saved locally");
-    }
 
-    setUploadedImages([]);
-    setAdTitle('');
-    setAdPrice('');
-    setAdWeight('');
-    setCurrentPage('home');
+      if (response.ok) {
+        fetchLiveAdsFromSupabase(); // Reload completely fresh global stream
+        setUploadedImages([]);
+        setAdTitle('');
+        setAdPrice('');
+        setAdWeight('');
+        setCurrentPage('home');
+      }
+    } catch (err) {
+      alert("Error uploading ad node to database");
+    }
   };
 
-  const handleLogoutAction = () => {
-    setIsLoggedIn(false);
-    setUserPhone('');
+  const triggerGoogleLoginAuthentication = () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('scrap_user_session');
+      const target = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
+      window.location.replace(target);
     }
   };
 
@@ -176,7 +181,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-3 gap-1.5 text-[11px] font-black">
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 border p-1.5 text-amber-400">{t.currentLang}</button>
-            <button onClick={() => { if (isLoggedIn) { handleLogoutAction(); } else { setCurrentPage('page1'); setShowOtpScreen(false); } }} className="bg-emerald-600/30 border text-white p-2">{isLoggedIn ? t.logoutBtn : t.loginBtn}</button>
+            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); localStorage.removeItem('scrap_user_session'); setUserPhone(''); } else { setCurrentPage('page1'); setShowOtpScreen(false); } }} className="bg-emerald-600/30 border text-white p-2">{isLoggedIn ? t.logoutBtn : t.loginBtn}</button>
             <button onClick={() => setCurrentPage('page2')} className="bg-white/5 border p-1.5">{t.moreBtn}</button>
             <button onClick={() => setCurrentPage('page3')} className="bg-white/5 border p-1.5">{t.industriesBtn}</button>
             <button onClick={() => { if (!isLoggedIn) setCurrentPage('page1'); else setCurrentPage('page4'); }} className="bg-white/5 border p-1.5">{t.postAdBtn}</button>
@@ -204,14 +209,14 @@ export default function Home() {
 
       {currentPage !== 'home' && (
         <main className="max-w-xl mx-auto p-4">
-          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2 rounded-xl">{t.backBtn}</button>
+          <button onClick={() => { setCurrentPage('home'); setUploadedImages([]); }} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2 rounded-xl">{t.backBtn}</button>
 
           {currentPage === 'page1' && (
             <div className="bg-white rounded-2xl p-6 border shadow-md space-y-4">
               {!showOtpScreen ? (
                 <div className="space-y-4">
                   <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="Mobile Number" className="w-full bg-white border-2 p-3 rounded-xl font-black text-slate-900" />
-                  <button onClick={handleAuthSubmit} className="w-full bg-[#1a365d] text-white font-black py-3 rounded-xl text-xs uppercase">Send OTP 📲</button>
+                  <button onClick={() => if (inputPhone) setShowOtpScreen(true)} className="w-full bg-[#1a365d] text-white font-black py-3 rounded-xl text-xs uppercase">Send OTP 📲</button>
                   <div className="border-t pt-4">
                     <button type="button" onClick={triggerGoogleLoginAuthentication} className="w-full bg-white hover:bg-slate-50 border-2 p-3 rounded-xl flex items-center justify-center gap-3 active:scale-95">
                       <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -227,7 +232,7 @@ export default function Home() {
               ) : (
                 <div className="space-y-4 text-center">
                   <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-white border-2 text-center text-slate-900 font-black p-3 rounded-xl" />
-                  <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-3 rounded-xl text-xs">Verify Code ✓</button>
+                  <button onClick={() => { if (inputOtp === "7861") { setIsLoggedIn(true); localStorage.setItem('scrap_user_session', inputPhone); setUserPhone(inputPhone); setShowOtpScreen(false); setCurrentPage('home'); } }} className="w-full bg-emerald-600 text-white font-black py-3 rounded-xl text-xs">Verify Code ✓</button>
                 </div>
               )}
             </div>
@@ -236,14 +241,20 @@ export default function Home() {
           {currentPage === 'page2' && <div className="bg-white p-4 rounded-xl border">📞 WhatsApp Support: +923008641994</div>}
           {currentPage === 'page3' && <div className="bg-white p-4 rounded-xl border">🏭 Registered Plants List Active.</div>}
 
+          {/* 📢 PRODUCTION CLOUD IMAGE PICKER */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl p-5 border shadow-md space-y-4">
               <h3 className="text-sm font-black text-[#1a365d] uppercase">📢 Post New Scrap Ad</h3>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 block">Photos (Max 3)</label>
+                <label className="text-[10px] font-black text-slate-400 block">Photos (Max 3 - Uploads to Supabase Cloud)</label>
                 <div className="flex gap-3 items-center">
-                  <input type="file" accept="image/*" ref={fileInputRef} onChange={handleSelectRealLocalImage} className="hidden" />
-                  <div onClick={() => fileInputRef.current?.click()} className="w-20 h-20 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer bg-slate-50 text-xl active:scale-95">📷</div>
+                  <input type="file" accept="image/*" ref={fileInputRef} onChange={handleSelectAndUploadImage} className="hidden" />
+                  <div 
+                    onClick={() => { if(!isUploading) fileInputRef.current?.click(); }} 
+                    className="w-20 h-20 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer bg-slate-50 text-xl active:scale-95"
+                  >
+                    {isUploading ? <span className="text-xs font-black text-indigo-600 animate-pulse">Uploading...</span> : "📷"}
+                  </div>
                   {uploadedImages.map((img, i) => (
                     <div key={i} className="w-20 h-20 rounded-xl border overflow-hidden relative shadow-sm">
                       <img src={img} className="w-full h-full object-cover" />
