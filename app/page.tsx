@@ -126,7 +126,7 @@ export default function Home() {
   const feedRef = useRef<HTMLDivElement>(null);
 
   const [appCategories] = useState(initialCategories);
-  const [allAdsList] = useState(initialAdsData);
+  const [allAdsList, setAllAdsList] = useState(initialAdsData);
   const [verifiedFactories] = useState(initialVerifiedStores);
 
   // Filter States
@@ -140,25 +140,62 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
   const [showPostAd, setShowPostAd] = useState(false);
-  const [formMainCat, setFormMainCat] = useState('iron');
-  const [formSubCat, setFormSubCat] = useState('scrap');
   const [selectedAd, setSelectedAd] = useState<any | null>(null);
   const [showInbox, setShowInbox] = useState(false);
   const [showVerificationPortal, setShowVerificationPortal] = useState(false);
   const [selectedFactoryCatalog, setSelectedFactoryCatalog] = useState<any | null>(null);
   const [lmeRates, setLmeRates] = useState(lmeData);
 
+  // 👑 SPECIFIC INTERFACE VARIABLE FORM STATES
+  const [formItemName, setFormItemName] = useState('');
+  const [formMainCat, setFormMainCat] = useState('iron');
+  const [formSubCat, setFormSubCat] = useState('scrap');
+  const [formPrice, setFormPrice] = useState('');
+  const [formUnit, setFormUnit] = useState('kg');
+  const [formAbout, setFormAbout] = useState('');
+  const [formWeight, setFormWeight] = useState('');
+
   const t: any = translations[lang];
 
   useEffect(() => {
     const today = new Date();
     setCurrentDate(today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
-    const timer = setTimeout(() => { setShowSplash(false); }, 2000);
+    const timer = setTimeout(() => { setShowSplash(false); }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
   const handlePostAdTrigger = () => { if (!isLoggedIn) { setShowAuth(true); } else { setShowPostAd(true); } };
   const scrollToSection = (elementRef: React.RefObject<HTMLDivElement | null>) => { elementRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+
+  const handlePublishAd = () => {
+    if (!formItemName || !formPrice) {
+      alert("Meherbani kar ke Item ka Naam aur Rate lazmi likhein!");
+      return;
+    }
+
+    const newAdObj = {
+      id: Date.now(),
+      titleEn: formItemName,
+      titleUr: formItemName,
+      city: selectedCity,
+      mainCat: formMainCat,
+      subCat: formSubCat,
+      price: Number(formPrice).toLocaleString(),
+      unit: formUnit,
+      weight: formWeight || "1 Lot",
+      isFeatured: false,
+      origin: "local",
+      icon: formMainCat === 'iron' ? '🔩' : formMainCat === 'copper' ? '🔌' : formMainCat === 'plastic' ? '🛢️' : '📦',
+      desc: formAbout || "No additional description provided."
+    };
+
+    setAllAdsList([newAdObj, ...allAdsList]);
+    alert("📢 Aap ka Ad Mandi Feed par kamyabi se lag gaya hai!");
+    
+    // Clear fields
+    setFormItemName(''); setFormPrice(''); setFormAbout(''); setFormWeight('');
+    setShowPostAd(false);
+  };
 
   const getFilteredAndSortedAds = (): any[] => {
     let dataset = allAdsList;
@@ -183,7 +220,7 @@ export default function Home() {
           <div className="text-center space-y-2">
             <div className="text-7xl animate-bounce">🏭♻️</div>
             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">SCRAP WORLD</h1>
-            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Mandi Layout Locked</p>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Post Ad Engine Active</p>
           </div>
         </div>
       )}
@@ -220,7 +257,7 @@ export default function Home() {
 
         <div className="mt-2 bg-white rounded-lg p-3 flex items-center shadow-inner text-slate-700">
           <span className="text-slate-400 mx-2">🔍</span>
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t.searchPlaceholder} className="w-full bg-transparent outline-none text-sm placeholder-slate-400 font-medium text-slate-800" />
+          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t.searchPlaceholder} className="w-full bg-transparent outline-none text-sm font-medium text-slate-800" />
         </div>
       </header>
 
@@ -229,11 +266,11 @@ export default function Home() {
         
         {/* Toggle Filters for Origin Stream */}
         <div className="grid grid-cols-2 gap-3 mb-6">
-          <div onClick={() => setActiveOriginFilter(activeOriginFilter === 'local' ? 'all' : 'local')} className={`rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer border-2 transition-all ${activeOriginFilter === 'local' ? 'bg-blue-50 border-blue-600 ring-2 ring-blue-500/20' : 'bg-white border-slate-100'}`}>
+          <div onClick={() => setActiveOriginFilter(activeOriginFilter === 'local' ? 'all' : 'local')} className={`rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer border-2 transition-all ${activeOriginFilter === 'local' ? 'bg-blue-50 border-blue-600' : 'bg-white border-slate-100'}`}>
             <div><span className="font-black text-sm text-[#1a365d] block">{t.localScrap}</span><span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.localScrapDesc}</span></div>
             <span className="text-3xl">🇵🇰</span>
           </div>
-          <div onClick={() => setActiveOriginFilter(activeOriginFilter === 'imported' ? 'all' : 'imported')} className={`rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer border-2 transition-all ${activeOriginFilter === 'imported' ? 'bg-green-50 border-green-600 ring-2 ring-green-500/20' : 'bg-white border-slate-100'}`}>
+          <div onClick={() => setActiveOriginFilter(activeOriginFilter === 'imported' ? 'all' : 'imported')} className={`rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer border-2 transition-all ${activeOriginFilter === 'imported' ? 'bg-green-50 border-green-600' : 'bg-white border-slate-100'}`}>
             <div><span className="font-black text-sm text-[#1a365d] block">{t.importedScrap}</span><span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.importedScrapDesc}</span></div>
             <span className="text-3xl">🚢</span>
           </div>
@@ -246,7 +283,6 @@ export default function Home() {
             <div key={idx} onClick={() => { if(item.cat === 'chaaloo') { setShowChaalooModal(true); } else { setActiveMainCatFilter(item.cat); setActiveSubCatFilter('all'); } }} className={`border rounded-xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm aspect-square cursor-pointer transition-all ${activeMainCatFilter === item.cat ? 'bg-indigo-600 text-white' : 'bg-white border-slate-100 text-slate-700'}`}>
               <span className="text-xl mb-1">{item.icon}</span>
               <span className="text-[10px] font-black leading-tight block truncate w-full">{lang === 'en' ? item.labelEn : item.labelUr}</span>
-              <span className="text-[7px] block opacity-60 mt-0.5 font-bold uppercase">{item.cat === 'chaaloo' ? 'Open' : 'Filter'}</span>
             </div>
           ))}
         </div>
@@ -258,31 +294,16 @@ export default function Home() {
               <div className="flex justify-between items-center border-b pb-2"><h3 className="font-black text-base text-[#1a365d]">{t.chaalooTitle}</h3><button onClick={() => setShowChaalooModal(false)} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold">✕</button></div>
               <div className="space-y-2">
                 {Object.keys(t.subCats).map((key) => (
-                  <button key={key} onClick={() => { setActiveMainCatFilter('chaaloo'); setActiveSubCatFilter(key); setShowChaalooModal(false); }} className={`w-full text-left p-3 rounded-xl border font-bold text-xs flex justify-between items-center ${activeSubCatFilter === key ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-700'}`}><span>{t.subCats[key]}</span></button>
+                  <button key={key} onClick={() => { setActiveMainCatFilter('chaaloo'); setActiveSubCatFilter(key); setShowChaalooModal(false); }} className={`w-full text-left p-3 rounded-xl border font-bold text-xs ${activeSubCatFilter === key ? 'bg-indigo-600 text-white' : 'bg-slate-50 text-slate-700'}`}>{t.subCats[key]}</button>
                 ))}
               </div>
             </div>
           </div>
         )}
 
-        {/* B2B Factories */}
-        <div className="mb-4 mt-8 border-t border-slate-200 pt-5">
-          <div className="flex justify-between items-center mb-3"><h2 className="text-sm font-black text-slate-900 uppercase tracking-tight">{t.b2bTitle}</h2></div>
-          <div className="flex overflow-x-auto pb-3 gap-3.5 scrollbar-none">
-            {verifiedFactories.map((store) => (
-              <div key={store.id} onClick={() => setSelectedFactoryCatalog(store)} className="bg-white border-2 border-amber-400/40 rounded-2xl p-4 min-w-[240px] shadow-sm cursor-pointer flex flex-col justify-between">
-                <div className="flex items-center gap-2.5"><span className="text-3xl bg-slate-50 border p-1 rounded-xl">{store.icon}</span><div><h4 className="font-black text-sm text-slate-800 line-clamp-1">{lang === 'en' ? store.nameEn : store.nameUr}</h4><span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md inline-block mt-0.5">{store.badge}</span></div></div>
-                <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center"><span className="text-[10px] font-bold text-slate-400">📍 {(t.cities as any)[store.city] || store.city}</span><span className="text-[11px] font-black text-indigo-600">View Catalog →</span></div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* 👑 FIXED RATES DISPLAY PANEL (City Name Buttons Always on Top) */}
+        {/* FIXED RATES DISPLAY PANEL (City Name Buttons Always on Top) */}
         <div ref={ratesRef} className="pt-4 scroll-mt-4">
-          
-          {/* LME Block Row */}
-          <div className="mb-3"><div className="flex justify-between items-center"><h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2><span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-md font-black animate-pulse">● LIVE TICKER</span></div></div>
+          <div className="mb-3"><div className="flex justify-between items-center"><h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.lmeTitle}</h2></div></div>
           <div className="flex overflow-x-auto pb-3 gap-3 scrollbar-none">
             {lmeRates.map((metal) => (
               <div key={metal.id} className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 min-w-[140px] shadow-md flex flex-col justify-between border border-slate-700/50">
@@ -292,27 +313,27 @@ export default function Home() {
             ))}
           </div>
 
-          {/* 📍 A: CITY SELECTOR BUTTONS MOVED ON TOP */}
+          {/* 📍 City Selectors (Top) */}
           <div className="mb-2 mt-6"><h2 className="text-sm font-black text-slate-500 uppercase tracking-wider">{t.selectCityTitle}</h2></div>
           <div className="flex gap-1.5 overflow-x-auto pb-3 scrollbar-none">
             {Object.keys(scrapRates).map((cityKey) => (
-              <button key={cityKey} onClick={() => setSelectedCity(cityKey as any)} className={`px-5 py-2.5 text-xs font-black rounded-xl border transition-all whitespace-nowrap ${selectedCity === cityKey ? 'bg-blue-900 text-white border-blue-900 shadow-md ring-2 ring-blue-900/10' : 'bg-white text-slate-600 border-slate-200'}`}>📍 {(t.cities as any)[cityKey]} <span className="block text-[8px] opacity-75 font-normal">(Select City)</span></button>
+              <button key={cityKey} onClick={() => setSelectedCity(cityKey as any)} className={`px-5 py-2.5 text-xs font-black rounded-xl border transition-all whitespace-nowrap ${selectedCity === cityKey ? 'bg-blue-900 text-white border-blue-900 shadow-md' : 'bg-white text-slate-600 border-slate-200'}`}>📍 {(t.cities as any)[cityKey]}</button>
             ))}
           </div>
 
-          {/* 💰 B: LIVE RATES LIST BOX DISPATCHED BELOW THE CITY BUTTONS */}
+          {/* 💰 Live Rates Matrix (Below Buttons) */}
           <div className="mb-2 mt-3"><h2 className="text-base font-extrabold text-slate-800 uppercase tracking-wide">{t.priceListTitle} ({(t.cities as any)[selectedCity]})</h2></div>
           <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm p-2 divide-y divide-slate-100 mb-6">
             {(scrapRates as any)[selectedCity]?.map((item: any) => (
               <div key={item.id} className="flex justify-between items-center p-3.5">
                 <div className="flex items-center space-x-3 gap-2"><span className="text-2xl bg-slate-100 p-1.5 rounded-lg">{item.icon}</span><span className="font-bold text-slate-700 text-sm">{(t as any)[item.nameKey]}</span></div>
-                <div className="text-right"><span className="text-base font-black text-green-600 block">Rs.{item.price}</span><span className="text-[10px] font-bold text-slate-400 block">{t.rateUnit}</span></div>
+                <div className="text-right"><span className="text-base font-black text-green-600 block">Rs.{item.price}</span></div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Marketplace Feed Panel */}
+        {/* Marketplace Feed */}
         <div ref={feedRef} className="pt-4 border-t border-slate-200 scroll-mt-4">
           <h2 className="text-lg font-black text-slate-900 tracking-tight mb-4">📋 {t.feedTitle}</h2>
           <div className="space-y-3.5 mb-6">
@@ -321,50 +342,131 @@ export default function Home() {
                 <div className="flex items-start space-x-3.5 gap-3 max-w-[70%]">
                   <div className="w-14 h-14 bg-slate-100 rounded-xl flex items-center justify-center text-2xl shrink-0">{ad.icon}</div>
                   <div>
-                    <h4 className="font-extrabold text-sm text-slate-800 leading-snug line-clamp-2">{lang === 'en' ? ad.titleEn : ad.titleUr}</h4>
+                    <h4 className="font-extrabold text-sm text-slate-800 leading-snug line-clamp-2">{ad.titleEn}</h4>
                     <p className="text-[10px] font-semibold text-slate-400">📍 {(t.cities as any)[ad.city] || ad.city} • <span className="text-slate-500 font-bold bg-slate-100 px-1.5 py-0.5 rounded">{ad.weight}</span></p>
                   </div>
                 </div>
-                <div className="text-right shrink-0"><span className="text-base font-black text-green-600 block">Rs.{ad.price}</span></div>
+                <div className="text-right shrink-0"><span className="text-base font-black text-green-600 block">Rs.{ad.price}</span><span className="text-[10px] text-slate-400 block">/{ad.unit}</span></div>
               </div>
             ))}
           </div>
         </div>
       </main>
 
-      {/* Popups & overlays */}
-      {selectedAd && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white w-full max-w-lg rounded-xl shadow-2xl relative flex flex-col pb-6 overflow-hidden">
-            <div className="bg-[#1a365d] text-white p-4 flex justify-between items-center shadow-md"><span className="text-sm font-black uppercase">📦 Stock Details</span><button onClick={() => setSelectedAd(null)} className="bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full">✕</button></div>
-            <div className="p-5 space-y-4 text-left" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
-              <div className="w-full h-32 bg-slate-50 border rounded-xl flex items-center justify-center text-5xl">{selectedAd.icon}</div>
-              <h3 className="text-base font-black text-slate-800">{lang === 'en' ? selectedAd.titleEn : selectedAd.titleUr}</h3>
-              <div className="bg-slate-50 border p-4 rounded-xl flex justify-between items-center"><span className="text-xs font-bold text-slate-400">Rate Demand</span><span className="text-xl font-black text-green-600">Rs.{selectedAd.price}</span></div>
-              <div className="grid grid-cols-3 gap-2 pt-2">
-                <a href="tel:+923000000000" className="bg-[#0066cc] text-white text-center font-black text-[11px] py-3.5 rounded-xl flex items-center justify-center">Call 📞</a>
-                <a href="https://wa.me/923000000000" target="_blank" className="bg-green-600 text-white text-center font-black text-[11px] py-3.5 rounded-xl flex items-center justify-center">WhatsApp 💬</a>
-                <button onClick={() => { setSelectedAd(null); setShowInbox(true); }} className="bg-indigo-600 text-white font-black text-[11px] py-3.5 rounded-xl">App Chat 💬</button>
+      {/* 👑 PREMIUM SEQUENCED POST AD MODAL POPUP INTERFACE */}
+      {showPostAd && isLoggedIn && (
+        <div className="fixed inset-0 bg-[#f2f6fa] z-[400] flex flex-col overflow-y-auto pb-12">
+          <div className="bg-[#1a365d] text-white p-4 sticky top-0 flex items-center justify-between shadow-md">
+            <button onClick={() => setShowPostAd(false)} className="text-white bg-white/10 font-bold px-3 py-2 rounded-xl">← Cancel</button>
+            <h3 className="text-sm font-black uppercase tracking-wider">📢 Post New Advertisement</h3>
+            <div></div>
+          </div>
+          
+          <div className="p-5 max-w-lg mx-auto w-full space-y-5 text-left" dir="ltr">
+            
+            {/* STEP 1: ITEM NAME */}
+            <div className="bg-white p-4 rounded-2xl border shadow-sm space-y-1">
+              <label className="block text-xs font-black text-slate-500 uppercase tracking-wider">1. Item Name / Maal Ka Naam</label>
+              <input type="text" value={formItemName} onChange={(e) => setFormItemName(e.target.value)} placeholder="e.g., Pure Copper Stripped Wire Grade A" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm outline-none font-bold text-slate-800 focus:border-blue-600" />
+            </div>
+
+            {/* STEP 2: CATEGORY SELECTOR */}
+            <div className="bg-white p-4 rounded-2xl border shadow-sm space-y-2">
+              <label className="block text-xs font-black text-slate-500 uppercase tracking-wider">2. Select Category / Maal Ki Type</label>
+              <select value={formMainCat} onChange={(e) => { setFormMainCat(e.target.value); if(e.target.value !== 'chaaloo') setFormSubCat('scrap'); }} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm outline-none font-bold text-slate-700 focus:border-blue-600">
+                <option value="iron">Iron / Loha (لوہا)</option>
+                <option value="plastic">Plastic (پلاسٹک)</option>
+                <option value="copper">Copper / Tamba (تانبا)</option>
+                <option value="aluminum">Aluminum (ایلومینیم)</option>
+                <option value="chaaloo">Chaaloo Maal / Useable Machinery (چالو مال)</option>
+              </select>
+
+              {/* Conditional Sub-Category Trigger for Chaaloo Maal option */}
+              {formMainCat === 'chaaloo' && (
+                <div className="mt-2 bg-amber-50/50 border border-amber-200 rounded-xl p-3 space-y-1 animate-fade-in">
+                  <label className="block text-[10px] font-black text-amber-800 uppercase">⚡ Specific Chaaloo Sub-Category</label>
+                  <select value={formSubCat} onChange={(e) => setFormSubCat(e.target.value)} className="w-full bg-white border border-amber-200 rounded-xl p-2.5 text-xs font-bold text-slate-800">
+                    <option value="compressor">Chaaloo Compressor 💨</option>
+                    <option value="motor">Chaaloo Motor ⚙️</option>
+                    <option value="generator">Chaaloo Generator ⚡</option>
+                    <option value="other">Other Useable Miscellaneous Items 📦</option>
+                  </select>
+                </div>
+              )}
+            </div>
+
+            {/* STEP 3: PRICE AND WEIGHT WITH DYNAMIC UNIT SELECTOR */}
+            <div className="bg-white p-4 rounded-2xl border shadow-sm space-y-3">
+              <label className="block text-xs font-black text-slate-500 uppercase tracking-wider">3. Price & Weight Demand / ریٹ اور وزن</label>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <span className="text-[10px] text-slate-400 font-bold block">Rate (Rs.)</span>
+                  <input type="number" value={formPrice} onChange={(e) => setFormPrice(e.target.value)} placeholder="Price Demanded" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-black text-green-600 outline-none" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] text-slate-400 font-bold block">Select Unit Type</span>
+                  <select value={formUnit} onChange={(e) => setFormUnit(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-bold text-slate-700 outline-none">
+                    <option value="kg">Per Kg (کلو)</option>
+                    <option value="ton">Per Ton (ٹن)</option>
+                    <option value="mund">Per Mund (من)</option>
+                    <option value="piece">Per Piece (عدد)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <span className="text-[10px] text-slate-400 font-bold block mb-1">Total Available Weight / Quantity Lot</span>
+                <input type="text" value={formWeight} onChange={(e) => setFormWeight(e.target.value)} placeholder="e.g., 15 Ton, 40 Mund, 350 Kg" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 outline-none" />
               </div>
             </div>
+
+            {/* STEP 4: PICTURE UPLOAD BLOCK */}
+            <div className="bg-white p-4 rounded-2xl border shadow-sm space-y-1">
+              <label className="block text-xs font-black text-slate-500 uppercase tracking-wider">4. Upload Photo / Maal Ki Tasveer</label>
+              <div onClick={() => alert("Mobile Camera & Gallery integration will trigger on live server device deployment.")} className="w-full h-28 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center cursor-pointer text-slate-400 hover:bg-slate-100/50 transition-all">
+                <span className="text-3xl">📷</span>
+                <span className="text-[10px] font-bold mt-1 uppercase tracking-wider">Click to add clear picture</span>
+              </div>
+            </div>
+
+            {/* STEP 5: ABOUT / DESCRIPTION */}
+            <div className="bg-white p-4 rounded-2xl border shadow-sm space-y-1">
+              <label className="block text-xs font-black text-slate-500 uppercase tracking-wider">5. About / Maal Ki Tafseelat</label>
+              <textarea rows={3} value={formAbout} onChange={(e) => setFormAbout(e.target.value)} placeholder="Write loading location, stock condition, payment terms here..." className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs font-medium text-slate-700 outline-none resize-none focus:border-blue-600"></textarea>
+            </div>
+
+            {/* MASTER PUBLISH ACTION BUTTON */}
+            <button type="button" onClick={handlePublishAd} className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-black text-sm py-4 rounded-xl shadow-lg transform active:scale-95 transition-all mt-4 uppercase tracking-wider">Publish Advertisement Live 📢</button>
           </div>
         </div>
       )}
 
-      {selectedFactoryCatalog && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[130] flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white w-full max-w-xl rounded-2xl max-h-[80vh] overflow-y-auto shadow-2xl p-5 space-y-4">
-            <div className="flex justify-between items-center border-b pb-3"><h3 className="font-black text-base text-slate-900">{lang === 'en' ? selectedFactoryCatalog.nameEn : selectedFactoryCatalog.nameUr}</h3><button onClick={() => setSelectedFactoryCatalog(null)} className="text-red-600 font-black">✕</button></div>
-            <div className="space-y-3" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
-              {selectedFactoryCatalog.catalog.map((cat: any, i: number) => (
-                <div key={i} className="bg-slate-50 border rounded-xl p-4 flex flex-col gap-2">
-                  <span className="font-bold text-xs block text-slate-800">⚙️ {cat.item} ({cat.cycle})</span>
-                  <div className="grid grid-cols-2 gap-2 text-center text-xs">
-                    <div className="bg-green-100/50 p-2 rounded-lg border border-green-200"><span className="text-green-700 block font-bold">Buy Rate</span><span className="font-black text-green-600">Rs.{cat.buy}/Kg</span></div>
-                    <div className="bg-blue-100/50 p-2 rounded-lg border border-blue-200"><span className="text-blue-700 block font-bold">Sell Rate</span><span className="font-black text-blue-600">Rs.{cat.sell}/Kg</span></div>
-                  </div>
-                </div>
-              ))}
+      {/* Auth Gate Keeper Layout */}
+      {showAuth && (
+        <div className="fixed inset-0 bg-[#f2f6fa] z-[300] flex flex-col justify-center p-4">
+          <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-2xl border p-6 space-y-4 relative">
+            <button onClick={() => setShowAuth(false)} className="absolute top-4 right-4 text-xs font-black bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full">✕</button>
+            <div className="text-center"><h2 className="text-xl font-black text-[#1a365d]">{t.appName} Registration</h2><p className="text-xs text-slate-400 mt-1 font-medium">Enter your number credentials to unlock posting.</p></div>
+            <button onClick={() => { setIsLoggedIn(true); setShowAuth(false); setShowPostAd(true); }} className="w-full bg-[#0066cc] text-white font-black text-sm py-3.5 rounded-xl mt-2 shadow">Quick Bypass Login 🔑</button>
+          </div>
+        </div>
+      )}
+
+      {/* Popups detail view */}
+      {selectedAd && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-xl shadow-2xl relative flex flex-col pb-6 overflow-hidden">
+            <div className="bg-[#1a365d] text-white p-4 flex justify-between items-center shadow-md"><span className="text-sm font-black uppercase">📦 Stock Details</span><button onClick={() => setSelectedAd(null)} className="bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full">✕</button></div>
+            <div className="p-5 space-y-4 text-left" dir="ltr">
+              <div className="w-full h-32 bg-slate-50 border rounded-xl flex items-center justify-center text-5xl">{selectedAd.icon}</div>
+              <h3 className="text-base font-black text-slate-800">{selectedAd.titleEn}</h3>
+              <div className="bg-slate-50 border p-4 rounded-xl flex justify-between items-center"><span className="text-xs font-bold text-slate-400">Rate Demand</span><span className="text-xl font-black text-green-600">Rs.{selectedAd.price} <span className="text-xs text-slate-400">/{selectedAd.unit}</span></span></div>
+              <div className="bg-slate-50 p-3 rounded-xl border"><span className="text-[10px] text-slate-400 font-bold block uppercase mb-1">About Maal:</span><p className="text-xs font-medium text-slate-600 leading-relaxed">{selectedAd.desc}</p></div>
+              <div className="grid grid-cols-2 gap-2 pt-2">
+                <a href="tel:+923000000000" className="bg-[#0066cc] text-white text-center font-black text-xs py-3.5 rounded-xl shadow">Call 📞</a>
+                <a href="https://wa.me/923000000000" target="_blank" className="bg-green-600 text-white text-center font-black text-xs py-3.5 rounded-xl shadow">WhatsApp 💬</a>
+              </div>
             </div>
           </div>
         </div>
@@ -378,7 +480,7 @@ export default function Home() {
           <button onClick={handlePostAdTrigger} className="w-14 h-14 bg-[#0066cc] text-white rounded-full flex items-center justify-center shadow-lg border-4 border-white transform active:scale-95 transition-all"><span className="text-2xl font-light">+</span></button>
           <span className="text-[10px] font-black text-[#0066cc] mt-0.5">{t.navSell}</span>
         </div>
-        <button onClick={() => setShowInbox(true)} className="flex flex-col items-center text-slate-400 font-medium text-[10px] w-14"><span className="text-lg">💬</span><span className="mt-0.5">{t.navChat}</span></button>
+        <button onClick={() => alert("Inbox Chat integration active module.")} className="flex flex-col items-center text-slate-400 font-medium text-[10px] w-14"><span className="text-lg">💬</span><span className="mt-0.5">{t.navChat}</span></button>
         <button onClick={() => scrollToSection(ratesRef)} className="flex flex-col items-center text-slate-400 font-medium text-[10px] w-14"><span className="text-lg">💰</span><span className="mt-0.5">Rates</span></button>
       </nav>
 
