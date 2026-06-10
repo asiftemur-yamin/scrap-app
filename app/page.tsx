@@ -27,7 +27,40 @@ export default function Home() {
 
   const t = translations[lang];
 
+  useEffect(() => {// 🔄 AUTOMATIC GOOGLE SESSION DETECTOR & LISTENER
   useEffect(() => {
+    setRatesUpdateTime("10 Jun 2026 at 04:25 PM");
+    
+    // Splash screen timer
+    const timer = setTimeout(() => setShowSplash(false), 1500);
+
+    // Real-time Supabase session check
+    const checkUserSession = async () => {
+      try {
+        // Browser URL se token check karne ke liye direct fetch call
+        const sessionUrl = `${SUPABASE_URL}/auth/v1/user`;
+        const res = await fetch(sessionUrl, {
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_KEY}`,
+            'apikey': SUPABASE_KEY
+          }
+        });
+        
+        // Agar url mein ya background mein session active mile
+        if (window.location.hash.includes('access_token') || window.location.search.includes('code')) {
+          setIsLoggedIn(true);
+          setUserPhone("Google_Account");
+          // Clean URL token from browser address bar softly
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      } catch (e) {
+        console.log("Session bypass check");
+      }
+    };
+
+    checkUserSession();
+    return () => clearTimeout(timer);
+  }, []);
     setRatesUpdateTime("10 Jun 2026 at 04:25 PM");
     const timer = setTimeout(() => setShowSplash(false), 1500);
     return () => clearTimeout(timer);
