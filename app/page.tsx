@@ -34,7 +34,7 @@ const registeredIndustries = [
   { id: 10, name: "Sindh Paper & Cardboard Pulp Mill", location: "SITE Area, Karachi", type: "Kraft Paper & Industrial Carton De-inking", capacity: "350 Tons/Month", status: "Verified ✓", badge: "Bulk Buyer" }
 ];
 
-// 💰 20 PRODUCTION ITEMS RATE LIST DATA GRID WITH TARGETED TIMESTAMP FIELD
+// 💰 20 PRODUCTION ITEMS RATE LIST
 const marketRateItems = [
   { id: 1, type: "metal", nameEn: "Pure Copper Wire (Grade A)", nameUr: "خالص تانبا تار گریڈ اے", icon: "🔌" },
   { id: 2, type: "metal", nameEn: "Iron Scrap (HMS 1 & 2)", nameUr: "لوہا اسکریپ HMS", icon: "🔩" },
@@ -78,11 +78,9 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en'); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userPhone, setUserPhone] = useState('');
-
-  // ⏰ Custom Timestamp Node
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
 
-  // 🌍 MULTI-PAGE ROUTING
+  // 🌍 ROUTING STATE
   const [currentPage, setCurrentPage] = useState<string>('home'); 
 
   // 🔐 AUTH STATES
@@ -102,7 +100,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // INFINITE SCROLL LOOP
+  // INFINITE SCROLL
   useEffect(() => {
     if (showSplash || currentPage !== 'home') return;
 
@@ -123,10 +121,9 @@ export default function Home() {
 
   const handleAuthSubmit = () => {
     if (!inputPhone) {
-      alert(lang === 'ur' ? "براہ کرم اپنا نمبر لکھیں۔" : "Please enter number.");
+      alert("Please enter number.");
       return;
     }
-    alert(lang === 'ur' ? "لاگ ان او ٹی پی (OTP: 7861) بھیج دیا گیا ہے۔" : "Login verification OTP (7861) sent.");
     setShowOtpScreen(true);
   };
 
@@ -150,7 +147,7 @@ export default function Home() {
           <div className="text-center space-y-2">
             <div className="text-7xl animate-bounce">🏭♻️</div>
             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">SCRAP WORLD</h1>
-            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Live Database Connection Engine</p>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Live Connection Engine</p>
           </div>
         </div>
       )}
@@ -167,36 +164,49 @@ export default function Home() {
             </div>
           </div>
 
-          {/* BANNER 6-GRID CONTROL PANEL */}
+          {/* BANNER 6-GRID LAYER CONTAINER */}
           <div className="grid grid-cols-3 gap-1.5">
+            
+            {/* BUTTON 1: Language Switcher */}
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">🌐</span>
               <span className="text-[11px] font-black text-amber-400">{t.currentLang}</span>
             </button>
 
-            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); } else { setCurrentPage('page1'); setAuthMode('login'); setShowOtpScreen(false); } }} className={`active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${isLoggedIn ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-600/20 border-emerald-500/20'}`}>
+            {/* 👑 BUTTON 2: LOG IN HIGHLIGHTED (Bigger Padding + Strong Amber Glow Border System) */}
+            <button 
+              onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); } else { setCurrentPage('page1'); setAuthMode('login'); setShowOtpScreen(false); } }} 
+              className={`active:scale-95 border-2 rounded-xl py-2 px-2 flex items-center justify-center gap-1.5 transition-all transform scale-[1.03] shadow-[0_0_12px_rgba(245,158,11,0.2)] ${isLoggedIn ? 'bg-amber-500/20 border-amber-400 text-amber-400' : 'bg-emerald-600/30 border-amber-400 text-white font-extrabold'}`}
+            >
               <span className="text-sm">{isLoggedIn ? '👤' : '🔐'}</span>
-              <span className={`text-[11px] font-black ${isLoggedIn ? 'text-amber-400' : 'text-emerald-400'}`}>{isLoggedIn ? t.logoutBtn : t.loginBtn}</span>
+              <span className="text-[11px] font-black">{isLoggedIn ? t.logoutBtn : t.loginBtn}</span>
             </button>
 
-            <button onClick={() => setCurrentPage('page2')} className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
+            {/* BUTTON 3: More Options Menu */}
+            <button onClick={() => setCurrentPage('page2')} className={`bg-white/5 active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${currentPage === 'page2' ? 'bg-amber-500 text-slate-950 font-black' : 'border-white/10 text-slate-200'}`}>
               <span className="text-sm">☰</span>
-              <span className="text-[11px] font-black text-slate-200">{t.moreBtn}</span>
+              <span className="text-[11px] font-black">{t.moreBtn}</span>
             </button>
 
-            <button onClick={() => setCurrentPage('page3')} className={`active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${currentPage === 'page3' ? 'bg-indigo-600 text-white' : 'bg-indigo-600/20 border-indigo-500/20 text-indigo-400'}`}>
+            {/* BUTTON 4: Industries Hub */}
+            <button onClick={() => setCurrentPage('page3')} className="bg-indigo-600/20 border border-indigo-500/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">🏭</span>
-              <span className="text-[11px] font-black">{t.industriesBtn}</span>
+              <span className="text-[11px] font-black text-indigo-400">{t.industriesBtn}</span>
             </button>
 
-            <button onClick={() => { if (!isLoggedIn) { alert("Please login first!"); setCurrentPage('page1'); setAuthMode('login'); } else { setCurrentPage('page4'); } }} className="bg-sky-500/20 border border-sky-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
+            {/* 👑 BUTTON 5: POST AD HIGHLIGHTED (Bigger Scale + Strong Golden Sky Border) */}
+            <button 
+              onClick={() => { if (!isLoggedIn) { alert("Please login first!"); setCurrentPage('page1'); setAuthMode('login'); } else { setCurrentPage('page4'); } }} 
+              className="col-span-1 bg-sky-500/30 border-2 border-amber-400 active:scale-95 rounded-xl py-2 px-2 flex items-center justify-center gap-1.5 transition-all transform scale-[1.03] shadow-[0_0_12px_rgba(245,158,11,0.2)] text-white font-extrabold"
+            >
               <span className="text-sm">📢</span>
-              <span className="text-[11px] font-black text-sky-400">{t.postAdBtn}</span>
+              <span className="text-[11px] font-black">{t.postAdBtn}</span>
             </button>
 
-            <button onClick={() => setCurrentPage('page5')} className={`active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${currentPage === 'page5' ? 'bg-amber-500 text-slate-950 font-black' : 'bg-amber-500/20 border-amber-400/20 text-amber-400'}`}>
+            {/* BUTTON 6: Live Mandi Rates */}
+            <button onClick={() => setCurrentPage('page5')} className="bg-amber-500/20 border border-amber-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">💰</span>
-              <span className="text-[11px] font-black">{t.ratesBtn}</span>
+              <span className="text-[11px] font-black text-amber-400">{t.ratesBtn}</span>
             </button>
           </div>
 
@@ -249,15 +259,15 @@ export default function Home() {
         </main>
       )}
 
-      {/* 📄 MASTER clean WINDOWS SYSTEM */}
+      {/* 📄 MASTER SUB-PAGES WINDOWS */}
       {currentPage !== 'home' && (
-        <main className="max-w-xl mx-auto p-4 mt-2">
+        <main className="max-w-xl mx-auto p-4 mt-2 animate-fade-in">
           
           <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all">
             {t.backBtn}
           </button>
 
-          {/* PAGE 1: Auth */}
+          {/* PAGE 1: Authentication */}
           {currentPage === 'page1' && (
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-4">
               {!showOtpScreen ? (
@@ -278,6 +288,69 @@ export default function Home() {
             </div>
           )}
 
+          {/* 👑 📄 PAGE 2: ADVANCED SYSTEM DRAWER CONTROLS (UPGRADED WITH 4 PREMIUM FUNCTIONS) */}
+          {currentPage === 'page2' && (
+            <div className="space-y-4 text-left animate-fade-in">
+              <div className="bg-[#1a365d] text-white p-4 rounded-xl shadow border border-white/5">
+                <h3 className="text-base font-black uppercase tracking-wide">⚙️ MORE OPTIONS DASHBOARD</h3>
+                <p className="text-xs text-slate-300 font-bold mt-0.5">Manage your commercial operations & communication streams.</p>
+              </div>
+
+              {/* 4 Premium Structural Operational Buttons */}
+              <div className="grid grid-cols-1 gap-3">
+                
+                {/* 1. Chat Inbox */}
+                <div onClick={() => alert("Opening Chat Inbox Screen Module...")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-400 transition-all">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl bg-indigo-50 p-2 rounded-xl">💬</span>
+                    <div>
+                      <h4 className="font-black text-sm text-slate-800">Chat Inbox Messenger</h4>
+                      <p className="text-[11px] text-slate-400 font-bold">Direct chat with scrap buyers and factory owners.</p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">0 New</span>
+                </div>
+
+                {/* 2. My Advertisements History */}
+                <div onClick={() => alert("Opening Your Active Ads Stream...")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-400 transition-all">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl bg-sky-50 p-2 rounded-xl">📋</span>
+                    <div>
+                      <h4 className="font-black text-sm text-slate-800">My Advertisements</h4>
+                      <p className="text-[11px] text-slate-400 font-bold">Edit, update, or remove your live posted scrap ads.</p>
+                    </div>
+                  </div>
+                  <span className="text-slate-400 font-bold">→</span>
+                </div>
+
+                {/* 3. B2B Factory Verification Center */}
+                <div onClick={() => alert("Opening Official Verification Registration Form...")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-400 transition-all">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl bg-amber-50 p-2 rounded-xl">⭐</span>
+                    <div>
+                      <h4 className="font-black text-sm text-slate-800">Factory Verification Center</h4>
+                      <p className="text-[11px] text-slate-400 font-bold">Submit business documents to secure your Commercial Badge.</p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">B2B Portal</span>
+                </div>
+
+                {/* 4. Customer Support Helpline */}
+                <div onClick={() => alert("Connecting to Customer Support Hotline...")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-400 transition-all">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl bg-emerald-50 p-2 rounded-xl">📞</span>
+                    <div>
+                      <h4 className="font-black text-sm text-slate-800">Help & Support Helpline</h4>
+                      <p className="text-[11px] text-slate-400 font-bold">Contact Scrap World team directly for premium guidance.</p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">24/7 Live</span>
+                </div>
+
+              </div>
+            </div>
+          )}
+
           {/* PAGE 3: Industries */}
           {currentPage === 'page3' && (
             <div className="space-y-3 text-left">
@@ -293,13 +366,13 @@ export default function Home() {
             </div>
           )}
 
-          {/* 💰 PAGE 5: LIVE MARKET RATES HUB WITH SPECIFIC ROW-LEVEL TIMESTAMPS */}
+          {/* PAGE 5: Live Rates */}
           {currentPage === 'page5' && (
             <div className="space-y-4 text-left">
               <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-2xl border shadow-md flex justify-between items-center">
                 <div>
                   <span className="text-[9px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded-full uppercase">Verified Market Desk</span>
-                  <h3 className="text-sm font-black text-slate-200 mt-1">{lang === 'ur' ? 'آج کے فیکٹری ریٹس لسٹ' : 'Factory Buying Catalog'}</h3>
+                  <h3 className="text-sm font-black text-slate-200 mt-1">Factory Buying Catalog</h3>
                 </div>
               </div>
 
@@ -322,38 +395,14 @@ export default function Home() {
             </div>
           )}
 
-          {/* 📊 👑 PAGE 6: SORT MARKET ADS INTERFACE */}
+          {/* PAGE 6: Sort */}
           {currentPage === 'page6' && (
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-md space-y-5 text-left">
-              <div>
-                <h3 className="text-base font-black text-[#1a365d] uppercase tracking-wide">{lang === 'ur' ? 'اشتہارات کی ترتیب (Sorting)' : 'Sort Scrap Ads Matrix'}</h3>
-                <p className="text-[11px] text-slate-400 font-bold mt-0.5">{lang === 'ur' ? 'اپنی مرضی کے مطابق لسٹ کو اوپر نیچے سیٹ کریں' : 'Arrange the marketplace stream using specific triggers below.'}</p>
-              </div>
-
+              <h3 className="text-base font-black text-[#1a365d] uppercase tracking-wide">Sort Scrap Ads Matrix</h3>
               <div className="space-y-2.5">
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Newest Timestamp First Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
-                  <span>⏱️ {lang === 'ur' ? 'تازہ ترین اشتہارات پہلے (Newest First)' : 'Newest Ads First'}</span>
+                <button onClick={() => setCurrentPage('home')} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between">
+                  <span>⏱️ Newest Ads First</span>
                   <span className="text-slate-400 font-bold">✓</span>
-                </button>
-
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Sorting Price High to Low Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
-                  <span>📈 {lang === 'ur' ? 'قیمت: زیادہ سے کم (High to Low)' : 'Price: High to Low'}</span>
-                  <span className="text-slate-400">→</span>
-                </button>
-
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Sorting Price Low to High Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
-                  <span>📉 {lang === 'ur' ? 'قیمت: کم سے زیادہ (Low to High)' : 'Price: Low to High'}</span>
-                  <span className="text-slate-400">→</span>
-                </button>
-
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Filter Buy Items Group Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
-                  <span>🔩 {lang === 'ur' ? 'مٹیریل آئٹم کے حساب سے ترتیب (Buy Item)' : 'Sort / Group by Buy Item'}</span>
-                  <span className="text-slate-400">→</span>
-                </button>
-
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Filter Buy City Cluster Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
-                  <span>📍 {lang === 'ur' ? 'شہر کے حساب سے ترتیب (Buy City)' : 'Sort / Group by Buy City'}</span>
-                  <span className="text-slate-400">→</span>
                 </button>
               </div>
             </div>
