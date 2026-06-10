@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { initial10Ads, registeredIndustries, marketRateItems, translations } from './data';
 
 const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
@@ -27,31 +28,22 @@ export default function Home() {
 
   const t = translations[lang];
 
-  useEffect(() => {// 🔄 AUTOMATIC GOOGLE SESSION DETECTOR & LISTENER
+  // 🔄 AUTOMATIC GOOGLE SESSION DETECTOR & LISTENER (FIXED BRACKETS)
   useEffect(() => {
     setRatesUpdateTime("10 Jun 2026 at 04:25 PM");
     
-    // Splash screen timer
-    const timer = setTimeout(() => setShowSplash(false), 1500);
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 1500);
 
-    // Real-time Supabase session check
     const checkUserSession = async () => {
       try {
-        // Browser URL se token check karne ke liye direct fetch call
-        const sessionUrl = `${SUPABASE_URL}/auth/v1/user`;
-        const res = await fetch(sessionUrl, {
-          headers: {
-            'Authorization': `Bearer ${SUPABASE_KEY}`,
-            'apikey': SUPABASE_KEY
+        if (typeof window !== 'undefined') {
+          if (window.location.hash.includes('access_token') || window.location.search.includes('code')) {
+            setIsLoggedIn(true);
+            setUserPhone("Google_Account");
+            window.history.replaceState(null, '', window.location.pathname);
           }
-        });
-        
-        // Agar url mein ya background mein session active mile
-        if (window.location.hash.includes('access_token') || window.location.search.includes('code')) {
-          setIsLoggedIn(true);
-          setUserPhone("Google_Account");
-          // Clean URL token from browser address bar softly
-          window.history.replaceState(null, '', window.location.pathname);
         }
       } catch (e) {
         console.log("Session bypass check");
@@ -59,10 +51,6 @@ export default function Home() {
     };
 
     checkUserSession();
-    return () => clearTimeout(timer);
-  }, []);
-    setRatesUpdateTime("10 Jun 2026 at 04:25 PM");
-    const timer = setTimeout(() => setShowSplash(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -85,10 +73,12 @@ export default function Home() {
   };
 
   const triggerGoogleLoginAuthentication = () => {
-    const target = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
-    setIsLoggedIn(true);
-    setUserPhone("Google_User");
-    window.location.replace(target);
+    if (typeof window !== 'undefined') {
+      const target = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
+      setIsLoggedIn(true);
+      setUserPhone("Google_User");
+      window.location.replace(target);
+    }
   };
 
   const handleCreateNewAd = (e: any) => {
@@ -145,7 +135,7 @@ export default function Home() {
             <div className="bg-white rounded-2xl p-6 border shadow-md space-y-4">
               {!showOtpScreen ? (
                 <div className="space-y-4">
-                  <input type="tel" placeholder="Mobile Number" className="w-full bg-white border-2 p-3 rounded-xl font-black text-slate-900" />
+                  <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="Mobile Number" className="w-full bg-white border-2 p-3 rounded-xl font-black text-slate-900" />
                   <button onClick={handleAuthSubmit} className="w-full bg-[#1a365d] text-white font-black py-3 rounded-xl text-xs uppercase">Send OTP 📲</button>
                   <div className="border-t pt-4">
                     <button type="button" onClick={triggerGoogleLoginAuthentication} className="w-full bg-white hover:bg-slate-50 border-2 p-3 rounded-xl flex items-center justify-center gap-3 active:scale-95">
