@@ -8,7 +8,7 @@ const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 export default function AdminPortal() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passcode, setPasscode] = useState('');
-  const [activeTab, setActiveTab] = useState('rates'); // rates, ads, categories
+  const [activeTab, setActiveTab] = useState('rates'); 
 
   // Live Data States
   const [mandiRates, setMandiRates] = useState<any[]>([]);
@@ -19,7 +19,7 @@ export default function AdminPortal() {
   // Input fields for Adding Category
   const [newCatEn, setNewCatEn] = useState('');
   const [newCatUr, setNewCatUr] = useState('');
-  const [newCatIcon, setNewCatIcon] = useState('📦');
+  const [newCatIcon, setNewCatIcon] = useState('🔩');
 
   // Input states for modifications
   const [newLogoUrl, setNewLogoUrl] = useState('');
@@ -50,7 +50,7 @@ export default function AdminPortal() {
       }
 
       // 2. Fetch All Mandi Rates
-      const resRates = await fetch(`${SUPABASE_URL}/rest/v1/mandi_rates?select=*&order=city.asc`, {
+      const resRates = await fetch(`${SUPABASE_URL}/rest/v1/mandi_rates?select=*&order=id.asc`, {
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
       });
       const dataRates = await resRates.json();
@@ -75,7 +75,7 @@ export default function AdminPortal() {
     }
   };
 
-  // 👑 ADD NEW CATEGORY COMPONENT FUNCTION
+  // ADD NEW CATEGORY FUNCTION
   const handleAddCategory = async () => {
     if (!newCatEn || !newCatUr) {
       alert("Meherbani kar ke English aur Urdu dono titles likhein!");
@@ -103,18 +103,18 @@ export default function AdminPortal() {
       });
 
       if (response.ok) {
-        alert("🚀 Nayi Category Database Layer par kamyabi se add ho gayi!");
+        alert("🚀 Nayi Category Database mein add ho gayi!");
         setNewCatEn(''); setNewCatUr('');
         fetchAdminData();
       } else {
-        alert("Category already exists or Database error.");
+        alert("Yeh category pehle se mojood hai.");
       }
     } catch (e) {
-      alert("Error adding component data slot.");
+      alert("Error adding category.");
     }
   };
 
-  // 👑 DELETE CATEGORY COMPONENT FUNCTION
+  // DELETE CATEGORY FUNCTION
   const handleDeleteCategory = async (id: number) => {
     if (!confirm("Kya aap waqai yeh category system se hamesha ke liye delete karna chahte hain?")) return;
 
@@ -126,33 +126,50 @@ export default function AdminPortal() {
           "Authorization": `Bearer ${SUPABASE_KEY}`
         }
       });
-      alert("🗑️ Category milti-layer database se remove kar di gayi!");
+      alert("🗑️ Category database se remove kar di gayi!");
       fetchAdminData();
     } catch (e) {
-      alert("Error removing component layer.");
+      alert("Error removing category.");
     }
   };
 
+  // UPDATE LIVE RATES FUNCTION
   const handleUpdateRateSave = async (id: number) => {
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/mandi_rates?id=eq.${id}`, {
         method: 'PATCH',
-        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        headers: { 
+          "apikey": SUPABASE_KEY, 
+          "Authorization": `Bearer ${SUPABASE_KEY}`, 
+          "Content-Type": "application/json" 
+        },
         body: JSON.stringify({ price: editingPriceValue })
       });
-      alert("Rate updated!"); setEditingRateId(null); fetchAdminData();
-    } catch (e) { alert("Error"); }
+      alert("Rate live update ho gaya!"); 
+      setEditingRateId(null); 
+      fetchAdminData();
+    } catch (e) { 
+      alert("Error updating rate"); 
+    }
   };
 
+  // APPROVE / REJECT ADS FUNCTION
   const handleAdStatusChange = async (id: number, status: 'approved' | 'rejected') => {
     try {
       await fetch(`${SUPABASE_URL}/rest/v1/user_ads?id=eq.${id}`, {
         method: 'PATCH',
-        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
+        headers: { 
+          "apikey": SUPABASE_KEY, 
+          "Authorization": `Bearer ${SUPABASE_KEY}`, 
+          "Content-Type": "application/json" 
+        },
         body: JSON.stringify({ status })
       });
-      alert(`Ad state marked as ${status}!`); fetchAdminData();
-    } catch (e) { alert("Error"); }
+      alert(`Ad status marked as ${status}!`); 
+      fetchAdminData();
+    } catch (e) { 
+      alert("Error changing status"); 
+    }
   };
 
   if (!isAuthenticated) {
@@ -161,8 +178,8 @@ export default function AdminPortal() {
         <div className="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-4 shadow-xl">
           <div className="text-5xl">🔐</div>
           <h2 className="text-xl font-black text-amber-400">SCRAP WORLD SYSTEM</h2>
-          <input type="password" value={passcode} onChange={(e) => setPasscode(e.target.value)} placeholder="•••••" className="w-full bg-slate-950 text-center font-black text-lg p-3 rounded-xl text-white outline-none" />
-          <button onClick={handleLogin} className="w-full bg-amber-500 text-slate-950 font-black py-3.5 rounded-xl">Secure Portal Entry 🚀</button>
+          <input type="password" value={passcode} onChange={(e) => setPasscode(e.target.value)} placeholder="•••••" className="w-full bg-slate-950 text-center font-black text-lg p-3 rounded-xl text-white outline-none border border-slate-800" />
+          <button onClick={handleLogin} className="w-full bg-amber-500 text-slate-950 font-black py-3.5 rounded-xl transition-all hover:bg-amber-400">Secure Portal Entry 🚀</button>
         </div>
       </div>
     );
@@ -171,7 +188,7 @@ export default function AdminPortal() {
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex" style={{ fontFamily: 'sans-serif' }}>
       
-      {/* LEFT FIXED PANEL NAVIGATION (Matching your exact screenshot design layout) */}
+      {/* LEFT SIDE NAVIGATION PANEL */}
       <aside className="w-64 bg-[#111c44] text-slate-400 flex flex-col justify-between shrink-0">
         <div>
           <div className="p-5 border-b border-slate-800 text-center">
@@ -187,7 +204,7 @@ export default function AdminPortal() {
         <div className="p-4"><button onClick={() => setIsAuthenticated(false)} className="w-full bg-red-950/40 text-red-400 border border-red-900/50 p-2.5 rounded-xl text-xs font-black">Lock & Logout 🔒</button></div>
       </aside>
 
-      {/* RIGHT MAIN NODE AREA CONTROLS */}
+      {/* RIGHT MAIN CONTENT PANEL */}
       <main className="flex-1 p-6 overflow-y-auto">
         <div className="max-w-5xl mx-auto space-y-6">
           
@@ -201,16 +218,14 @@ export default function AdminPortal() {
             <span className="bg-emerald-100 text-emerald-700 text-xs font-black px-3 py-1 rounded-full border border-emerald-300">● DATABASE CONNECTED</span>
           </div>
 
-          {/* TAB 1: CATEGORIES MANAGER (ADD / DELETE REAL ACTIONS ACTIVE) */}
+          {/* APP CATEGORY MANAGER TAB */}
           {activeTab === 'categories' && (
-            <div className="space-y-6 animate-fade-in">
-              
-              {/* CREATE BOX DESIGN SLOT */}
+            <div className="space-y-6">
               <div className="border-2 border-dashed border-slate-300 bg-white p-5 rounded-2xl space-y-4">
                 <h3 className="text-sm font-black text-slate-800 uppercase">Create Nayi Scrap Category Slot</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <input type="text" value={newCatEn} onChange={(e) => setNewCatEn(e.target.value)} placeholder="Category Title (English)" className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold outline-none focus:border-blue-600" />
-                  <input type="text" value={newCatUr} onChange={(e) => setNewCatUr(e.target.value)} placeholder="Category Title (Urdu)" className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-right outline-none focus:border-blue-600" dir="rtl" />
+                  <input type="text" value={newCatEn} onChange={(e) => setNewCatEn(e.target.value)} placeholder="Category Title (English)" className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold outline-none" />
+                  <input type="text" value={newCatUr} onChange={(e) => setNewCatUr(e.target.value)} placeholder="Category Title (Urdu)" className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold text-right outline-none" dir="rtl" />
                   <select value={newCatIcon} onChange={(e) => setNewCatIcon(e.target.value)} className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs font-bold outline-none">
                     <option value="🔩">🔩 Structural Bolt/Iron</option>
                     <option value="🛢️">🛢️ Plastic Drums Flakes</option>
@@ -227,12 +242,11 @@ export default function AdminPortal() {
                 </button>
               </div>
 
-              {/* MATRIX DISPLAY BLOCK */}
               <div className="bg-white p-5 rounded-2xl border shadow-sm">
                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-4">Active Categories Catalog Matrix</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {dbCategories.map((item) => (
-                    <div key={item.id} className="border border-slate-200 rounded-xl p-3.5 flex items-center justify-between bg-slate-50/50 group relative hover:border-red-400 transition-all">
+                    <div key={item.id} className="border border-slate-200 rounded-xl p-3.5 flex items-center justify-between bg-slate-50/50 hover:border-red-400 transition-all">
                       <div className="flex items-center gap-3">
                         <span className="text-2xl">{item.icon}</span>
                         <div>
@@ -240,8 +254,7 @@ export default function AdminPortal() {
                           <span className="text-[10px] font-bold text-slate-400 block mt-0.5" dir="rtl">{item.label_ur}</span>
                         </div>
                       </div>
-                      {/* Live Delete Action Trigger Button Component */}
-                      <button onClick={() => handleDeleteCategory(item.id)} className="text-red-500 hover:bg-red-50 text-xs font-bold p-1 rounded-full w-6 h-6 flex items-center justify-center border border-transparent hover:border-red-200" title="Delete Layer Component">✕</button>
+                      <button onClick={() => handleDeleteCategory(item.id)} className="text-red-500 hover:bg-red-50 text-xs font-bold w-6 h-6 flex items-center justify-center border rounded-full transition-all">✕</button>
                     </div>
                   ))}
                 </div>
@@ -249,7 +262,7 @@ export default function AdminPortal() {
             </div>
           )}
 
-          {/* TAB 2: LIVE RATES ENGINE MANAGEMENT */}
+          {/* MANDI LIVE RATES ENGINE TAB */}
           {activeTab === 'rates' && (
             <div className="bg-white p-5 rounded-2xl border shadow-sm space-y-4">
               <div className="overflow-x-auto">
@@ -259,7 +272,7 @@ export default function AdminPortal() {
                       <th className="p-3">Mandi City</th>
                       <th className="p-3">Material Category</th>
                       <th className="p-3 text-right">Live Rate (Rs.)</th>
-                      <th className="p-3浏览 text-center">Actions</th>
+                      <th className="p-3 text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="text-xs font-bold text-slate-700 divide-y">
@@ -269,7 +282,7 @@ export default function AdminPortal() {
                         <td className="p-3 font-extrabold text-slate-800">🔩 {item.item_name}</td>
                         <td className="p-3 text-right font-black text-green-600 text-sm">
                           {editingRateId === item.id ? (
-                            <input type="text" value={editingPriceValue} onChange={(e) => setEditingPriceValue(e.target.value)} className="bg-white border rounded px-2 py-1 w-20 text-right text-slate-800" />
+                            <input type="text" value={editingPriceValue} onChange={(e) => setEditingPriceValue(e.target.value)} className="bg-white border rounded px-2 py-1 w-20 text-right text-slate-800 outline-none" />
                           ) : (<span>Rs.{item.price} /kg</span>)}
                         </td>
                         <td className="p-3 text-center">
@@ -290,7 +303,7 @@ export default function AdminPortal() {
             </div>
           )}
 
-          {/* TAB 3: USER ADS MODERATION BROADCAST */}
+          {/* MODERATE ADS STREAM TAB */}
           {activeTab === 'ads' && (
             <div className="bg-white p-5 rounded-2xl border shadow-sm space-y-4">
               {pendingAds.length > 0 ? (
