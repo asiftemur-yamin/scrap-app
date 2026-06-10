@@ -125,6 +125,31 @@ export default function Home() {
     return () => observer.disconnect();
   }, [showSplash, visibleAds, currentPage]);
 
+  const handleAuthSubmit = () => {
+    if (!inputPhone) {
+      alert(lang === 'ur' ? "براہ کرم اپنا نمبر لکھیں۔" : "Please enter number.");
+      return;
+    }
+    if (authMode === 'login') {
+      alert(lang === 'ur' ? "لاگ ان او ٹی پی (OTP: 7861) بھیج دیا گیا ہے۔" : "Login verification OTP (7861) sent.");
+      setShowOtpScreen(true);
+    } else {
+      alert(lang === 'ur' ? "تصدیقی کوڈ (OTP: 7861) بھیج دیا گیا ہے۔" : "Verification OTP (7861) sent.");
+      setShowOtpScreen(true);
+    }
+  };
+
+  const handleVerifyOtpCode = () => {
+    if (inputOtp === generatedOtp) {
+      setIsLoggedIn(true);
+      setUserPhone(inputPhone);
+      setShowOtpScreen(false);
+      setCurrentPage('home');
+    } else {
+      alert("Invalid OTP!");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f2f6fa] text-left" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }} dir="ltr">
 
@@ -245,9 +270,21 @@ export default function Home() {
           {/* PAGE 1: Auth */}
           {currentPage === 'page1' && (
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-4">
-              <h3 className="font-black text-slate-800 text-sm">Enter Mobile Phone</h3>
-              <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-black outline-none" />
-              <button onClick={handleAuthSubmit} className="w-full bg-[#1a365d] text-white font-black py-3 rounded-xl text-xs uppercase">Send OTP (7861) 📲</button>
+              {!showOtpScreen ? (
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-black text-slate-500 uppercase">Mobile Number</label>
+                    <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-sm font-black outline-none" />
+                  </div>
+                  <button onClick={handleAuthSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-xs uppercase">Send Secure OTP Code 📲</button>
+                </div>
+              ) : (
+                <div className="space-y-4 text-center">
+                  <h3 className="font-black text-sm text-[#1a365d]">Enter Code (7861)</h3>
+                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-slate-50 border text-center font-black text-xl p-3 rounded-xl" />
+                  <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-3 rounded-xl text-xs">Verify Code ✓</button>
+                </div>
+              )}
             </div>
           )}
 
