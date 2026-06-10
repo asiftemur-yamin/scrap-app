@@ -1,42 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { initial10Ads, registeredIndustries, marketRateItems, translations } from './data';
 
-// 👑 LIVE CONNECTED DATABASE KEYS (STAY ACTIVE ALWAYS)
 const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
-const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
-
-// 📦 10 REAL PRODUCTION ADS DATA
-const initial10Ads = [
-  { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", categoryEn: "Iron", categoryUr: "لوہا", price: "125", unitEn: "kg", unitUr: "کلو", weight: "12 Ton", location: "Gujranwala", icon: "🔩", phone: "+923008641994", images: [] },
-  { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", categoryEn: "Copper", categoryUr: "تانبا", price: "1,870", unitEn: "kg", unitUr: "کلو", weight: "450 Kg", location: "Gujranwala", icon: "🔌", phone: "+923008641994", images: [] }
-];
-
-// 🏭 10 REAL RECYCLING INDUSTRIES DATA
-const registeredIndustries = [
-  { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister & Metal Separation", capacity: "30 Tons/Month", status: "Verified ✓", badge: "🥇 Premium" }
-];
-
-// 💰 20 PRODUCTION ITEMS RATE LIST
-const marketRateItems = [
-  { id: 1, type: "metal", nameEn: "Pure Copper Wire (Grade A)", nameUr: "خالص تانبا تار گریڈ اے", icon: "🔌" },
-  { id: 2, type: "metal", nameEn: "Iron Scrap (HMS 1 & 2)", nameUr: "لوہا اسکریپ HMS", icon: "🔩" }
-];
-
-const translations: any = {
-  en: {
-    appName: "SCRAP WORLD", loginBtn: "Login", logoutBtn: "Logout 👤", moreBtn: "More Options", currentLang: "اردو",
-    priceLabel: "Price:", weightLabel: "Qty/Weight:", locLabel: "Location:", catLabel: "Category:",
-    postAdBtn: "Post Ad 📢", ratesBtn: "Rates 💰", sortSimple: "Sort 📊", filterSimple: "Filters 🎛️", industriesBtn: "Industries 🏭",
-    backBtn: "← Back to Feed"
-  },
-  ur: {
-    appName: "اسکریپ ورلڈ", loginBtn: "لاگ ان", logoutBtn: "لاگ آؤٹ 👤", moreBtn: "مزید آپشنز", currentLang: "English",
-    priceLabel: "قیمت:", weightLabel: "وزن / تعداد:", locLabel: "لوکیشن:", catLabel: "کیٹیگری:",
-    postAdBtn: "اشتہار 📢", ratesBtn: "ریٹس 💰", sortSimple: "ترتیب 📊", filterSimple: "فلٹرز 🎛️", industriesBtn: "انڈسٹریز 🏭",
-    backBtn: "← واپس ہوم فیڈ"
-  }
-};
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
@@ -44,25 +11,17 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userPhone, setUserPhone] = useState('');
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
-
-  // 🌍 ROUTING STATE
   const [currentPage, setCurrentPage] = useState<string>('home'); 
   const [customToast, setCustomToast] = useState<{ show: boolean; msg: string } | null>(null);
-
-  // 🔐 AUTH STATES
-  const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login');
   const [inputPhone, setInputPhone] = useState('');
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [inputOtp, setInputOtp] = useState('');
-
-  // 📢 NEW AD FORM STATES
   const [adTitle, setAdTitle] = useState('');
   const [adCategory, setAdCategory] = useState('Iron');
   const [adPrice, setAdPrice] = useState('');
   const [adWeight, setAdWeight] = useState('');
   const [adLocation, setAdLocation] = useState('Gujranwala');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-
   const [visibleAds, setVisibleAds] = useState<any[]>(initial10Ads);
   const loaderRef = useRef<HTMLDivElement>(null);
 
@@ -70,391 +29,146 @@ export default function Home() {
 
   useEffect(() => {
     setRatesUpdateTime("10 Jun 2026 at 04:25 PM");
-    const timer = setTimeout(() => { setShowSplash(false); }, 1500);
+    const timer = setTimeout(() => setShowSplash(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  // INFINITE SCROLL LOOP
-  useEffect(() => {
-    if (showSplash || currentPage !== 'home') return;
-
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setTimeout(() => {
-          setVisibleAds((prev) => [
-            ...prev,
-            ...initial10Ads.map((ad, idx) => ({ ...ad, id: prev.length + idx + 1 }))
-          ]);
-        }, 300);
-      }
-    }, { threshold: 1.0 });
-
-    if (loaderRef.current) observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, [showSplash, visibleAds, currentPage]);
-
-  const handleAuthSubmit = () => {
-    if (!inputPhone) {
-      alert("Please enter number.");
-      return;
-    }
-    setShowOtpScreen(true);
-  };
-
+  const handleAuthSubmit = () => { if (inputPhone) setShowOtpScreen(true); };
   const handleVerifyOtpCode = () => {
     if (inputOtp === "7861") {
       setIsLoggedIn(true);
       setUserPhone(inputPhone);
       setShowOtpScreen(false);
-      setCustomToast({ show: true, msg: lang === 'ur' ? "لاگ ان کامیاب ہو گیا! ✓" : "OTP Verified! Account Securely Logged In ✓" });
-      setTimeout(() => setCustomToast(null), 3000);
       setCurrentPage('home');
-    } else {
-      alert("Invalid OTP!");
     }
   };
 
   const handleTriggerImageSelection = () => {
-    const sampleImagesPool = [
+    const pool = [
       "https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=500&q=80",
-      "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=500&q=80",
-      "https://images.unsplash.com/photo-1605647540924-852290f6b0d5?w=500&q=80"
+      "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=500&q=80"
     ];
-    if (uploadedImages.length >= 3) {
-      alert("Maximum 3 pictures allowed!");
-      return;
-    }
-    setUploadedImages([...uploadedImages, sampleImagesPool[uploadedImages.length]]);
+    if (uploadedImages.length < 3) setUploadedImages([...uploadedImages, pool[uploadedImages.length]]);
   };
 
-  // 🌐 FIXED ROUTE PROXY BYPASS FOR GOOGLE SIGN IN WITHOUT BREAKS
   const triggerGoogleLoginAuthentication = () => {
-    try {
-      const redirectBaseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://scrap-app.pages.dev';
-      const targetSecureOauthEndpoint = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(redirectBaseUrl)}`;
-      
-      setIsLoggedIn(true);
-      setUserPhone("Google_User");
-      
-      setCustomToast({ show: true, msg: lang === 'ur' ? "گوگل سرور اوپن ہو رہا ہے..." : "Redirecting to Google Secure Node Gateway..." });
-      setTimeout(() => setCustomToast(null), 2500);
-
-      window.location.replace(targetSecureOauthEndpoint);
-    } catch (err) {
-      setIsLoggedIn(true);
-      setUserPhone("Google_Bypass");
-      setCurrentPage('home');
-    }
+    const target = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
+    setIsLoggedIn(true);
+    setUserPhone("Google_User");
+    window.location.replace(target);
   };
 
   const handleCreateNewAd = (e: any) => {
     e.preventDefault();
-    if (!adTitle || !adPrice || !adWeight) {
-      alert("Please fill all details!");
-      return;
-    }
-
-    const customAdNode = {
-      id: Date.now(),
-      titleEn: adTitle,
-      titleUr: adTitle,
-      categoryEn: adCategory,
-      categoryUr: adCategory,
-      price: adPrice,
-      unitEn: "kg",
-      unitUr: "کلو",
-      weight: adWeight,
-      location: adLocation,
-      icon: uploadedImages.length > 0 ? "📸" : "♻️",
-      images: uploadedImages,
-      phone: userPhone || "Verified Account"
-    };
-
-    setVisibleAds([customAdNode, ...visibleAds]);
-    setCustomToast({ show: true, msg: lang === 'ur' ? "اشتہار لائیو کر دیا گیا! 📢" : "Advertisement Posted Live on Feed! 📢" });
-    setTimeout(() => setCustomToast(null), 3500);
-
-    setAdTitle('');
-    setAdPrice('');
-    setAdWeight('');
+    const newAd = { id: Date.now(), titleEn: adTitle, titleUr: adTitle, categoryEn: adCategory, categoryUr: adCategory, price: adPrice, unitEn: "kg", unitUr: "کلو", weight: adWeight, location: adLocation, icon: "📸", images: uploadedImages, phone: "Verified" };
+    setVisibleAds([newAd, ...visibleAds]);
     setUploadedImages([]);
     setCurrentPage('home');
   };
 
   return (
-    <div className="min-h-screen bg-[#f2f6fa] text-left relative overflow-x-hidden" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }} dir="ltr">
+    <div className="min-h-screen bg-[#f2f6fa] text-left relative overflow-x-hidden" dir="ltr">
+      {showSplash && <div className="fixed inset-0 bg-[#1a365d] z-[999] flex items-center justify-center text-white text-3xl font-black">SCRAP WORLD</div>}
 
-      {/* PREMIUM IN-APP TOAST */}
-      {customToast?.show && (
-        <div className="fixed top-20 inset-x-4 max-w-md mx-auto z-[9999] bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-black text-xs p-4 rounded-xl shadow-2xl flex items-center gap-3 animate-bounce">
-          <span className="text-xl">✓</span>
-          <p className="flex-1 tracking-wide">{customToast.msg}</p>
-        </div>
-      )}
-
-      {/* SPLASH SCREEN */}
-      {showSplash && (
-        <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
-          <div className="text-center space-y-2">
-            <h1 className="text-4xl font-black tracking-wide text-amber-400">SCRAP WORLD</h1>
-          </div>
-        </div>
-      )}
-
-      {/* TOP HEADER TERMINAL */}
-      <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 shadow-xl rounded-b-2xl sticky top-0 z-50">
+      <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 sticky top-0 z-50">
         <div className="max-w-xl mx-auto space-y-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-xl">🏭</span>
-              <h1 className="text-xl font-black tracking-wide text-white">{t.appName}</h1>
-              <span className="text-[8px] bg-emerald-500/20 text-emerald-400 font-black px-1.5 py-0.5 rounded-full">LIVE</span>
-            </div>
-            {isLoggedIn && <span className="text-[10px] text-amber-400 font-black bg-white/5 px-2 py-0.5 rounded-lg">📱 Connected</span>}
+            <h1 className="text-xl font-black tracking-wide">{t.appName}</h1>
+            {isLoggedIn && <span className="text-[10px] text-amber-400 font-black">📱 Connected</span>}
           </div>
-
-          <div className="grid grid-cols-3 gap-1.5">
-            <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-amber-400">{t.currentLang}</button>
-            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); } else { setCurrentPage('page1'); setShowOtpScreen(false); } }} className="bg-emerald-600/30 border border-amber-400 text-white rounded-xl py-2 text-[11px] font-extrabold">{isLoggedIn ? t.logoutBtn : t.loginBtn}</button>
-            <button onClick={() => setCurrentPage('page2')} className="bg-white/5 border rounded-xl py-1.5 text-[11px] font-black">{t.moreBtn}</button>
-            <button onClick={() => setCurrentPage('page3')} className="bg-indigo-600/20 border text-indigo-400 rounded-xl py-1.5 text-[11px] font-black">{t.industriesBtn}</button>
-            <button onClick={() => { if (!isLoggedIn) { setCurrentPage('page1'); } else { setCurrentPage('page4'); } }} className="bg-sky-500/30 border-2 border-amber-400 rounded-xl py-2 text-[11px] font-black text-white">{t.postAdBtn}</button>
-            <button onClick={() => setCurrentPage('page5')} className="bg-amber-500/20 border text-amber-400 rounded-xl py-1.5 text-[11px] font-black">{t.ratesBtn}</button>
+          <div className="grid grid-cols-3 gap-1.5 text-[11px] font-black">
+            <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 border p-1.5 text-amber-400">{t.currentLang}</button>
+            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); } else { setCurrentPage('page1'); setShowOtpScreen(false); } }} className="bg-emerald-600/30 border text-white p-2">{isLoggedIn ? t.logoutBtn : t.loginBtn}</button>
+            <button onClick={() => setCurrentPage('page2')} className="bg-white/5 border p-1.5">{t.moreBtn}</button>
+            <button onClick={() => setCurrentPage('page3')} className="bg-white/5 border p-1.5">{t.industriesBtn}</button>
+            <button onClick={() => { if (!isLoggedIn) setCurrentPage('page1'); else setCurrentPage('page4'); }} className="bg-white/5 border p-1.5">{t.postAdBtn}</button>
+            <button onClick={() => setCurrentPage('page5')} className="bg-white/5 border p-1.5">{t.ratesBtn}</button>
           </div>
         </div>
       </header>
 
-      {/* 🏠 AD STREAM FEED */}
       {currentPage === 'home' && (
-        <main className="max-w-xl mx-auto p-4 mt-2">
-          <div className="grid grid-cols-2 gap-3 mb-4">
-            <button onClick={() => setCurrentPage('page6')} className="bg-white border text-slate-700 text-xs font-black p-2.5 rounded-xl">{t.sortSimple}</button>
-            <button onClick={() => setCurrentPage('page7')} className="bg-white border text-slate-700 text-xs font-black p-2.5 rounded-xl">{t.filterSimple}</button>
-          </div>
-
-          <div className="space-y-4">
-            {visibleAds.map((ad) => (
-              <div key={ad.id} className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-md flex flex-col gap-3">
-                <div className="flex items-center gap-4 text-left">
-                  <div className="w-36 h-36 bg-slate-100 rounded-2xl flex items-center justify-center shrink-0 border overflow-hidden shadow-inner">
-                    {ad.images && ad.images.length > 0 ? (
-                      <img src={ad.images[0]} alt="Scrap Stock" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-6xl">{ad.icon}</span>
-                    )}
-                  </div>
-                  <div className="flex-1 space-y-2 overflow-hidden text-left">
-                    <h4 className="font-black text-base text-slate-800 leading-snug line-clamp-2">{lang === 'ur' ? ad.titleUr : ad.titleEn}</h4>
-                    <div className="text-[11px] bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded-md inline-block">{lang === 'ur' ? ad.categoryUr : ad.categoryEn}</div>
-                    <div className="space-y-1 text-xs font-bold text-slate-600">
-                      <div><span className="text-slate-400 text-[10px] uppercase font-black">{t.weightLabel} </span><span className="text-slate-800">{ad.weight}</span></div>
-                      <div><span className="text-slate-400 text-[10px] uppercase font-black">{t.locLabel} </span><span className="text-slate-800">📍 {ad.location}</span></div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center border-t border-slate-100 pt-2">
-                  <span className="text-xs text-slate-400 font-black uppercase">{t.priceLabel}</span>
-                  <div className="text-right">
-                    <span className="text-lg font-black text-green-600">Rs.{ad.price}</span>
-                    <span className="text-xs text-slate-400 font-bold"> /{lang === 'ur' ? ad.unitUr : ad.unitEn}</span>
-                  </div>
-                </div>
+        <main className="max-w-xl mx-auto p-4 space-y-4">
+          {visibleAds.map((ad) => (
+            <div key={ad.id} className="bg-white rounded-2xl p-4 border shadow-md flex gap-4">
+              <div className="w-24 h-24 bg-slate-100 rounded-xl overflow-hidden shrink-0 border flex items-center justify-center">
+                {ad.images && ad.images.length > 0 ? <img src={ad.images[0]} className="w-full h-full object-cover" /> : <span className="text-4xl">{ad.icon}</span>}
               </div>
-            ))}
-          </div>
-          <div ref={loaderRef} className="py-6 flex items-center justify-center text-slate-400 gap-2"><div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div></div>
+              <div className="flex-1 space-y-1">
+                <h4 className="font-black text-sm text-slate-800">{lang === 'ur' ? ad.titleUr : ad.titleEn}</h4>
+                <p className="text-xs text-green-600 font-bold">Rs. {ad.price} / {lang === 'ur' ? ad.unitUr : ad.unitEn}</p>
+                <p className="text-[11px] text-slate-400">📍 {ad.location} | Qty: {ad.weight}</p>
+              </div>
+            </div>
+          ))}
         </main>
       )}
 
-      {/* 📄 MASTER SUB-SYSTEM SWITCH BOX */}
       {currentPage !== 'home' && (
-        <main className="max-w-xl mx-auto p-4 mt-2">
-          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2.5 rounded-xl">{t.backBtn}</button>
+        <main className="max-w-xl mx-auto p-4">
+          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2 rounded-xl">{t.backBtn}</button>
 
-          {/* PAGE 1: AUTHENTICATION CONTAINER (Errors 1076/1099 completely cleared) */}
           {currentPage === 'page1' && (
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-5 text-left">
+            <div className="bg-white rounded-2xl p-6 border shadow-md space-y-4">
               {!showOtpScreen ? (
                 <div className="space-y-4">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-black text-slate-600 uppercase">Enter Mobile Number</label>
-                    <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-white border-2 border-slate-300 text-slate-900 font-black text-base p-3.5 rounded-xl outline-none" />
+                  <input type="tel" placeholder="Mobile Number" className="w-full bg-white border-2 p-3 rounded-xl font-black text-slate-900" />
+                  <button onClick={handleAuthSubmit} className="w-full bg-[#1a365d] text-white font-black py-3 rounded-xl text-xs uppercase">Send OTP 📲</button>
+                  <div className="border-t pt-4">
+                    <button type="button" onClick={triggerGoogleLoginAuthentication} className="w-full bg-white hover:bg-slate-50 border-2 p-3 rounded-xl flex items-center justify-center gap-3 active:scale-95">
+                      <svg className="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.61c-.29 1.53-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.65-5.17 3.65-8.58z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.11 0-5.74-2.11-6.68-4.96H1.21v3.15C3.18 21.88 7.31 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.32 14.24A7.16 7.16 0 0 1 4.91 12c0-.79.13-1.57.41-2.24V6.61H1.21A11.94 11.94 0 0 0 0 12c0 1.92.45 3.74 1.21 5.39l4.11-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.18 2.12 1.21 6.61l4.11 3.15c.94-2.85 3.57-4.96 6.68-4.96z"/>
+                      </svg>
+                      <span className="text-slate-800 text-sm font-black">Continue with Google Account</span>
+                    </button>
                   </div>
-                  <button onClick={handleAuthSubmit} className="w-full bg-[#1a365d] text-white font-black py-4 rounded-xl text-xs uppercase shadow-md">Send Secure OTP Code 📲</button>
-                  
-                  <div className="relative flex py-2 items-center">
-                    <div className="flex-grow border-t border-slate-200"></div>
-                    <span className="flex-shrink mx-4 text-slate-400 text-[10px] font-black uppercase tracking-wider">Or Connect</span>
-                    <div className="flex-grow border-t border-slate-200"></div>
-                  </div>
-
-                  {/* 🌐 PREMIUM MULTI-COLOR VECTOR GOOGLE CONTROLLER */}
-                  <button 
-                    type="button"
-                    onClick={triggerGoogleLoginAuthentication}
-                    className="w-full bg-white hover:bg-slate-50 border-2 border-slate-300 text-slate-700 font-black text-xs py-3.5 rounded-xl flex items-center justify-center gap-3 shadow-md transition-all active:scale-95"
-                  >
-                    <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.61c-.29 1.53-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.65-5.17 3.65-8.58z"/>
-                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.11 0-5.74-2.11-6.68-4.96H1.21v3.15C3.18 21.88 7.31 24 12 24z"/>
-                      <path fill="#FBBC05" d="M5.32 14.24A7.16 7.16 0 0 1 4.91 12c0-.79.13-1.57.41-2.24V6.61H1.21A11.94 11.94 0 0 0 0 12c0 1.92.45 3.74 1.21 5.39l4.11-3.15z"/>
-                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.18 2.12 1.21 6.61l4.11 3.15c.94-2.85 3.57-4.96 6.68-4.96z"/>
-                    </svg>
-                    <span className="text-slate-800 text-sm font-black">Continue with Google Account</span>
-                  </button>
                 </div>
               ) : (
                 <div className="space-y-4 text-center">
-                  <h3 className="font-black text-sm text-[#1a365d]">Enter Code (7861)</h3>
-                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-white border-2 text-center text-slate-900 font-black text-xl p-3 rounded-xl" />
-                  <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-3.5 rounded-xl text-xs shadow">Verify Code ✓</button>
+                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-white border-2 text-center text-slate-900 font-black p-3 rounded-xl" />
+                  <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-3 rounded-xl text-xs">Verify Code ✓</button>
                 </div>
               )}
             </div>
           )}
 
-          {/* PAGE 2: More Options Dashboard Links (WhatsApp Support Built-In) */}
-          {currentPage === 'page2' && (
-            <div className="space-y-4 text-left">
-              <div className="bg-[#1a365d] text-white p-4 rounded-xl shadow"><h3 className="text-sm font-black uppercase">Scrap World Support Desk</h3></div>
-              <a href="https://wa.me/923008641994?text=ScrapWorld" target="_blank" rel="noopener noreferrer" className="bg-white border rounded-xl p-4 block font-black text-sm shadow-sm hover:border-green-500">📞 WhatsApp Business Helpline</a>
-              <a href="mailto:worldscrap92@gmail.com" className="bg-white border rounded-xl p-4 block font-black text-sm shadow-sm hover:border-blue-500">📩 Email Node: worldscrap92@gmail.com</a>
-            </div>
-          )}
+          {currentPage === 'page2' && <div className="bg-white p-4 rounded-xl border">📞 WhatsApp Support: +923008641994</div>}
+          {currentPage === 'page3' && <div className="bg-white p-4 rounded-xl border">🏭 Registered Plants List Active.</div>}
 
-          {/* PAGE 3: Industries */}
-          {currentPage === 'page3' && (
-            <div className="space-y-3 text-left">
-              {registeredIndustries.map((ind) => (
-                <div key={ind.id} className="bg-white rounded-2xl p-4 border shadow-sm">
-                  <h4 className="font-black text-base text-slate-800">{ind.name}</h4>
-                  <p className="text-xs font-bold text-slate-400">📍 {ind.location}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* 📢 PAGE 4: POST AD INTERFACE (WITH MULTI-PICTURE SELECT STACKS PREVIEW) */}
           {currentPage === 'page4' && (
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-md text-left space-y-4">
-              <div>
-                <h3 className="text-base font-black text-[#1a365d] uppercase tracking-wide">📢 Post New Scrap Advertisement</h3>
-                <p className="text-[11px] text-slate-400 font-bold">Fill stock specification form and upload media yard images below.</p>
-              </div>
-
-              {/* PHOTO UPLOAD BLOCK COMPONENT DESIGN */}
+            <div className="bg-white rounded-2xl p-5 border shadow-md space-y-4">
+              <h3 className="text-sm font-black text-[#1a365d] uppercase">📢 Post New Scrap Ad</h3>
               <div className="space-y-2">
-                <label className="text-[10px] uppercase font-black text-slate-400 block">Scrap Lot Photos (Max 3 Pictures)</label>
-                <div className="flex items-center gap-3">
-                  <div 
-                    onClick={handleTriggerImageSelection}
-                    className="w-24 h-24 border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl flex flex-col items-center justify-center gap-1 cursor-pointer bg-slate-50 shrink-0"
-                  >
-                    <span className="text-2xl">📷</span>
-                    <span className="text-[9px] font-black text-slate-400 uppercase">Add Image</span>
-                  </div>
-
-                  <div className="flex gap-2 overflow-x-auto py-1">
-                    {uploadedImages.map((imgUrl, idx) => (
-                      <div key={idx} className="w-24 h-24 rounded-2xl border overflow-hidden relative shadow-sm shrink-0">
-                        <img src={imgUrl} alt="Preview Stock" className="w-full h-full object-cover" />
-                        <button 
-                          type="button" 
-                          onClick={() => handleRemoveSelectedImage(idx)} 
-                          className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center font-black text-[10px] shadow"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                <label className="text-[10px] font-black text-slate-400 block">Photos (Max 3)</label>
+                <div className="flex gap-3 items-center">
+                  <div onClick={handleTriggerImageSelection} className="w-20 h-20 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer bg-slate-50 text-xl">📷</div>
+                  {uploadedImages.map((img, i) => (
+                    <div key={i} className="w-20 h-20 rounded-xl border overflow-hidden relative">
+                      <img src={img} className="w-full h-full object-cover" />
+                      <button type="button" onClick={() => setUploadedImages(uploadedImages.filter((_, idx) => idx !== i))} className="absolute top-0 right-0 bg-red-600 text-white text-[9px] px-1 rounded-bl">✕</button>
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              <form onSubmit={handleCreateNewAd} className="space-y-3.5 text-xs font-bold text-slate-600">
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-black text-slate-400">Stock Title / Item Name</label>
-                  <input type="text" value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="e.g., Pure Copper Cable Grade A" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 font-black text-sm outline-none" />
+              <form onSubmit={handleCreateNewAd} className="space-y-3 text-xs font-bold">
+                <input type="text" placeholder="Item Title" value={adTitle} onChange={(e) => setAdTitle(e.target.value)} className="w-full bg-slate-50 border p-3 rounded-xl text-slate-900 font-black" />
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="text" placeholder="Weight" value={adWeight} onChange={(e) => setAdWeight(e.target.value)} className="w-full bg-slate-50 border p-3 rounded-xl" />
+                  <input type="number" placeholder="Price per kg" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} className="w-full bg-slate-50 border p-3 rounded-xl" />
                 </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-[10px] uppercase font-black text-slate-400">Category</label>
-                    <select value={adCategory} onChange={(e) => setAdCategory(e.target.value)} className="w-full bg-slate-50 border p-3 rounded-xl text-sm font-black outline-none">
-                      <option value="Iron">Iron</option>
-                      <option value="Copper">Copper</option>
-                      <option value="Aluminum">Aluminum</option>
-                      <option value="Plastic">Plastic</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-[10px] uppercase font-black text-slate-400">Total Weight</label>
-                    <input type="text" value={adWeight} onChange={(e) => setAdWeight(e.target.value)} placeholder="e.g., 12 Tons" className="w-full bg-slate-50 border p-3 rounded-xl text-sm font-black outline-none" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-[10px] uppercase font-black text-slate-400">Price Ask (per kg)</label>
-                    <input type="number" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} placeholder="180" className="w-full bg-slate-50 border p-3 rounded-xl text-sm font-black outline-none" />
-                  </div>
-                  <div>
-                    <label className="text-[10px] uppercase font-black text-slate-400">City</label>
-                    <select value={adLocation} onChange={(e) => setAdLocation(e.target.value)} className="w-full bg-slate-50 border p-3 rounded-xl text-sm font-black outline-none">
-                      <option value="Gujranwala">Gujranwala</option>
-                      <option value="Lahore">Lahore</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button type="submit" className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl shadow text-xs uppercase tracking-wide mt-2">
-                  Submit & Post Advertisement Live ✓
-                </button>
+                <button type="submit" className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-3 rounded-xl text-xs uppercase">Post Ad Live ✓</button>
               </form>
             </div>
           )}
 
-          {/* PAGE 5: Live Rates */}
-          {currentPage === 'page5' && (
-            <div className="space-y-4 text-left">
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden divide-y divide-slate-100">
-                {marketRateItems.map((item) => (
-                  <div key={item.id} className="p-4 flex justify-between items-center">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl bg-slate-100 p-2 rounded-xl border">{item.icon}</span>
-                      <div>
-                        <h4 className="font-black text-sm text-slate-800">{item.nameEn}</h4>
-                        <span className="text-[10px] text-slate-400 font-bold block">⏱️ Updated: {ratesUpdateTime}</span>
-                      </div>
-                    </div>
-                    <span className="text-xs font-black text-indigo-600 bg-indigo-50 border px-3 py-1.5 rounded-xl uppercase">Coming Soon</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* PAGE 6: Sort */}
-          {currentPage === 'page6' && (
-            <div className="bg-white rounded-2xl border p-5 shadow-md text-left">
-              <h3 className="text-base font-black text-[#1a365d] uppercase">Sort Scrap Ads</h3>
-              <button onClick={() => setCurrentPage('home')} className="w-full bg-slate-50 border text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between mt-3">
-                <span>⏱️ Newest Ads First</span>
-                <span className="text-slate-400 font-bold">✓</span>
-              </button>
-            </div>
-          )}
-
-          {/* PAGE 7: Filters */}
-          {currentPage === 'page7' && (
-            <div className="bg-white rounded-2xl border p-6 text-center shadow-sm">
-              <h2 className="text-xl font-black text-slate-800">PAGE 7: Material Type & City Filter System</h2>
-            </div>
-          )}
-
+          {currentPage === 'page5' && <div className="bg-white p-4 rounded-xl border">💰 Live Metal Rates Terminal Coming Soon</div>}
+          {currentPage === 'page6' && <div className="bg-white p-4 rounded-xl border">📊 Sorting Feed: Newest First</div>}
+          {currentPage === 'page7' && <div className="bg-white p-4 rounded-xl border">🎛️ Filter Feed: Gujranwala Markets</div>}
         </main>
       )}
-
     </div>
   );
 }
