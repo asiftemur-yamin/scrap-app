@@ -23,13 +23,13 @@ const initial10Ads = [
 const translations: any = {
   en: {
     appName: "SCRAP WORLD", loginBtn: "Login", logoutBtn: "Logout 👤", moreBtn: "More", currentLang: "Urdu",
-    feedTitle: "Infinite Scrap Marketplace Feed 📋", priceLabel: "Price:", weightLabel: "Qty/Weight:", locLabel: "Loc:", catLabel: "Category:",
-    sortBtn: "Sort 📊", postAdBtn: "Post Ad 📢", ratesBtn: "Rates 💰"
+    priceLabel: "Price:", weightLabel: "Qty/Weight:", locLabel: "Loc:", catLabel: "Category:",
+    postAdBtn: "Post Ad 📢", ratesBtn: "Rates 💰", sortSimple: "Sort 📊", filterSimple: "Filters 🎛️", industriesBtn: "Industries 🏭"
   },
   ur: {
     appName: "اسکریپ ورلڈ", loginBtn: "لاگ ان", logoutBtn: "لاگ آؤٹ 👤", moreBtn: "مزید", currentLang: "English",
-    feedTitle: "اسکریپ مارکیٹ فیڈ (انفنائٹ اسکرول) 📋", priceLabel: "قیمت / ریٹ:", weightLabel: "وزن / تعداد:", locLabel: "لوکیشن:", catLabel: "کیٹیگری:",
-    sortBtn: "ترتیب 📊", postAdBtn: "اشتہار 📢", ratesBtn: "ریٹس 💰"
+    priceLabel: "قیمت / ریٹ:", weightLabel: "وزن / تعداد:", locLabel: "لوکیشن:", catLabel: "کیٹیگری:",
+    postAdBtn: "اشتہار 📢", ratesBtn: "ریٹس 💰", sortSimple: "ترتیب 📊", filterSimple: "فلٹرز 🎛️", industriesBtn: "انڈسٹریز 🏭"
   }
 };
 
@@ -69,7 +69,6 @@ export default function Home() {
   }, [showSplash, visibleAds]);
 
   return (
-    // 👑 FIXED DIRECTION: Strictly 'ltr' and Left-Align taake Urdu par mirror na ho
     <div className="min-h-screen bg-[#f2f6fa] text-left" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }} dir="ltr">
 
       {/* SPLASH SCREEN */}
@@ -83,7 +82,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* COMPACT 15% HEIGHT BANNER */}
+      {/* COMPACT TOP BANNER */}
       <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 shadow-xl rounded-b-2xl sticky top-0 z-50 border-b border-white/5">
         <div className="max-w-xl mx-auto space-y-2">
           
@@ -95,33 +94,40 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 6 GRAPHIC GRID BUTTONS */}
+          {/* BANNER 6-GRID LAYER (With Recycling Industries) */}
           <div className="grid grid-cols-3 gap-1.5">
+            
+            {/* BUTTON 1: Language */}
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">🌐</span>
               <span className="text-[11px] font-black text-slate-200">{t.currentLang}</span>
             </button>
 
+            {/* BUTTON 2: Login */}
             <button onClick={() => { if (isLoggedIn) setIsLoggedIn(false); else setShowAuth(true); }} className={`active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${isLoggedIn ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-600/20 border-emerald-500/20'}`}>
               <span className="text-sm">{isLoggedIn ? '👤' : '🔐'}</span>
               <span className={`text-[11px] font-black ${isLoggedIn ? 'text-amber-400' : 'text-emerald-400'}`}>{isLoggedIn ? t.logoutBtn : t.loginBtn}</span>
             </button>
 
+            {/* BUTTON 3: More Menu */}
             <button onClick={() => alert("Dashboard options link.")} className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">☰</span>
               <span className="text-[11px] font-black text-slate-200">{t.moreBtn}</span>
             </button>
 
-            <button onClick={() => alert("Sorting parameters activated.")} className="bg-indigo-600/20 border border-indigo-500/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
-              <span className="text-sm">📊</span>
-              <span className="text-[11px] font-black text-indigo-400">{t.sortBtn}</span>
+            {/* 👑 BUTTON 4: Recycling Industries (Shifted into Banner Row 2) */}
+            <button onClick={() => alert("Recycling Smelting Plants Registry Interface Active.")} className="bg-indigo-600/20 border border-indigo-500/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
+              <span className="text-sm">🏭</span>
+              <span className="text-[11px] font-black text-indigo-400">{t.industriesBtn}</span>
             </button>
 
+            {/* BUTTON 5: Post Ad */}
             <button onClick={() => { if (!isLoggedIn) setShowAuth(true); else alert("Live ad system triggered."); }} className="bg-sky-500/20 border border-sky-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all" >
               <span className="text-sm">📢</span>
               <span className="text-[11px] font-black text-sky-400">{t.postAdBtn}</span>
             </button>
 
+            {/* BUTTON 6: Mandi Rates */}
             <button onClick={() => alert("Sliding framework to Local Mandi Rates.")} className="bg-amber-500/20 border border-amber-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">💰</span>
               <span className="text-[11px] font-black text-amber-400">{t.ratesBtn}</span>
@@ -131,12 +137,26 @@ export default function Home() {
         </div>
       </header>
 
-      {/* INFINITE MARKETPLACE ADS FEED */}
+      {/* INFINITE MARKETPLACE FEED STREAM AREA */}
       <main className="max-w-xl mx-auto p-4 mt-2">
-        <h2 className="text-base font-black text-slate-800 uppercase tracking-wide border-b pb-1.5 mb-3 flex items-center gap-2">
-          <span>📋</span> {t.feedTitle}
-        </h2>
+        
+        {/* 👑 SIMPLE CONTROLS LAYER: SORT & FILTERS SHIFTED RIGHT BELOW BANNER (Heading Removed) */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <button 
+            onClick={() => alert("Sorting parameters trigger active.")} 
+            className="bg-white hover:bg-slate-50 border border-slate-200 active:scale-95 rounded-xl py-2.5 px-4 flex items-center justify-center gap-2 text-slate-700 shadow-sm font-black text-xs transition-all"
+          >
+            {t.sortSimple}
+          </button>
+          <button 
+            onClick={() => alert("Filter criteria node trigger active.")} 
+            className="bg-white hover:bg-slate-50 border border-slate-200 active:scale-95 rounded-xl py-2.5 px-4 flex items-center justify-center gap-2 text-slate-700 shadow-sm font-black text-xs transition-all"
+          >
+            {t.filterSimple}
+          </button>
+        </div>
 
+        {/* ADS LIST DISPLAY */}
         <div className="space-y-4">
           {visibleAds.map((ad) => (
             <div 
@@ -144,15 +164,13 @@ export default function Home() {
               className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-md flex flex-col gap-3 hover:border-blue-400 transition-all cursor-pointer transform active:scale-[0.99]"
               onClick={() => alert(`Opening Ad Details: ${lang === 'ur' ? ad.titleUr : ad.titleEn}`)}
             >
-              {/* 👑 FIXED ROW: Left to Right execution always */}
               <div className="flex items-center gap-4 text-left">
-                
-                {/* Fixed Left Side: Picture Box */}
+                {/* Left Side: Picture Box */}
                 <div className="w-36 h-36 bg-slate-100 rounded-2xl flex items-center justify-center text-6xl shrink-0 border border-slate-200 shadow-inner">
                   {ad.icon}
                 </div>
 
-                {/* Fixed Right Side: Writing Details Layout */}
+                {/* Right Side: Writing Details Layout */}
                 <div className="flex-1 space-y-2 overflow-hidden text-left">
                   <h4 className="font-black text-base text-slate-800 leading-snug line-clamp-2">
                     {lang === 'ur' ? ad.titleUr : ad.titleEn}
@@ -171,7 +189,6 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-
               </div>
 
               {/* Bottom Row: Cost Tag Display */}
