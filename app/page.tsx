@@ -8,16 +8,16 @@ const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 
 // 📦 10 REAL PRODUCTION ADS DATA
 const initial10Ads = [
-  { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", categoryEn: "Iron", categoryUr: "لوہا", price: "125", unitEn: "kg", unitUr: "کلو", weight: "12 Ton", location: "Gujranwala", icon: "🔩" },
-  { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", categoryEn: "Copper", categoryUr: "تانبا", price: "1,870", unitEn: "kg", unitUr: "کلو", weight: "450 Kg", location: "Gujranwala", icon: "🔌" },
-  { id: 3, titleEn: "Chaaloo Industrial Air Compressor 200L", titleUr: "چالو انڈسٹریل ائیر کمپریسر 200L", categoryEn: "Chaaloo Maal", categoryUr: "چالو مال", price: "45,000", unitEn: "piece", unitUr: "عدد", weight: "1 Unit", location: "Gujranwala", icon: "💨" },
-  { id: 4, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", categoryEn: "Aluminum", categoryUr: "ایلومینیم", price: "465", unitEn: "kg", unitUr: "کلو", weight: "35 Mund", location: "Lahore", icon: "🥫" },
-  { id: 5, titleEn: "Mixed Crushed Plastic Drums Flakes HDPE", titleUr: "مکس کرشڈ پلاسٹک ڈرم اسکریپ اسٹاک", categoryEn: "Plastic", categoryUr: "پلاسٹک", price: "98", unitEn: "kg", unitUr: "کلو", weight: "3 Ton", location: "Gujranwala", icon: "🛢️" },
-  { id: 6, titleEn: "Silicon Solar Panels Scrap Lot 250W", titleUr: "سولر پینل اسکریپ لاٹ 250W", categoryEn: "Solar Panels", categoryUr: "سولر پینل", price: "4,500", unit: "piece", weight: "85 Pieces", location: "Lahore", icon: "☀️" },
-  { id: 7, titleEn: "Lead Acid UPS Batteries Scrap Lot", titleUr: "لیڈ ایسڈ یو پی ایس بیٹریاں اسکریپ", categoryEn: "Batteries", categoryUr: "بیٹریاں", price: "320", unitEn: "kg", unitUr: "کلو", weight: "220 Kg", location: "Lahore", icon: "🔋" },
-  { id: 8, titleEn: "Chaaloo Electric Motor 5HP Copper Winding", titleUr: "چالو الیکٹرک موٹر 5HP (تانبا وائنڈنگ)", categoryEn: "Chaaloo Maal", categoryUr: "چالو مال", price: "16,500", unitEn: "piece", unitUr: "عدد", weight: "2 Units", location: "Gujranwala", icon: "⚙️" },
-  { id: 9, titleEn: "Industrial PVC Pipe Regrind Regulated Stock", titleUr: "انڈسٹریل پی وی سی پائپ ریگرائنڈ مال", categoryEn: "Plastic", categoryUr: "پلاسٹک", price: "115", unitEn: "kg", unitUr: "کلو", weight: "5 Ton", location: "Gujranwala", icon: "🧪" },
-  { id: 10, titleEn: "Electronic Server Green Motherboards Grade B", titleUr: "الیکٹرانک سرور مدر بورڈز اسکریپ", categoryEn: "Electronic", categoryUr: "الیکٹرانک", price: "850", unitEn: "piece", unitUr: "عدد", weight: "120 Pieces", location: "Karachi", icon: "💻" }
+  { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", categoryEn: "Iron", categoryUr: "لوہا", price: "125", unitEn: "kg", unitUr: "کلو", weight: "12 Ton", location: "Gujranwala", icon: "🔩", phone: "+923008641994" },
+  { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", categoryEn: "Copper", categoryUr: "تانبا", price: "1,870", unitEn: "kg", unitUr: "کلو", weight: "450 Kg", location: "Gujranwala", icon: "🔌", phone: "+923008641994" },
+  { id: 3, titleEn: "Chaaloo Industrial Air Compressor 200L", titleUr: "چالو انڈسٹریل ائیر کمپریسر 200L", categoryEn: "Chaaloo Maal", categoryUr: "چالو مال", price: "45,000", unitEn: "piece", unitUr: "عدد", weight: "1 Unit", location: "Gujranwala", icon: "💨", phone: "+923008641994" },
+  { id: 4, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", categoryEn: "Aluminum", categoryUr: "ایلومینیم", price: "465", unitEn: "kg", unitUr: "کلو", weight: "35 Mund", location: "Lahore", icon: "🥫", phone: "+923008641994" },
+  { id: 5, titleEn: "Mixed Crushed Plastic Drums Flakes HDPE", titleUr: "مکس کرشڈ پلاسٹک ڈرم اسکریپ اسٹاک", categoryEn: "Plastic", categoryUr: "پلاسٹک", price: "98", unitEn: "kg", unitUr: "کلو", weight: "3 Ton", location: "Gujranwala", icon: "🛢️", phone: "+923008641994" },
+  { id: 6, titleEn: "Silicon Solar Panels Scrap Lot 250W", titleUr: "سولر پینل اسکریپ لاٹ 250W", categoryEn: "Solar Panels", categoryUr: "سولر پینل", price: "4,500", unit: "piece", weight: "85 Pieces", location: "Lahore", icon: "☀️", phone: "+923008641994" },
+  { id: 7, titleEn: "Lead Acid UPS Batteries Scrap Lot", titleUr: "لیڈ ایسڈ یو پی ایس بیٹریاں اسکریپ", categoryEn: "Batteries", categoryUr: "بیٹریاں", price: "320", unitEn: "kg", unitUr: "کلو", weight: "220 Kg", location: "Lahore", icon: "🔋", phone: "+923008641994" },
+  { id: 8, titleEn: "Chaaloo Electric Motor 5HP Copper Winding", titleUr: "چالو الیکٹرک موٹر 5HP (تانبا وائنڈنگ)", categoryEn: "Chaaloo Maal", categoryUr: "چالو مال", price: "16,500", unitEn: "piece", unitUr: "عدد", weight: "2 Units", location: "Gujranwala", icon: "⚙️", phone: "+923008641994" },
+  { id: 9, titleEn: "Industrial PVC Pipe Regrind Regulated Stock", titleUr: "انڈسٹریل پی وی سی پائپ ریگرائنڈ مال", categoryEn: "Plastic", categoryUr: "پلاسٹک", price: "115", unitEn: "kg", unitUr: "کلو", weight: "5 Ton", location: "Gujranwala", icon: "🧪", phone: "+923008641994" },
+  { id: 10, titleEn: "Electronic Server Green Motherboards Grade B", titleUr: "الیکٹرانک سرور مدر بورڈز اسکریپ", categoryEn: "Electronic", categoryUr: "الیکٹرانک", price: "850", unitEn: "piece", unitUr: "عدد", weight: "120 Pieces", location: "Karachi", icon: "💻", phone: "+923008641994" }
 ];
 
 // 🏭 10 REAL RECYCLING INDUSTRIES DATA
@@ -89,6 +89,13 @@ export default function Home() {
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [inputOtp, setInputOtp] = useState('');
 
+  // 📢 NEW AD INPUT FORM STATE FIELDS (PAGE 4)
+  const [adTitle, setAdTitle] = useState('');
+  const [adCategory, setAdCategory] = useState('Iron');
+  const [adPrice, setAdPrice] = useState('');
+  const [adWeight, setAdWeight] = useState('');
+  const [adLocation, setAdLocation] = useState('Gujranwala');
+
   const [visibleAds, setVisibleAds] = useState<any[]>(initial10Ads);
   const loaderRef = useRef<HTMLDivElement>(null);
 
@@ -100,7 +107,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // INFINITE SCROLL
+  // INFINITE SCROLL LOOP
   useEffect(() => {
     if (showSplash || currentPage !== 'home') return;
 
@@ -138,6 +145,39 @@ export default function Home() {
     }
   };
 
+  // 📢 TRIGGER CUSTOM AD SUBMISSION METHOD WITH FIXED USER LOGGED IN PHONE
+  const handleCreateNewAd = (e: any) => {
+    e.preventDefault();
+    if (!adTitle || !adPrice || !adWeight) {
+      alert("Please fill all advertisement details form fields!");
+      return;
+    }
+
+    const customAdNode = {
+      id: visibleAds.length + 1,
+      titleEn: adTitle,
+      titleUr: adTitle,
+      categoryEn: adCategory,
+      categoryUr: adCategory,
+      price: adPrice,
+      unitEn: "kg",
+      unitUr: "کلو",
+      weight: adWeight,
+      location: adLocation,
+      icon: "♻️",
+      phone: userPhone // 👑 VERIFIED NUMBER IS AUTOMATICALLY LOCKED HERE
+    };
+
+    setVisibleAds([customAdNode, ...visibleAds]);
+    alert(`Success: Advertisement posted with your verified number: ${userPhone}`);
+    
+    // Clear form inputs
+    setAdTitle('');
+    setAdPrice('');
+    setAdWeight('');
+    setCurrentPage('home');
+  };
+
   return (
     <div className="min-h-screen bg-[#f2f6fa] text-left" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }} dir="ltr">
 
@@ -162,18 +202,18 @@ export default function Home() {
               <h1 className="text-xl font-black tracking-wide text-white">{t.appName}</h1>
               <span className="text-[8px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-black px-1.5 py-0.5 rounded-full">LIVE</span>
             </div>
+            {isLoggedIn && (
+              <span className="text-[10px] text-amber-400 font-black tracking-tight bg-white/5 px-2 py-0.5 rounded-lg border border-white/10">📱 Verified: {userPhone}</span>
+            )}
           </div>
 
-          {/* BANNER 6-GRID LAYER CONTAINER */}
+          {/* BANNER 6-GRID CONTROL PANEL */}
           <div className="grid grid-cols-3 gap-1.5">
-            
-            {/* BUTTON 1: Language Switcher */}
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">🌐</span>
               <span className="text-[11px] font-black text-amber-400">{t.currentLang}</span>
             </button>
 
-            {/* 👑 BUTTON 2: LOG IN HIGHLIGHTED (Bigger Padding + Strong Amber Glow Border System) */}
             <button 
               onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); } else { setCurrentPage('page1'); setAuthMode('login'); setShowOtpScreen(false); } }} 
               className={`active:scale-95 border-2 rounded-xl py-2 px-2 flex items-center justify-center gap-1.5 transition-all transform scale-[1.03] shadow-[0_0_12px_rgba(245,158,11,0.2)] ${isLoggedIn ? 'bg-amber-500/20 border-amber-400 text-amber-400' : 'bg-emerald-600/30 border-amber-400 text-white font-extrabold'}`}
@@ -182,28 +222,24 @@ export default function Home() {
               <span className="text-[11px] font-black">{isLoggedIn ? t.logoutBtn : t.loginBtn}</span>
             </button>
 
-            {/* BUTTON 3: More Options Menu */}
             <button onClick={() => setCurrentPage('page2')} className={`bg-white/5 active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${currentPage === 'page2' ? 'bg-amber-500 text-slate-950 font-black' : 'border-white/10 text-slate-200'}`}>
               <span className="text-sm">☰</span>
               <span className="text-[11px] font-black">{t.moreBtn}</span>
             </button>
 
-            {/* BUTTON 4: Industries Hub */}
-            <button onClick={() => setCurrentPage('page3')} className="bg-indigo-600/20 border border-indigo-500/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
+            <button onClick={() => setCurrentPage('page3')} className={`active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${currentPage === 'page3' ? 'bg-indigo-600 text-white' : 'bg-indigo-600/20 border-indigo-500/20 text-indigo-400'}`}>
               <span className="text-sm">🏭</span>
-              <span className="text-[11px] font-black text-indigo-400">{t.industriesBtn}</span>
+              <span className="text-[11px] font-black">{t.industriesBtn}</span>
             </button>
 
-            {/* 👑 BUTTON 5: POST AD HIGHLIGHTED (Bigger Scale + Strong Golden Sky Border) */}
             <button 
-              onClick={() => { if (!isLoggedIn) { alert("Please login first!"); setCurrentPage('page1'); setAuthMode('login'); } else { setCurrentPage('page4'); } }} 
-              className="col-span-1 bg-sky-500/30 border-2 border-amber-400 active:scale-95 rounded-xl py-2 px-2 flex items-center justify-center gap-1.5 transition-all transform scale-[1.03] shadow-[0_0_12px_rgba(245,158,11,0.2)] text-white font-extrabold"
+              onClick={() => { if (!isLoggedIn) { alert("Please login or verify your mobile number first to post advertisements!"); setCurrentPage('page1'); setAuthMode('login'); setShowOtpScreen(false); } else { setCurrentPage('page4'); } }} 
+              className={`col-span-1 border-2 border-amber-400 active:scale-95 rounded-xl py-2 px-2 flex items-center justify-center gap-1.5 transition-all transform scale-[1.03] shadow-[0_0_12px_rgba(245,158,11,0.2)] ${currentPage === 'page4' ? 'bg-sky-500 text-slate-950' : 'bg-sky-500/30 text-white font-extrabold'}`}
             >
               <span className="text-sm">📢</span>
               <span className="text-[11px] font-black">{t.postAdBtn}</span>
             </button>
 
-            {/* BUTTON 6: Live Mandi Rates */}
             <button onClick={() => setCurrentPage('page5')} className="bg-amber-500/20 border border-amber-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">💰</span>
               <span className="text-[11px] font-black text-amber-400">{t.ratesBtn}</span>
@@ -242,6 +278,9 @@ export default function Home() {
                     <div className="space-y-1 text-xs font-bold text-slate-600 text-left">
                       <div className="truncate"><span className="text-slate-400 text-[10px] uppercase font-black">{t.weightLabel} </span><span className="text-slate-800">{ad.weight}</span></div>
                       <div className="truncate"><span className="text-slate-400 text-[10px] uppercase font-black">{t.locLabel} </span><span className="text-slate-800">📍 {ad.location}</span></div>
+                      {ad.phone && (
+                        <div className="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-black inline-block mt-1">✓ Seller Contact: {ad.phone}</div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -267,7 +306,7 @@ export default function Home() {
             {t.backBtn}
           </button>
 
-          {/* PAGE 1: Authentication */}
+          {/* PAGE 1: Auth */}
           {currentPage === 'page1' && (
             <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-4">
               {!showOtpScreen ? (
@@ -288,65 +327,56 @@ export default function Home() {
             </div>
           )}
 
-          {/* 👑 📄 PAGE 2: ADVANCED SYSTEM DRAWER CONTROLS (UPGRADED WITH 4 PREMIUM FUNCTIONS) */}
+          {/* PAGE 2: More Drawer (WhatsApp & Email active) */}
           {currentPage === 'page2' && (
             <div className="space-y-4 text-left animate-fade-in">
-              <div className="bg-[#1a365d] text-white p-4 rounded-xl shadow border border-white/5">
+              <div className="bg-[#1a365d] text-white p-4 rounded-xl shadow">
                 <h3 className="text-base font-black uppercase tracking-wide">⚙️ MORE OPTIONS DASHBOARD</h3>
-                <p className="text-xs text-slate-300 font-bold mt-0.5">Manage your commercial operations & communication streams.</p>
               </div>
 
-              {/* 4 Premium Structural Operational Buttons */}
               <div className="grid grid-cols-1 gap-3">
-                
-                {/* 1. Chat Inbox */}
-                <div onClick={() => alert("Opening Chat Inbox Screen Module...")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-400 transition-all">
+                {/* 💬 Active Simulation Chat Box */}
+                <div onClick={() => alert("Chat Window Active: Connected with Local Scrap Merchants Node.")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl bg-indigo-50 p-2 rounded-xl">💬</span>
                     <div>
                       <h4 className="font-black text-sm text-slate-800">Chat Inbox Messenger</h4>
-                      <p className="text-[11px] text-slate-400 font-bold">Direct chat with scrap buyers and factory owners.</p>
+                      <p className="text-[11px] text-slate-400 font-bold">Direct secure communication terminal with active users.</p>
                     </div>
                   </div>
-                  <span className="text-xs font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">0 New</span>
                 </div>
 
-                {/* 2. My Advertisements History */}
-                <div onClick={() => alert("Opening Your Active Ads Stream...")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-400 transition-all">
+                {/* 🟢 Live WhatsApp Helpline Link */}
+                <a 
+                  href="https://wa.me/923008641994?text=Hello%20Scrap%20World%20Support" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-green-500 block"
+                >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl bg-sky-50 p-2 rounded-xl">📋</span>
+                    <span className="text-2xl bg-green-50 p-2 rounded-xl">📞</span>
                     <div>
-                      <h4 className="font-black text-sm text-slate-800">My Advertisements</h4>
-                      <p className="text-[11px] text-slate-400 font-bold">Edit, update, or remove your live posted scrap ads.</p>
+                      <h4 className="font-black text-sm text-slate-800">WhatsApp Helpline Support</h4>
+                      <p className="text-[11px] text-slate-400 font-bold">Contact: +92 300 8641994</p>
                     </div>
                   </div>
-                  <span className="text-slate-400 font-bold">→</span>
-                </div>
+                  <span className="text-xs font-black text-green-600 bg-green-50 px-2 py-0.5 rounded-md">Live Link</span>
+                </a>
 
-                {/* 3. B2B Factory Verification Center */}
-                <div onClick={() => alert("Opening Official Verification Registration Form...")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-400 transition-all">
+                {/* 📧 Live Email Node Button */}
+                <a 
+                  href="mailto:worldscrap92@gmail.com?subject=Scrap%20World%20Inquiry" 
+                  className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-blue-500 block"
+                >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl bg-amber-50 p-2 rounded-xl">⭐</span>
+                    <span className="text-2xl bg-blue-50 p-2 rounded-xl">📩</span>
                     <div>
-                      <h4 className="font-black text-sm text-slate-800">Factory Verification Center</h4>
-                      <p className="text-[11px] text-slate-400 font-bold">Submit business documents to secure your Commercial Badge.</p>
+                      <h4 className="font-black text-sm text-slate-800">Official Email Node</h4>
+                      <p className="text-[11px] text-slate-400 font-bold">worldscrap92@gmail.com</p>
                     </div>
                   </div>
-                  <span className="text-xs font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">B2B Portal</span>
-                </div>
-
-                {/* 4. Customer Support Helpline */}
-                <div onClick={() => alert("Connecting to Customer Support Hotline...")} className="bg-white border rounded-xl p-4 flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-400 transition-all">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl bg-emerald-50 p-2 rounded-xl">📞</span>
-                    <div>
-                      <h4 className="font-black text-sm text-slate-800">Help & Support Helpline</h4>
-                      <p className="text-[11px] text-slate-400 font-bold">Contact Scrap World team directly for premium guidance.</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">24/7 Live</span>
-                </div>
-
+                  <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">Send Mail</span>
+                </a>
               </div>
             </div>
           )}
@@ -366,12 +396,71 @@ export default function Home() {
             </div>
           )}
 
+          {/* 📢 👑 PAGE 4: SECURE AD POSTING INTERFACE WITH AUTOMATIC PHONE LOCK SYSTEM */}
+          {currentPage === 'page4' && (
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-md text-left space-y-4 animate-fade-in">
+              <div>
+                <h3 className="text-base font-black text-[#1a365d] uppercase tracking-wide">📢 Create New Advertisement</h3>
+                <p className="text-[11px] text-slate-400 font-bold">Your listing will be locked with your authenticated account credentials.</p>
+              </div>
+
+              <form onSubmit={handleCreateNewAd} className="space-y-3.5 text-xs font-bold text-slate-600">
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-black text-slate-400">Scrap Stock Title / Item Name</label>
+                  <input type="text" value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="e.g., Copper Wire Grade A Lot" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none font-black text-sm" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-black text-slate-400">Material Category</label>
+                    <select value={adCategory} onChange={(e) => setAdCategory(e.target.value)} className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none text-sm font-black">
+                      <option value="Iron">Iron / Loha</option>
+                      <option value="Copper">Copper / Tamba</option>
+                      <option value="Aluminum">Aluminum</option>
+                      <option value="Plastic">Plastic</option>
+                      <option value="Gatta">Gatta / Paper</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-black text-slate-400">Total Weight / Quantity</label>
+                    <input type="text" value={adWeight} onChange={(e) => setAdWeight(e.target.value)} placeholder="e.g., 5 Tons" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none font-black text-sm" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-black text-slate-400">Price Ask (per kg/pc)</label>
+                    <input type="number" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} placeholder="e.g., 180" className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none font-black text-sm" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-black text-slate-400">Industrial Location / City</label>
+                    <select value={adLocation} onChange={(e) => setAdLocation(e.target.value)} className="w-full bg-slate-50 border p-3 rounded-xl text-slate-800 outline-none text-sm font-black">
+                      <option value="Gujranwala">Gujranwala</option>
+                      <option value="Lahore">Lahore</option>
+                      <option value="Karachi">Karachi</option>
+                      <option value="Sialkot">Sialkot</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* 👑 LOCK MECHANISM DISPLAY SYSTEM RULE */}
+                <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-1">
+                  <span className="text-[9px] uppercase font-black text-amber-800 block">🔒 Verified Security Lock Active</span>
+                  <p className="text-[11px] text-slate-700 font-extrabold">This listing will permanently link to your verified network ID: <span className="text-indigo-600 font-black">{userPhone}</span></p>
+                </div>
+
+                <button type="submit" className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl shadow text-xs uppercase tracking-wide mt-2 active:scale-95 transition-all">
+                  Submit & Post Advertisement Live ✓
+                </button>
+              </form>
+            </div>
+          )}
+
           {/* PAGE 5: Live Rates */}
           {currentPage === 'page5' && (
             <div className="space-y-4 text-left">
               <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-2xl border shadow-md flex justify-between items-center">
                 <div>
-                  <span className="text-[9px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded-full uppercase">Verified Market Desk</span>
                   <h3 className="text-sm font-black text-slate-200 mt-1">Factory Buying Catalog</h3>
                 </div>
               </div>
@@ -398,7 +487,7 @@ export default function Home() {
           {/* PAGE 6: Sort */}
           {currentPage === 'page6' && (
             <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-md space-y-5 text-left">
-              <h3 className="text-base font-black text-[#1a365d] uppercase tracking-wide">Sort Scrap Ads Matrix</h3>
+              <h3 className="text-base font-black text-[#1a365d] uppercase">Sort Scrap Ads Matrix</h3>
               <div className="space-y-2.5">
                 <button onClick={() => setCurrentPage('home')} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between">
                   <span>⏱️ Newest Ads First</span>
