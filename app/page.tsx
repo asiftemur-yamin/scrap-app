@@ -62,7 +62,7 @@ const translations: any = {
   },
   ur: {
     appName: "اسکریپ ورلڈ", sellScrap: "اسکریپ بیچیں", buyScrap: "اسکریپ خریدیں", rates: "لائیو ریٹس", postAd: "اشتہار لگائیں",
-    searchPlaceholder: "لوہا، پلاسٹک، تانبا تلاش کریں...", browseTitle: "اسکریپ کیٹیگریز (فلٹر لگانے کیلئے کلک کریں)",
+    searchPlaceholder: "لوہا، پلاسٹک، تانبا تلاش کریں...", browseTitle: "اسکریپ کیٹیگریز",
     priceListTitle: "مارکیٹ کی لائیو ریٹ لسٹ", selectCityTitle: "شہر کا انتخاب کریں", lmeTitle: "ایل ایم ای (LME) لائیو ریٹس",
     rateUnit: "روپے / کلو", lmeUnit: "ڈالر / ٹن", navHome: "ہوم", navAds: "اشتہارات", navSell: "ابھی بیچیں", navChat: "چیٹ ان باکس",
     cities: { gujranwala: "گوجرانوالہ", lahore: "لاہور", karachi: "کراچی", multan: "ملتان" },
@@ -73,7 +73,7 @@ const translations: any = {
     callSeller: "فوری فون کال 📞", whatsappSeller: "واٹس ایپ 💬", appChatSeller: "ایپ چیٹ 💬",
     postedIn: "لوکیشن", weightLabel: "کل وزن", loginBtn: "لاگ ان / رجسٹر", logoutBtn: "لاگ آؤٹ 👤",
     inboxTitle: "آپ کے ان ایپ پیغامات", chatPlaceholder: "یہاں اپنا پیغام لکھیں...", sendChatBtn: "بھیجیں",
-    b2bTitle: "تصدیق شدہ فیکٹریاں اور کمرشل یارڈز 👑 (ریٹ دیکھنے کیلئے کلک کریں)", verifyActionBtn: "فیکٹری اسٹور رجسٹر کریں ⭐",
+    b2bTitle: "تصدیق شدہ فیکٹریاں اور کمرشل یارڈز 👑", verifyActionBtn: "فیکٹری اسٹور رجسٹر کریں ⭐",
     buyPriceLabel: "خرید ریٹ", sellPriceLabel: "بیچ ریٹ", catalogTitle: "روزمرہ کا کیٹلاگ اور مال کی دستیابی",
     portalTitle: "فیکٹری ویریفیکیشن رجسٹریشن پورٹل", portalDesc: "روزانہ اور ماہانہ ہول سیل ریٹ لسٹ لگانے کیلئے تصدیقی فیس جمع کروائیں۔",
     companyNameLabel: "فیکٹری یا کاروباری ادارے کا نام", storeTypeLabel: "ادارے کی قسم منتخب کریں", payFeeBtn: "ویریفیکیشن فیس ادا کر کے اسٹور چلائیں 💳",
@@ -104,15 +104,13 @@ const scrapRates = {
   ],
   karachi: [
     { id: "iron", nameKey: "cat1", icon: "🔩", price: "130" },
-    { id: "copper", nameKey: "cat3", icon: "🔌", price: "1,920" },
-    { id: "aluminum", nameKey: "cat4", icon: "🥫", price: "480" },
-    { id: "plastic", nameKey: "cat2", icon: "105" }
+    { id: "copper", nameKey: "cat3", price: "1,920" },
+    { id: "aluminum", nameKey: "cat4", price: "480" },
+    { id: "plastic", nameKey: "cat2", price: "105" }
   ],
   multan: [
-    { id: "iron", nameKey: "cat1", icon: "🔩", price: "118" },
-    { id: "copper", nameKey: "cat3", icon: "🔌", price: "1,820" },
-    { id: "aluminum", nameKey: "cat4", icon: "🥫", price: "440" },
-    { id: "plastic", nameKey: "cat2", icon: "90" }
+    { id: "iron", nameKey: "cat1", price: "118" },
+    { id: "copper", nameKey: "cat3", price: "1,820" }
   ]
 };
 
@@ -153,7 +151,7 @@ export default function Home() {
   useEffect(() => {
     const today = new Date();
     setCurrentDate(today.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }));
-    const timer = setTimeout(() => { setShowSplash(false); }, 2000);
+    const timer = setTimeout(() => { setShowSplash(false); }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -175,91 +173,91 @@ export default function Home() {
   const sortedFeedAds = getFilteredAndSortedAds();
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-24 relative" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', textAlign: lang === 'ur' ? 'right' : 'left' }} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-[#f8fafc] pb-24 relative" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', textAlign: lang === 'ur' ? 'right' : 'left' }} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
 
-      {/* Modern Charcoal Splash Screen */}
+      {/* Clean Premium White Splash Screen */}
       {showSplash && (
-        <div className="fixed inset-0 bg-[#0f172a] z-[999] flex flex-col items-center justify-center text-white p-6">
+        <div className="fixed inset-0 bg-white z-[999] flex flex-col items-center justify-center text-slate-900 p-6">
           <div className="text-center space-y-2">
-            <div className="text-7xl animate-bounce">🏭♻️</div>
-            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">SCRAP WORLD</h1>
-            <p className="text-xs font-bold text-slate-400 tracking-widest">Premium Charcoal-Slate Edition</p>
+            <div className="text-6xl animate-pulse">🏭</div>
+            <h1 className="text-3xl font-black text-[#1e3a8a] tracking-wider">SCRAP WORLD</h1>
+            <div className="w-12 h-1 bg-[#1e3a8a] rounded mx-auto mt-2"></div>
           </div>
         </div>
       )}
 
-      {/* 👑 NEW DESIGN: CARBON SLATE HEADER */}
-      <header className="bg-[#0f172a] text-white px-4 pt-4 pb-6 shadow-xl rounded-b-[2rem]">
-        <div className="flex justify-between items-center mb-3 border-b border-slate-800 pb-1.5">
-          <span className="text-[11px] font-bold bg-slate-800 text-slate-300 px-3 py-1 rounded-full">📅 {currentDate || "10 Jun 2026"}</span>
-          <span className="text-[10px] bg-emerald-500 text-slate-950 px-2.5 py-0.5 rounded-full font-black animate-pulse">● MANDI LIVE</span>
+      {/* 👑 NEW DESIGN: MINIMALIST ICE-WHITE HEADER */}
+      <header className="bg-white border-b border-slate-200 px-4 pt-4 pb-5 shadow-sm">
+        <div className="flex justify-between items-center mb-4">
+          <span className="text-[11px] font-bold text-slate-400 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md">📅 {currentDate || "10 Jun 2026"}</span>
+          <span className="text-[10px] bg-green-50 text-green-700 border border-green-200 px-2 py-0.5 rounded-md font-bold">● LIVE MARKET</span>
         </div>
 
-        <div className="flex justify-between items-center mb-4 gap-2">
-          <div className="text-2xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">{t.appName}</div>
+        <div className="flex justify-between items-center mb-5 gap-2">
+          <div className="text-2xl font-black text-[#1e3a8a] tracking-wide">{t.appName}</div>
           <div className="flex items-center gap-2">
-            <button onClick={() => { if (isLoggedIn) setIsLoggedIn(false); else setShowAuth(true); }} className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold text-xs px-3 py-1.5 rounded-xl border border-slate-700 shadow-sm">{isLoggedIn ? t.logoutBtn : t.loginBtn}</button>
-            <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-emerald-500/10 text-emerald-400 font-bold text-xs px-3 py-1.5 rounded-xl border border-emerald-500/20">{lang === 'en' ? 'اردو' : 'English'}</button>
+            <button onClick={() => { if (isLoggedIn) setIsLoggedIn(false); else setShowAuth(true); }} className="bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg">{isLoggedIn ? t.logoutBtn : t.loginBtn}</button>
+            <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-lg">{lang === 'en' ? 'اردو' : 'English'}</button>
           </div>
         </div>
 
-        {/* Dynamic Action Rows with Gradients */}
-        <div className="flex overflow-x-auto pb-3 scrollbar-none gap-2">
-          <button onClick={handlePostAdTrigger} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl whitespace-nowrap shadow-md text-center">
+        {/* Clean Line Action Row Buttons */}
+        <div className="flex overflow-x-auto pb-1 scrollbar-none gap-2">
+          <button onClick={handlePostAdTrigger} className="bg-[#1e3a8a] text-white text-xs font-bold px-5 py-2.5 rounded-xl whitespace-nowrap shadow-sm text-center">
             {t.sellScrap} <span className="block text-[8px] opacity-75 font-normal">(مال بیچیں)</span>
           </button>
-          <button onClick={() => scrollToSection(feedRef)} className="bg-slate-800 text-slate-200 text-xs font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap border border-slate-700 text-center">
+          <button onClick={() => scrollToSection(feedRef)} className="bg-white text-slate-700 text-xs font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap border border-slate-200 text-center">
             {t.buyScrap} <span className="block text-[8px] opacity-50 font-normal">(مارکیٹ فیڈ)</span>
           </button>
-          <button onClick={() => scrollToSection(ratesRef)} className="bg-slate-800 text-slate-200 text-xs font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap border border-slate-700 text-center">
-            {t.rates} <span className="block text-[8px] opacity-50 font-normal">(تازہ ریٹس)</span>
+          <button onClick={() => scrollToSection(ratesRef)} className="bg-white text-slate-700 text-xs font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap border border-slate-200 text-center">
+            {t.rates} <span className="block text-[8px] opacity-50 font-normal">(تازہ ریٹ)</span>
           </button>
-          <button onClick={handlePostAdTrigger} className="bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 text-xs font-black px-5 py-2.5 rounded-xl whitespace-nowrap shadow-md text-center">
+          <button onClick={handlePostAdTrigger} className="bg-green-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl whitespace-nowrap shadow-sm text-center">
             📢 {t.postAd} <span className="block text-[8px] opacity-75 font-normal">(اشتہار لگائیں)</span>
           </button>
         </div>
 
-        {/* Modern Search Row */}
-        <div className="mt-2 bg-slate-900 border border-slate-800 rounded-xl p-3 flex items-center text-slate-300 shadow-inner">
-          <span className="text-slate-500 mx-2">🔍</span>
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t.searchPlaceholder} className="w-full bg-transparent outline-none text-sm placeholder-slate-500 text-white font-medium" />
+        {/* Simple Input Search */}
+        <div className="mt-4 bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center text-slate-700 shadow-inner">
+          <span className="text-slate-400 mx-2">🔍</span>
+          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder={t.searchPlaceholder} className="w-full bg-transparent outline-none text-sm placeholder-slate-400 font-medium" />
         </div>
       </header>
 
-      {/* Main Container */}
-      <main className="px-4 mt-6">
+      {/* Main Body Area */}
+      <main className="px-4 mt-5">
         
-        {/* Origin Grid Blocks */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <div onClick={() => setActiveOriginFilter(activeOriginFilter === 'local' ? 'all' : 'local')} className={`rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer border transition-all ${activeOriginFilter === 'local' ? 'bg-blue-50/50 border-blue-400 ring-2 ring-blue-400/10' : 'bg-white border-slate-200'}`}>
-            <div><span className="font-black text-sm text-slate-800 block">{t.localScrap}</span><span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.localScrapDesc}</span></div>
-            <span className="text-3xl">🇵🇰</span>
+        {/* Simple Toggle Filters for Stream Origin */}
+        <div className="grid grid-cols-2 gap-3 mb-5">
+          <div onClick={() => setActiveOriginFilter(activeOriginFilter === 'local' ? 'all' : 'local')} className={`rounded-xl p-3.5 flex items-center justify-between border cursor-pointer transition-all ${activeOriginFilter === 'local' ? 'bg-blue-50 border-blue-400 font-bold' : 'bg-white border-slate-200'}`}>
+            <div><span className="text-sm text-slate-800 block font-bold">{t.localScrap}</span><span className="text-[9px] text-slate-400 block mt-0.5">{t.localScrapDesc}</span></div>
+            <span className="text-2xl">🇵🇰</span>
           </div>
-          <div onClick={() => setActiveOriginFilter(activeOriginFilter === 'imported' ? 'all' : 'imported')} className={`rounded-2xl p-4 flex items-center justify-between shadow-sm cursor-pointer border transition-all ${activeOriginFilter === 'imported' ? 'bg-emerald-50/50 border-emerald-400 ring-2 ring-emerald-400/10' : 'bg-white border-slate-200'}`}>
-            <div><span className="font-black text-sm text-slate-800 block">{t.importedScrap}</span><span className="text-[10px] text-slate-400 font-bold block mt-0.5">{t.importedScrapDesc}</span></div>
-            <span className="text-3xl">🚢</span>
+          <div onClick={() => setActiveOriginFilter(activeOriginFilter === 'imported' ? 'all' : 'imported')} className={`rounded-xl p-3.5 flex items-center justify-between border cursor-pointer transition-all ${activeOriginFilter === 'imported' ? 'bg-green-50 border-green-400 font-bold' : 'bg-white border-slate-200'}`}>
+            <div><span className="text-sm text-slate-800 block font-bold">{t.importedScrap}</span><span className="text-[9px] text-slate-400 block mt-0.5">{t.importedScrapDesc}</span></div>
+            <span className="text-2xl">🚢</span>
           </div>
         </div>
 
-        {/* Categories Matrix */}
-        <div className="mb-4 flex justify-between items-center"><h2 className="text-sm font-black text-slate-500 uppercase tracking-wider">{t.browseTitle}</h2></div>
-        <div className="grid grid-cols-4 gap-2.5 mb-6">
+        {/* Categories Clean System Matrix */}
+        <div className="mb-3"><h2 className="text-xs font-black text-slate-400 uppercase tracking-wider">{t.browseTitle}</h2></div>
+        <div className="grid grid-cols-4 gap-2 mb-5">
           {appCategories.map((item, idx) => (
-            <div key={idx} onClick={() => { if(item.cat === 'chaaloo') { setShowChaalooModal(true); } else { setActiveMainCatFilter(item.cat); setActiveSubCatFilter('all'); } }} className={`border rounded-2xl p-2.5 flex flex-col items-center justify-center text-center shadow-sm aspect-square cursor-pointer transition-all ${activeMainCatFilter === item.cat ? 'bg-gradient-to-br from-slate-800 to-slate-900 border-slate-900 text-white ring-2 ring-slate-800/20' : 'bg-white border-slate-200 text-slate-700'}`}>
-              <span className="text-xl mb-1">{item.icon}</span>
-              <span className="text-[10px] font-black leading-tight block truncate w-full">{lang === 'en' ? item.labelEn : item.labelUr}</span>
+            <div key={idx} onClick={() => { if(item.cat === 'chaaloo') { setShowChaalooModal(true); } else { setActiveMainCatFilter(item.cat); setActiveSubCatFilter('all'); } }} className={`border rounded-xl p-2 flex flex-col items-center justify-center text-center cursor-pointer transition-all ${activeMainCatFilter === item.cat ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]' : 'bg-white border-slate-200 text-slate-700'}`}>
+              <span className="text-lg mb-1">{item.icon}</span>
+              <span className="text-[10px] font-bold block truncate w-full">{lang === 'en' ? item.labelEn : item.labelUr}</span>
             </div>
           ))}
         </div>
 
         {/* Sub Categories Popup */}
         {showChaalooModal && (
-          <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[200] flex items-end sm:items-center justify-center p-4">
-            <div className="bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-4">
-              <div className="flex justify-between items-center border-b pb-2"><h3 className="font-black text-base text-slate-900">{t.chaalooTitle}</h3><button onClick={() => setShowChaalooModal(false)} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-bold">✕</button></div>
-              <div className="space-y-2">
+          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[200] flex items-end sm:items-center justify-center p-4">
+            <div className="bg-white w-full max-w-md rounded-xl p-5 shadow-xl space-y-3">
+              <div className="flex justify-between items-center border-b pb-2"><h3 className="font-bold text-sm text-slate-800">{t.chaalooTitle}</h3><button onClick={() => setShowChaalooModal(false)} className="text-slate-400 text-xs">✕</button></div>
+              <div className="space-y-1.5">
                 {Object.keys(t.subCats).map((key) => (
-                  <button key={key} onClick={() => { setActiveMainCatFilter('chaaloo'); setActiveSubCatFilter(key); setShowChaalooModal(false); }} className={`w-full text-left p-3.5 rounded-xl border font-bold text-xs ${activeSubCatFilter === key && activeMainCatFilter === 'chaaloo' ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-700'}`}>{t.subCats[key]}</button>
+                  <button key={key} onClick={() => { setActiveMainCatFilter('chaaloo'); setActiveSubCatFilter(key); setShowChaalooModal(false); }} className={`w-full text-left p-3 rounded-lg border font-semibold text-xs ${activeSubCatFilter === key && activeMainCatFilter === 'chaaloo' ? 'bg-[#1e3a8a] text-white' : 'bg-slate-50 text-slate-700'}`}>{t.subCats[key]}</button>
                 ))}
               </div>
             </div>
@@ -267,96 +265,96 @@ export default function Home() {
         )}
 
         {/* B2B Verified Stores */}
-        <div className="mb-4 mt-8 border-t border-slate-200 pt-5">
-          <div className="flex justify-between items-center mb-3"><h2 className="text-xs font-black text-slate-500 uppercase tracking-wider">{t.b2bTitle}</h2></div>
-          <div className="flex overflow-x-auto pb-3 gap-3.5 scrollbar-none snap-x">
+        <div className="mb-4 mt-6 border-t border-slate-200 pt-4">
+          <div className="mb-2"><h2 className="text-xs font-black text-slate-400 uppercase tracking-wider">{t.b2bTitle}</h2></div>
+          <div className="flex overflow-x-auto pb-2 gap-3 scrollbar-none">
             {verifiedFactories.map((store) => (
-              <div key={store.id} onClick={() => setSelectedFactoryCatalog(store)} className="bg-white border-2 border-amber-400/30 rounded-2xl p-4 min-w-[240px] shadow-sm snap-center cursor-pointer flex flex-col justify-between">
-                <div className="flex items-center gap-2.5"><span className="text-3xl bg-slate-50 border p-1 rounded-xl">{store.icon}</span><div><h4 className="font-black text-sm text-slate-800 line-clamp-1">{lang === 'en' ? store.nameEn : store.nameUr}</h4><span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 inline-block mt-0.5">{store.badge}</span></div></div>
-                <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center"><span className="text-[10px] font-bold text-slate-400">📍 {t.cities[store.city as any] || store.city}</span><span className="text-[11px] font-black text-slate-900">View Catalog →</span></div>
+              <div key={store.id} onClick={() => setSelectedFactoryCatalog(store)} className="bg-white border border-slate-200 rounded-xl p-3.5 min-w-[220px] shadow-xs cursor-pointer flex flex-col justify-between">
+                <div className="flex items-center gap-2"><span className="text-2xl bg-slate-50 p-1 rounded-lg border">{store.icon}</span><div><h4 className="font-bold text-xs text-slate-800 line-clamp-1">{lang === 'en' ? store.nameEn : store.nameUr}</h4><span className="text-[9px] text-amber-700 font-bold bg-amber-50 px-1.5 rounded mt-0.5 inline-block">{store.badge}</span></div></div>
+                <div className="mt-3 pt-2 border-t border-slate-100 flex justify-between items-center"><span className="text-[9px] font-semibold text-slate-400">📍 {(t.cities as any)[store.city] || store.city}</span><span className="text-[10px] font-bold text-[#1e3a8a]">Catalog →</span></div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Live Market Rates System */}
+        {/* Live Rates Module Display */}
         <div ref={ratesRef} className="pt-4 scroll-mt-4">
-          <div className="mb-3"><div className="flex justify-between items-center"><h2 className="text-xs font-black text-slate-500 uppercase tracking-wider">{t.lmeTitle}</h2></div></div>
-          <div className="flex overflow-x-auto pb-3 gap-3 scrollbar-none snap-x">
+          <div className="mb-2"><h2 className="text-xs font-black text-slate-400 uppercase tracking-wider">{t.lmeTitle}</h2></div>
+          <div className="flex overflow-x-auto pb-2 gap-2.5 scrollbar-none">
             {lmeRates.map((metal) => (
-              <div key={metal.id} className="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 min-w-[140px] shadow-md flex flex-col justify-between border border-slate-700/50">
-                <div className="flex justify-between items-center gap-2"><span className="text-xl bg-white/10 p-1 rounded-lg">{metal.icon}</span><span className={`text-[11px] font-black px-1.5 py-0.5 rounded-md ${metal.up ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>{metal.change}</span></div>
-                <div className="mt-4"><span className="text-[11px] font-bold text-slate-400 block truncate">{(t.lmeMetals as any)[metal.key]}</span><span className="text-lg font-black text-white block mt-0.5">${metal.price.toLocaleString()}</span></div>
+              <div key={metal.id} className="bg-white border border-slate-200 text-slate-800 rounded-xl p-3 min-w-[125px] shadow-xs flex flex-col justify-between">
+                <div className="flex justify-between items-center"><span className="text-base bg-slate-50 p-1 rounded border">{metal.icon}</span><span className={`text-[10px] font-bold px-1 rounded ${metal.up ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>{metal.change}</span></div>
+                <div className="mt-3"><span className="text-[10px] font-semibold text-slate-400 block truncate">{(t.lmeMetals as any)[metal.key]}</span><span className="text-base font-black text-slate-800 block mt-0.5">${metal.price.toLocaleString()}</span></div>
               </div>
             ))}
           </div>
 
-          <div className="mb-3 mt-6"><h2 className="text-sm font-black text-slate-500 uppercase tracking-wider">{t.priceListTitle} ({(t.cities as any)[selectedCity]})</h2></div>
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-1 divide-y divide-slate-100 mb-4">
-            {(scrapRates as any)[selectedCity].map((item: any) => (
-              <div key={item.id} className="flex justify-between items-center p-3.5">
-                <div className="flex items-center space-x-3 gap-2"><span className="text-2xl bg-slate-50 p-1.5 rounded-xl border">{item.icon}</span><span className="font-extrabold text-slate-700 text-sm">{(t as any)[item.nameKey]}</span></div>
-                <div className="text-right"><span className="text-base font-black text-emerald-600 block">Rs.{item.price}</span></div>
+          <div className="mb-2 mt-5"><h2 className="text-xs font-black text-slate-400 uppercase tracking-wider">{t.priceListTitle} ({(t.cities as any)[selectedCity]})</h2></div>
+          <div className="bg-white rounded-xl border border-slate-200 shadow-xs p-1 divide-y divide-slate-100 mb-4">
+            {(scrapRates as any)[selectedCity]?.map((item: any) => (
+              <div key={item.id} className="flex justify-between items-center p-3">
+                <div className="flex items-center gap-2"><span className="text-xl bg-slate-50 p-1 rounded-lg border">{item.icon}</span><span className="font-bold text-slate-700 text-xs">{(t as any)[item.nameKey]}</span></div>
+                <div className="text-right"><span className="text-sm font-black text-green-600 block">Rs.{item.price}</span></div>
               </div>
             ))}
           </div>
-          <div className="flex gap-1.5 overflow-x-auto pb-4 scrollbar-none">
+          <div className="flex gap-1 overflow-x-auto pb-3 scrollbar-none">
             {Object.keys(scrapRates).map((cityKey) => (
-              <button key={cityKey} onClick={() => setSelectedCity(cityKey as any)} className={`px-4 py-2 text-xs font-black rounded-xl border transition-all ${selectedCity === cityKey ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 'bg-white text-slate-600 border-slate-200'}`}>📍 {(t.cities as any)[cityKey]}</button>
+              <button key={cityKey} onClick={() => setSelectedCity(cityKey as any)} className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all ${selectedCity === cityKey ? 'bg-[#1e3a8a] text-white border-[#1e3a8a]' : 'bg-white text-slate-600 border-slate-200'}`}>📍 {(t.cities as any)[cityKey]}</button>
             ))}
           </div>
         </div>
 
-        {/* Marketplace Dynamic Feed Grid */}
+        {/* Marketplace Simple Clean Feed */}
         <div ref={feedRef} className="pt-4 border-t border-slate-200 scroll-mt-4">
-          <h2 className="text-sm font-black text-slate-500 uppercase tracking-wider mb-4">📋 {t.feedTitle}</h2>
-          <div className="space-y-3.5 mb-6">
+          <h2 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3">📋 {t.feedTitle}</h2>
+          <div className="space-y-2.5 mb-6">
             {sortedFeedAds.map((ad) => (
-              <div key={ad.id} onClick={() => setSelectedAd(ad)} className="bg-white rounded-2xl p-4 border border-slate-200 flex justify-between items-center shadow-sm cursor-pointer hover:border-slate-300 transition-all">
-                <div className="flex items-start space-x-3.5 gap-3 max-w-[70%]">
-                  <div className="w-14 h-14 bg-slate-50 rounded-xl border flex items-center justify-center text-2xl shrink-0">{ad.icon}</div>
+              <div key={ad.id} onClick={() => setSelectedAd(ad)} className="bg-white rounded-xl p-3.5 border border-slate-200 flex justify-between items-center shadow-xs cursor-pointer hover:border-slate-300 transition-all">
+                <div className="flex items-start gap-3 max-w-[75%]">
+                  <div className="w-12 h-12 bg-slate-50 rounded-lg border flex items-center justify-center text-xl shrink-0">{ad.icon}</div>
                   <div>
-                    <h4 className="font-extrabold text-sm text-slate-800 leading-snug line-clamp-2">{lang === 'en' ? ad.titleEn : ad.titleUr}</h4>
-                    <p className="text-[10px] font-semibold text-slate-400 mt-0.5">📍 {(t.cities as any)[ad.city] || ad.city} • <span className="text-slate-600 font-bold bg-slate-100 px-2 py-0.5 rounded-md text-[9px]">{ad.weight}</span></p>
+                    <h4 className="font-bold text-xs text-slate-800 leading-snug line-clamp-2">{lang === 'en' ? ad.titleEn : ad.titleUr}</h4>
+                    <p className="text-[10px] font-semibold text-slate-400 mt-0.5">📍 {(t.cities as any)[ad.city] || ad.city} • <span className="text-slate-500 font-bold bg-slate-100 px-1.5 rounded">{ad.weight}</span></p>
                   </div>
                 </div>
-                <div className="text-right shrink-0"><span className="text-base font-black text-emerald-600 block">Rs.{ad.price}</span></div>
+                <div className="text-right shrink-0"><span className="text-sm font-black text-green-600 block">Rs.{ad.price}</span></div>
               </div>
             ))}
           </div>
         </div>
       </main>
 
-      {/* Popups Overlays Blocks Layout mapping */}
+      {/* Popups Overlays */}
       {selectedAd && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[120] flex items-end sm:items-center justify-center p-4">
-          <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl relative flex flex-col pb-6 overflow-hidden">
-            <div className="bg-[#0f172a] text-white p-4 flex justify-between items-center shadow-md"><span className="text-xs font-black uppercase tracking-wider">📦 {t.appName} Mandi Stock</span><button onClick={() => setSelectedAd(null)} className="bg-red-600 text-white text-xs font-black px-3 py-1.5 rounded-full">✕</button></div>
-            <div className="p-5 space-y-4 text-left" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
-              <div className="w-full h-32 bg-slate-50 border rounded-xl flex items-center justify-center text-5xl">{selectedAd.icon}</div>
-              <h3 className="text-base font-black text-slate-800">{lang === 'en' ? selectedAd.titleEn : selectedAd.titleUr}</h3>
-              <div className="bg-slate-50 border p-4 rounded-xl flex justify-between items-center"><span className="text-xs font-bold text-slate-400 uppercase">Rate Demand</span><span className="text-xl font-black text-emerald-600">Rs.{selectedAd.price}</span></div>
-              <div className="grid grid-cols-3 gap-2 pt-2">
-                <a href="tel:+923000000000" className="bg-slate-900 text-white text-center font-black text-[11px] py-3.5 rounded-xl flex items-center justify-center">Call 📞</a>
-                <a href="https://wa.me/923000000000" target="_blank" className="bg-emerald-600 text-white text-center font-black text-[11px] py-3.5 rounded-xl flex items-center justify-center">WhatsApp 💬</a>
-                <button onClick={() => { setSelectedAd(null); setShowInbox(true); }} className="bg-indigo-600 text-white font-black text-[11px] py-3.5 rounded-xl">App Chat 💬</button>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-[120] flex items-end sm:items-center justify-center p-4">
+          <div className="bg-white w-full max-w-md rounded-xl shadow-xl overflow-hidden pb-5">
+            <div className="bg-slate-50 border-b p-3 flex justify-between items-center"><span className="text-xs font-bold text-slate-700 uppercase">📦 Stock Details</span><button onClick={() => setSelectedAd(null)} className="text-slate-400 font-bold text-xs">✕</button></div>
+            <div className="p-4 space-y-4 text-left" dir={lang === 'ur' ? 'rtl' : 'ltr'}>
+              <div className="w-full h-24 bg-slate-50 border rounded-xl flex items-center justify-center text-4xl">{selectedAd.icon}</div>
+              <h3 className="text-sm font-bold text-slate-800">{lang === 'en' ? selectedAd.titleEn : selectedAd.titleUr}</h3>
+              <div className="bg-slate-50 border p-3 rounded-lg flex justify-between items-center"><span className="text-xs font-semibold text-slate-400">Demanded Rate</span><span className="text-base font-black text-green-600">Rs.{selectedAd.price}</span></div>
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t">
+                <a href="tel:+923000000000" className="bg-[#1e3a8a] text-white text-center font-bold text-[11px] py-2.5 rounded-lg">Call 📞</a>
+                <a href="https://wa.me/923000000000" target="_blank" className="bg-green-600 text-white text-center font-bold text-[11px] py-2.5 rounded-lg">WhatsApp 💬</a>
+                <button onClick={() => { setSelectedAd(null); setShowInbox(true); }} className="bg-slate-100 text-slate-700 font-bold text-[11px] py-2.5 rounded-lg">App Chat 💬</button>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Sticky Bottom Navigation Bar with New Slate Styling */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-2 flex justify-around items-center z-50 shadow-xl">
-        <button onClick={() => { setShowInbox(false); setShowPostAd(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="flex flex-col items-center text-slate-900 font-black text-[10px] w-14">
+      {/* Clean Bottom Sticky Navigation Bar */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-2 py-1.5 flex justify-around items-center z-50 shadow-md">
+        <button onClick={() => { setShowInbox(false); setShowPostAd(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="flex flex-col items-center text-[#1e3a8a] font-bold text-[10px] w-14">
           <span className="text-lg">🏠</span><span className="mt-0.5">{t.navHome}</span>
         </button>
         <button onClick={() => scrollToSection(feedRef)} className="flex flex-col items-center text-slate-400 font-medium text-[10px] w-14">
           <span className="text-lg">📋</span><span className="mt-0.5">{t.navAds}</span>
         </button>
-        <div className="relative -top-5 flex flex-col items-center justify-center">
-          <button onClick={handlePostAdTrigger} className="w-14 h-14 bg-gradient-to-br from-slate-800 to-slate-950 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-white transform active:scale-95 transition-all"><span className="text-2xl font-light">+</span></button>
-          <span className="text-[10px] font-black text-slate-900 mt-0.5">{t.navSell}</span>
+        <div className="relative -top-4 flex flex-col items-center justify-center">
+          <button onClick={handlePostAdTrigger} className="w-12 h-12 bg-[#1e3a8a] text-white rounded-full flex items-center justify-center shadow-md border-4 border-white transform active:scale-95 transition-all"><span className="text-xl font-light">+</span></button>
+          <span className="text-[9px] font-bold text-slate-800 mt-0.5">{t.navSell}</span>
         </div>
         <button onClick={() => setShowInbox(true)} className="flex flex-col items-center text-slate-400 font-medium text-[10px] w-14">
           <span className="text-lg">💬</span><span className="mt-0.5">{t.navChat}</span>
