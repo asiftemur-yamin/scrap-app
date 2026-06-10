@@ -79,7 +79,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userPhone, setUserPhone] = useState('');
 
-  // ⏰ Custom Timestamp Node (Dynamic Date and Time tracking)
+  // ⏰ Custom Timestamp Node
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
 
   // 🌍 MULTI-PAGE ROUTING
@@ -88,9 +88,6 @@ export default function Home() {
   // 🔐 AUTH STATES
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login');
   const [inputPhone, setInputPhone] = useState('');
-  const [inputPassword, setInputPassword] = useState('');
-  const [inputName, setInputName] = useState('');
-  const [newPassword, setNewPassword] = useState('');
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [inputOtp, setInputOtp] = useState('');
 
@@ -100,7 +97,6 @@ export default function Home() {
   const t = translations[lang];
 
   useEffect(() => {
-    // 🎯 Lock exact requested current update time framework
     setRatesUpdateTime("10 Jun 2026 at 04:25 PM");
     const timer = setTimeout(() => { setShowSplash(false); }, 1500);
     return () => clearTimeout(timer);
@@ -130,17 +126,12 @@ export default function Home() {
       alert(lang === 'ur' ? "براہ کرم اپنا نمبر لکھیں۔" : "Please enter number.");
       return;
     }
-    if (authMode === 'login') {
-      alert(lang === 'ur' ? "لاگ ان او ٹی پی (OTP: 7861) بھیج دیا گیا ہے۔" : "Login verification OTP (7861) sent.");
-      setShowOtpScreen(true);
-    } else {
-      alert(lang === 'ur' ? "تصدیقی کوڈ (OTP: 7861) بھیج دیا گیا ہے۔" : "Verification OTP (7861) sent.");
-      setShowOtpScreen(true);
-    }
+    alert(lang === 'ur' ? "لاگ ان او ٹی پی (OTP: 7861) بھیج دیا گیا ہے۔" : "Login verification OTP (7861) sent.");
+    setShowOtpScreen(true);
   };
 
   const handleVerifyOtpCode = () => {
-    if (inputOtp === generatedOtp) {
+    if (inputOtp === "7861") {
       setIsLoggedIn(true);
       setUserPhone(inputPhone);
       setShowOtpScreen(false);
@@ -178,7 +169,6 @@ export default function Home() {
 
           {/* BANNER 6-GRID CONTROL PANEL */}
           <div className="grid grid-cols-3 gap-1.5">
-            {/* BUTTON 1: Language Switcher (Fixed to show English on Urdu interface) */}
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">🌐</span>
               <span className="text-[11px] font-black text-amber-400">{t.currentLang}</span>
@@ -261,7 +251,7 @@ export default function Home() {
 
       {/* 📄 MASTER clean WINDOWS SYSTEM */}
       {currentPage !== 'home' && (
-        <main className="max-w-xl mx-auto p-4 mt-2 animate-fade-in">
+        <main className="max-w-xl mx-auto p-4 mt-2">
           
           <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2.5 rounded-xl active:scale-95 transition-all">
             {t.backBtn}
@@ -305,7 +295,7 @@ export default function Home() {
 
           {/* 💰 PAGE 5: LIVE MARKET RATES HUB WITH SPECIFIC ROW-LEVEL TIMESTAMPS */}
           {currentPage === 'page5' && (
-            <div className="space-y-4 text-left animate-fade-in">
+            <div className="space-y-4 text-left">
               <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-2xl border shadow-md flex justify-between items-center">
                 <div>
                   <span className="text-[9px] bg-emerald-500/20 text-emerald-400 font-black px-2 py-0.5 rounded-full uppercase">Verified Market Desk</span>
@@ -320,7 +310,6 @@ export default function Home() {
                       <span className="text-2xl bg-slate-100 p-2 rounded-xl border">{item.icon}</span>
                       <div>
                         <h4 className="font-black text-sm text-slate-800">{lang === 'ur' ? item.nameUr : item.nameEn}</h4>
-                        {/* 👑 TARGET TIME INTEGRATION RULE: Shows specific time under every row item */}
                         <span className="text-[10px] text-slate-400 font-bold block mt-0.5">⏱️ Updated: {ratesUpdateTime}</span>
                       </div>
                     </div>
@@ -333,47 +322,39 @@ export default function Home() {
             </div>
           )}
 
-          {/* 📊 👑 PAGE 6: SORT MARKET ADS INTERFACE (FULLY PROGRAMMED & COMPLETED) */}
+          {/* 📊 👑 PAGE 6: SORT MARKET ADS INTERFACE */}
           {currentPage === 'page6' && (
-            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-md space-y-5 text-left animate-fade-in">
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-md space-y-5 text-left">
               <div>
                 <h3 className="text-base font-black text-[#1a365d] uppercase tracking-wide">{lang === 'ur' ? 'اشتہارات کی ترتیب (Sorting)' : 'Sort Scrap Ads Matrix'}</h3>
                 <p className="text-[11px] text-slate-400 font-bold mt-0.5">{lang === 'ur' ? 'اپنی مرضی کے مطابق لسٹ کو اوپر نیچے سیٹ کریں' : 'Arrange the marketplace stream using specific triggers below.'}</p>
               </div>
 
-              {/* Functional Sorting Blocks Stack Cluster */}
               <div className="space-y-2.5">
-                
-                {/* Filter 1: Newest First */}
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Newest Timestamp First Active."); }} className="w-full bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
+                <button onClick={() => { setCurrentPage('home'); alert("Applied: Newest Timestamp First Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
                   <span>⏱️ {lang === 'ur' ? 'تازہ ترین اشتہارات پہلے (Newest First)' : 'Newest Ads First'}</span>
                   <span className="text-slate-400 font-bold">✓</span>
                 </button>
 
-                {/* Filter 2: Price High to Low */}
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Sorting Price High to Low Active."); }} className="w-full bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
+                <button onClick={() => { setCurrentPage('home'); alert("Applied: Sorting Price High to Low Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
                   <span>📈 {lang === 'ur' ? 'قیمت: زیادہ سے کم (High to Low)' : 'Price: High to Low'}</span>
                   <span className="text-slate-400">→</span>
                 </button>
 
-                {/* Filter 3: Price Low to High */}
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Sorting Price Low to High Active."); }} className="w-full bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
+                <button onClick={() => { setCurrentPage('home'); alert("Applied: Sorting Price Low to High Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
                   <span>📉 {lang === 'ur' ? 'قیمت: کم سے زیادہ (Low to High)' : 'Price: Low to High'}</span>
                   <span className="text-slate-400">→</span>
                 </button>
 
-                {/* Filter 4: Sorting / Group by specific item types */}
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Filter Buy Items Group Active."); }} className="w-full bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
+                <button onClick={() => { setCurrentPage('home'); alert("Applied: Filter Buy Items Group Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
                   <span>🔩 {lang === 'ur' ? 'مٹیریل آئٹم کے حساب سے ترتیب (Buy Item)' : 'Sort / Group by Buy Item'}</span>
                   <span className="text-slate-400">→</span>
                 </button>
 
-                {/* Filter 5: Sorting / Group by Cities */}
-                <button onClick={() => { setCurrentPage('home'); alert("Applied: Filter Buy City Cluster Active."); }} className="w-full bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
+                <button onClick={() => { setCurrentPage('home'); alert("Applied: Filter Buy City Cluster Active."); }} className="w-full bg-slate-50 border border-slate-200 text-slate-700 font-black text-xs p-3.5 rounded-xl flex items-center justify-between transition-all">
                   <span>📍 {lang === 'ur' ? 'شہر کے حساب سے ترتیب (Buy City)' : 'Sort / Group by Buy City'}</span>
                   <span className="text-slate-400">→</span>
                 </button>
-
               </div>
             </div>
           )}
