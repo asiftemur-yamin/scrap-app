@@ -22,7 +22,7 @@ export default function Home() {
   const [adWeight, setAdWeight] = useState('');
   const [adLocation, setAdLocation] = useState('Gujranwala');
   
-  // 📸 FREE PUBLIC CLOUD STORAGE ENGINE STATES
+  // 📸 ULTRA-SPEED CLOUDINARY ENGINE STATES
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   
@@ -30,9 +30,9 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const t = translations[lang];
 
-  // Load permanent session and cloud ads on start
+  // Load permanent session on application mount
   useEffect(() => {
-    setRatesUpdateTime("11 Jun 2026 at 11:30 AM");
+    setRatesUpdateTime("11 Jun 2026 at 11:45 AM");
     const timer = setTimeout(() => setShowSplash(false), 1500);
 
     if (typeof window !== 'undefined') {
@@ -69,7 +69,7 @@ export default function Home() {
     }
   };
 
-  // ⚡ FAST FREE CLOUD IMAGE UPLOAD ENGINE
+  // ☁️ FASTEST ROCKET CLOUDINARY UPLOAD GATEWAY
   const handleSelectAndUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -81,28 +81,28 @@ export default function Home() {
     const targetFile = files[0];
     setIsUploading(true);
 
-    // Free Public Upload Token Key
-    const IMGBB_API_KEY = "8f3cf588cf79a32c7bf6cfdf69502a5c"; 
+    // Unsigned Live Global Production Streaming Data
     const formData = new FormData();
-    formData.append('image', targetFile);
+    formData.append('file', targetFile);
+    formData.append('upload_preset', 'scrap_world_preset'); // Production open preset
 
     try {
-      const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      const response = await fetch(`https://api.cloudinary.com/v1_1/dms6m8vxt/image/upload`, {
         method: 'POST',
         body: formData
       });
 
       const resData = await response.json();
 
-      if (resData.success) {
-        // Permanent Global Internet URL generated instantly
-        const publicLiveUrl = resData.data.url;
+      if (resData.secure_url) {
+        // Permanent Global Internet URL generated instantly with HTTPS encryption
+        const publicLiveUrl = resData.secure_url;
         setUploadedImages([...uploadedImages, publicLiveUrl]);
       } else {
-        alert("Cloud gateway busy, try again!");
+        alert("Server routing filter active, please retry!");
       }
     } catch (err) {
-      alert("Cloud connection error!");
+      alert("Cloud gateway connection reset!");
     } finally {
       setIsUploading(false);
     }
@@ -127,11 +127,10 @@ export default function Home() {
       weight: adWeight,
       location: adLocation,
       icon: "📸",
-      images: uploadedImages, // Live links ready
+      images: uploadedImages, // Cloud URLs safely loaded here
       phone: userPhone || "Verified User"
     };
 
-    // Prepend nicely to current stream feed state
     setVisibleAds([newAdNode, ...visibleAds]);
     
     setUploadedImages([]);
@@ -231,19 +230,19 @@ export default function Home() {
           {currentPage === 'page2' && <div className="bg-white p-4 rounded-xl border">📞 WhatsApp Support: +923008641994</div>}
           {currentPage === 'page3' && <div className="bg-white p-4 rounded-xl border">🏭 Registered Plants List Active.</div>}
 
-          {/* 📢 DYNAMIC REAL PHOTO SELECT PAGE WITH FAST PUBLIC CLOUD BYPASS */}
+          {/* 📢 CLOUD IMAGE UPLOAD COMPONENT FOR FACTORY YARD PHOTOS */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl p-5 border shadow-md space-y-4">
               <h3 className="text-sm font-black text-[#1a365d] uppercase">📢 Post New Scrap Ad</h3>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 block">Photos (Max 3 - Uploads to Secure Server)</label>
+                <label className="text-[10px] font-black text-slate-400 block">Photos (Max 3 - High Speed Cloud Streaming)</label>
                 <div className="flex gap-3 items-center">
                   <input type="file" accept="image/*" ref={fileInputRef} onChange={handleSelectAndUploadImage} className="hidden" />
                   <div 
                     onClick={() => { if(!isUploading) fileInputRef.current?.click(); }} 
                     className="w-20 h-20 border-2 border-dashed rounded-xl flex items-center justify-center cursor-pointer bg-slate-50 text-xl active:scale-95"
                   >
-                    {isUploading ? <span className="text-[10px] font-black text-indigo-600 animate-pulse text-center p-1">Cloud Uploading...</span> : "📷"}
+                    {isUploading ? <span className="text-[10px] font-black text-emerald-600 animate-pulse text-center p-1">Cloud Uploading...</span> : "📷"}
                   </div>
                   {uploadedImages.map((img, i) => (
                     <div key={i} className="w-20 h-20 rounded-xl border overflow-hidden relative shadow-sm">
@@ -259,8 +258,8 @@ export default function Home() {
                   <input type="text" placeholder="Weight" value={adWeight} onChange={(e) => setAdWeight(e.target.value)} className="w-full bg-slate-50 border p-3 rounded-xl" />
                   <input type="number" placeholder="Price per kg" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} className="w-full bg-slate-50 border p-3 rounded-xl" />
                 </div>
-                <button type="submit" className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-3 rounded-xl text-xs uppercase disabled:opacity-50" disabled={isUploading}>
-                  {isUploading ? "Waiting for photos..." : "Post Ad Live ✓"}
+                <button type="submit" className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-3 rounded-xl text-xs uppercase" disabled={isUploading}>
+                  {isUploading ? "Uploading photos to cloud..." : "Post Ad Live ✓"}
                 </button>
               </form>
             </div>
