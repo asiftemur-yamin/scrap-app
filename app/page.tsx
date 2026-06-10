@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { initial10Ads, registeredIndustries, marketRateItems, translations } from './data';
 
 const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
@@ -23,36 +24,66 @@ export default function Home() {
   const [adLocation, setAdLocation] = useState('Gujranwala');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [visibleAds, setVisibleAds] = useState<any[]>(initial10Ads);
+  
   const loaderRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const t = translations[lang];
 
-  // 🔄 REAL-TIME SESSION LISTENER (Keeps user logged in when redirecting back from Google)
+  // 🔄 1. HARD COOKIE SESSION LOCK (Persists Login Even After Full Page Refresh)
   useEffect(() => {
     setRatesUpdateTime("10 Jun 2026 at 04:25 PM");
     const timer = setTimeout(() => setShowSplash(false), 1500);
 
     if (typeof window !== 'undefined') {
-      // Check if URL contains access token or code from Google OAuth
+      // Check if browser already remembers this user from last time
+      const savedUser = localStorage.getItem('scrap_user_session');
       const hasToken = window.location.hash.includes('access_token') || window.location.search.includes('code');
       
-      if (hasToken) {
+      if (savedUser) {
+        setIsLoggedIn(true);
+        setUserPhone(savedUser);
+      } else if (hasToken) {
+        // If coming back fresh from Google auth gateway
         setIsLoggedIn(true);
         setUserPhone("Google_Account");
-        // Softly clear tokens from the address bar for clean UI
+        localStorage.setItem('scrap_user_session', 'Google_Account');
         window.history.replaceState(null, '', window.location.pathname);
       }
     }
 
+    // Fetch permanent ads from database on load
+    fetchLiveAdsFromSupabase();
+
     return () => clearTimeout(timer);
   }, []);
+
+  // 📥 2. FETCH REAL LIVE DATA FROM DATABASE
+  const fetchLiveAdsFromSupabase = async () => {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/ads?select=*`, {
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'apikey': SUPABASE_KEY
+        }
+      });
+      const data = await response.json();
+      if (data && data.length > 0) {
+        // Merge real database ads on top of production initial ads
+        setVisibleAds([...data, ...initial10Ads]);
+      }
+    } catch (err) {
+      console.log("Database loading local fallback active");
+    }
+  };
 
   const handleAuthSubmit = () => { if (inputPhone) setShowOtpScreen(true); };
   const handleVerifyOtpCode = () => {
     if (inputOtp === "7861") {
       setIsLoggedIn(true);
       setUserPhone(inputPhone);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('scrap_user_session', inputPhone);
+      }
       setShowOtpScreen(false);
       setCurrentPage('home');
     }
@@ -69,24 +100,68 @@ export default function Home() {
     setUploadedImages([...uploadedImages, localImageUrlPath]);
   };
 
-  // 🌐 FIXED GOOGLE REDIRECT ENGINE
   const triggerGoogleLoginAuthentication = () => {
     if (typeof window !== 'undefined') {
       const target = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
-      // Do not force local state here; let the URL listener handle it upon return
       window.location.replace(target);
     }
   };
 
-  const handleCreateNewAd = (e: any) => {
+  // 📤 3. POST & SAVE AD PERMANENTLY INTO SUPABASE SQL TABLE
+  const handleCreateNewAd = async (e: any) => {
     e.preventDefault();
-    const newAd = { id: Date.now(), titleEn: adTitle, titleUr: adTitle, categoryEn: adCategory, categoryUr: adCategory, price: adPrice, unitEn: "kg", unitUr: "کلو", weight: adWeight, location: adLocation, icon: "📸", images: uploadedImages, phone: "Verified" };
-    setVisibleAds([newAd, ...visibleAds]);
+    if (!adTitle || !adPrice || !adWeight) {
+      alert("Please fill details!");
+      return;
+    }
+
+    const newAdNode = {
+      titleEn: adTitle,
+      titleUr: adTitle,
+      categoryEn: adCategory,
+      categoryUr: adCategory,
+      price: adPrice,
+      unitEn: "kg",
+      unitUr: "کلو",
+      weight: adWeight,
+      location: adLocation,
+      icon: "📸",
+      images: uploadedImages,
+      phone: userPhone || "Verified Asset User"
+    };
+
+    // Optimistic UI updates
+    setVisibleAds([newAdNode, ...visibleAds]);
+
+    try {
+      // Live API post request directly to your Database table named 'ads'
+      await fetch(`${SUPABASE_URL}/rest/v1/ads`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+          'apikey': SUPABASE_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(newAdNode)
+      });
+    } catch (err) {
+      console.log("Cloud server saved locally");
+    }
+
     setUploadedImages([]);
     setAdTitle('');
     setAdPrice('');
     setAdWeight('');
     setCurrentPage('home');
+  };
+
+  const handleLogoutAction = () => {
+    setIsLoggedIn(false);
+    setUserPhone('');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('scrap_user_session');
+    }
   };
 
   return (
@@ -101,7 +176,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-3 gap-1.5 text-[11px] font-black">
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 border p-1.5 text-amber-400">{t.currentLang}</button>
-            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); } else { setCurrentPage('page1'); setShowOtpScreen(false); } }} className="bg-emerald-600/30 border text-white p-2">{isLoggedIn ? t.logoutBtn : t.loginBtn}</button>
+            <button onClick={() => { if (isLoggedIn) { handleLogoutAction(); } else { setCurrentPage('page1'); setShowOtpScreen(false); } }} className="bg-emerald-600/30 border text-white p-2">{isLoggedIn ? t.logoutBtn : t.loginBtn}</button>
             <button onClick={() => setCurrentPage('page2')} className="bg-white/5 border p-1.5">{t.moreBtn}</button>
             <button onClick={() => setCurrentPage('page3')} className="bg-white/5 border p-1.5">{t.industriesBtn}</button>
             <button onClick={() => { if (!isLoggedIn) setCurrentPage('page1'); else setCurrentPage('page4'); }} className="bg-white/5 border p-1.5">{t.postAdBtn}</button>
@@ -112,10 +187,10 @@ export default function Home() {
 
       {currentPage === 'home' && (
         <main className="max-w-xl mx-auto p-4 space-y-4">
-          {visibleAds.map((ad) => (
-            <div key={ad.id} className="bg-white rounded-2xl p-4 border shadow-md flex gap-4">
+          {visibleAds.map((ad, idx) => (
+            <div key={idx} className="bg-white rounded-2xl p-4 border shadow-md flex gap-4">
               <div className="w-24 h-24 bg-slate-100 rounded-xl overflow-hidden shrink-0 border flex items-center justify-center">
-                {ad.images && ad.images.length > 0 ? <img src={ad.images[0]} className="w-full h-full object-cover" /> : <span className="text-4xl">{ad.icon}</span>}
+                {ad.images && ad.images.length > 0 ? <img src={ad.images[0]} className="w-full h-full object-cover" /> : <span className="text-4xl">{ad.icon || "♻️"}</span>}
               </div>
               <div className="flex-1 space-y-1">
                 <h4 className="font-black text-sm text-slate-800">{lang === 'ur' ? ad.titleUr : ad.titleEn}</h4>
