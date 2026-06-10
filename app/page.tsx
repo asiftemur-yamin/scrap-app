@@ -6,11 +6,11 @@ import { useState, useEffect, useRef } from 'react';
 const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 
-// 📦 10 REAL IMMERSIVE PRODUCTION ADS DATA WITH ALL 5 REQUIRED FIELDS
+// 📦 10 REAL IMMERSIVE PRODUCTION ADS DATA
 const initial10Ads = [
   { id: 1, titleEn: "Heavy Industrial HMS 1 Melting Iron", titleUr: "بھاری انڈسٹریل پگھلنے والا لوہا HMS 1", category: "Iron / Loha", price: "125", unit: "kg", weight: "12 Ton", location: "Khiali Gate, Gujranwala", icon: "🔩" },
   { id: 2, titleEn: "Pure Copper Cable Wire Scrap Grade A", titleUr: "خالص تانبا کیبل وائر اسکریپ گریڈ اے", category: "Copper / Tamba", price: "1,870", unit: "kg", weight: "450 Kg", location: "Sialkoti Gate, Gujranwala", icon: "🔌" },
-  { id: 3, titleEn: "Chaaloo Industrial Air Compressor 200L", titleUr: "چالو انڈسٹریل ائیر کمپریسر 200L", category: "Chaaloo Maal", price: "45,000", unit: "piece", weight: "1 Unit", location: "Gondlanwala Road, Gujranwala", icon: "💨" },
+  { id: 3, titleEn: "Chaaloo Industrial Air Compressor 200L", titleUr: "چالو انڈسٹریل ائیر کملپریسر 200L", category: "Chaaloo Maal", price: "45,000", unit: "piece", weight: "1 Unit", location: "Gondlanwala Road, Gujranwala", icon: "💨" },
   { id: 4, titleEn: "Bundled Pure Aluminum Beverage Cans", titleUr: "بنڈل ایلومینیم کولڈ ڈرنک کین اسکریپ", category: "Aluminum", price: "465", unit: "kg", weight: "35 Mund", location: "Badami Bagh, Lahore", icon: "🥫" },
   { id: 5, titleEn: "Mixed Crushed Plastic Drums Flakes HDPE", titleUr: "مکس کرشڈ پلاسٹک ڈرم اسکریپ اسٹاک", category: "Plastic", price: "98", unit: "kg", weight: "3 Ton", location: "Sheikhupura Road, Gujranwala", icon: "🛢️" },
   { id: 6, titleEn: "Silicon Solar Panels Scrap Lot 250W", titleUr: "سولر پینل اسکریپ لاٹ 250W", category: "Solar Panels", price: "4,500", unit: "piece", weight: "85 Pieces", location: "Shahdara, Lahore", icon: "☀️" },
@@ -37,7 +37,6 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuth, setShowAuth] = useState(false);
 
-  // Infinite Scroll State Node
   const [visibleAds, setVisibleAds] = useState<any[]>(initial10Ads);
   const loaderRef = useRef<HTMLDivElement>(null);
 
@@ -48,19 +47,18 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // 🔄 INFINITE SCROLL GENERATOR ENGINE
+  // INFINITE SCROLL LOOP ENGINE
   useEffect(() => {
     if (showSplash) return;
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        // Jab user bilkul end par pahuche ga, 10 ads ka naya lot peeche infinite loop mein jor diya jaye ga
         setTimeout(() => {
           setVisibleAds((prev) => [
             ...prev,
             ...initial10Ads.map((ad, idx) => ({ ...ad, id: prev.length + idx + 1 }))
           ]);
-        }, 300); // smooth loading delay
+        }, 300);
       }
     }, { threshold: 1.0 });
 
@@ -108,50 +106,54 @@ export default function Home() {
 
       {/* INFINITE MARKETPLACE ADS FEED */}
       <main className="max-w-xl mx-auto p-4 mt-6">
-        <h2 className="text-base font-black text-slate-800 uppercase tracking-wide border-b pb-2 mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-black text-slate-800 uppercase tracking-wide border-b pb-2 mb-4 flex items-center gap-2">
           <span>📋</span> {t.feedTitle}
         </h2>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
           {visibleAds.map((ad) => (
             <div 
               key={ad.id} 
-              className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col gap-3 hover:border-blue-400 transition-all cursor-pointer transform active:scale-[0.99]"
+              className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-md flex flex-col gap-4 hover:border-blue-400 transition-all cursor-pointer transform active:scale-[0.99]"
               onClick={() => alert(`Opening Ad: ${lang === 'ur' ? ad.titleUr : ad.titleEn}`)}
             >
-              {/* Top Row: Icon + Title */}
-              <div className="flex items-start gap-3.5">
-                <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center text-3xl shrink-0 border border-slate-200/50">
+              {/* Top Row: 50% Bigger Icon Box + 10% Bigger Title */}
+              <div className="flex items-start gap-4">
+                {/* 👑 PICTURE BOX 50% LARGER (w-14 h-14 -> w-20 h-20) */}
+                <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center text-4xl shrink-0 border border-slate-200 shadow-inner">
                   {ad.icon}
                 </div>
-                <div className="space-y-0.5">
-                  <h4 className="font-black text-sm text-slate-800 leading-snug">
+                <div className="space-y-1.5 flex-1">
+                  {/* 👑 HEADING 10% LARGER (text-sm -> text-base) */}
+                  <h4 className="font-black text-base text-slate-800 leading-snug">
                     {lang === 'ur' ? ad.titleUr : ad.titleEn}
                   </h4>
-                  <div className="text-[10px] bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded-md inline-block">
+                  {/* 👑 BADGE TEXT LARGER (text-[10px] -> text-xs) */}
+                  <div className="text-xs bg-indigo-50 text-indigo-700 font-extrabold px-2.5 py-1 rounded-md inline-block">
                     {t.catLabel} {ad.category}
                   </div>
                 </div>
               </div>
 
-              {/* Middle Row: Meta Specs Matrix */}
-              <div className="grid grid-cols-2 gap-2 bg-slate-50/50 p-2.5 rounded-xl border border-slate-100 text-[11px] font-bold text-slate-600">
+              {/* Middle Row: Meta Specs Matrix 10% Larger Writing (text-[11px] -> text-xs) */}
+              <div className="grid grid-cols-2 gap-3 bg-slate-50/70 p-3 rounded-xl border border-slate-100 text-xs font-bold text-slate-600">
                 <div>
-                  <span className="text-slate-400 block text-[9px] uppercase font-black">{t.weightLabel}</span>
-                  <span className="text-slate-800 font-extrabold">{ad.weight}</span>
+                  <span className="text-slate-400 block text-[10px] uppercase font-black mb-0.5">{t.weightLabel}</span>
+                  <span className="text-slate-900 font-black text-sm">{ad.weight}</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[9px] uppercase font-black">{t.locLabel}</span>
-                  <span className="text-slate-800 font-extrabold block truncate">📍 {ad.location}</span>
+                  <span className="text-slate-400 block text-[10px] uppercase font-black mb-0.5">{t.locLabel}</span>
+                  <span className="text-slate-900 font-black text-sm block truncate">📍 {ad.location}</span>
                 </div>
               </div>
 
-              {/* Bottom Row: Cost Value Display */}
-              <div className="flex justify-between items-center border-t border-slate-100 pt-2.5">
-                <span className="text-[10px] text-slate-400 font-black uppercase">{t.priceLabel}</span>
+              {/* Bottom Row: Cost Value Display (Writing scaled up) */}
+              <div className="flex justify-between items-center border-t border-slate-100 pt-3">
+                <span className="text-xs text-slate-400 font-black uppercase">{t.priceLabel}</span>
                 <div className="text-right">
-                  <span className="text-base font-black text-green-600">Rs.{ad.price}</span>
-                  <span className="text-[10px] text-slate-400 font-bold"> /{ad.unit}</span>
+                  {/* 👑 PRICE 10% LARGER (text-base -> text-lg) */}
+                  <span className="text-lg font-black text-green-600">Rs.{ad.price}</span>
+                  <span className="text-xs text-slate-400 font-bold"> /{ad.unit}</span>
                 </div>
               </div>
 
@@ -159,7 +161,7 @@ export default function Home() {
           ))}
         </div>
 
-        {/* INFINITE SCROLL DETECTION LAYER TRIGGER */}
+        {/* INFINITE SCROLL DETECTION LAYER */}
         <div ref={loaderRef} className="py-6 flex items-center justify-center text-slate-400 gap-2">
           <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
           <span className="text-xs font-black uppercase tracking-wider">Loading More Scrap Stock...</span>
