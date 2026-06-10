@@ -69,7 +69,8 @@ export default function Home() {
   }, [showSplash, visibleAds]);
 
   return (
-    <div className="min-h-screen bg-[#f2f6fa]" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', textAlign: lang === 'ur' ? 'right' : 'left' }} dir={lang === 'ur' ? 'rtl' : 'ltr'}>
+    // 👑 FIXED DIRECTION: Strictly 'ltr' and Left-Align taake Urdu par mirror na ho
+    <div className="min-h-screen bg-[#f2f6fa] text-left" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }} dir="ltr">
 
       {/* SPLASH SCREEN */}
       {showSplash && (
@@ -82,11 +83,10 @@ export default function Home() {
         </div>
       )}
 
-      {/* 👑 COMPACTED 15% SCREEN HEIGHT HEADER BANNER */}
+      {/* COMPACT 15% HEIGHT BANNER */}
       <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 shadow-xl rounded-b-2xl sticky top-0 z-50 border-b border-white/5">
         <div className="max-w-xl mx-auto space-y-2">
           
-          {/* Top Row: Brand Info Minimal Heights */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xl text-amber-400">🏭</span>
@@ -95,69 +95,43 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 💎 6 INTERFACE GRAPHIC GRID - COMPACT HEIGHTS FOR 15% TOTAL RATIO */}
+          {/* 6 GRAPHIC GRID BUTTONS */}
           <div className="grid grid-cols-3 gap-1.5">
-            
-            {/* BUTTON 1: Language */}
-            <button 
-              onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} 
-              className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
-            >
+            <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">🌐</span>
               <span className="text-[11px] font-black text-slate-200">{t.currentLang}</span>
             </button>
 
-            {/* BUTTON 2: Login */}
-            <button 
-              onClick={() => { if (isLoggedIn) setIsLoggedIn(false); else setShowAuth(true); }} 
-              className={`active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${isLoggedIn ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-600/20 border-emerald-500/20'}`}
-            >
+            <button onClick={() => { if (isLoggedIn) setIsLoggedIn(false); else setShowAuth(true); }} className={`active:scale-95 border rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all ${isLoggedIn ? 'bg-amber-500/10 border-amber-500/20' : 'bg-emerald-600/20 border-emerald-500/20'}`}>
               <span className="text-sm">{isLoggedIn ? '👤' : '🔐'}</span>
               <span className={`text-[11px] font-black ${isLoggedIn ? 'text-amber-400' : 'text-emerald-400'}`}>{isLoggedIn ? t.logoutBtn : t.loginBtn}</span>
             </button>
 
-            {/* BUTTON 3: More Menu */}
-            <button 
-              onClick={() => alert("Dashboard options link.")} 
-              className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
-            >
+            <button onClick={() => alert("Dashboard options link.")} className="bg-white/5 active:scale-95 border border-white/10 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">☰</span>
               <span className="text-[11px] font-black text-slate-200">{t.moreBtn}</span>
             </button>
 
-            {/* BUTTON 4: Sort Matrix */}
-            <button 
-              onClick={() => alert("Sorting parameters activated.")} 
-              className="bg-indigo-600/20 border border-indigo-500/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
-            >
+            <button onClick={() => alert("Sorting parameters activated.")} className="bg-indigo-600/20 border border-indigo-500/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">📊</span>
               <span className="text-[11px] font-black text-indigo-400">{t.sortBtn}</span>
             </button>
 
-            {/* BUTTON 5: Post Ad Terminal */}
-            <button 
-              onClick={() => { if (!isLoggedIn) setShowAuth(true); else alert("Live ad system triggered."); }} 
-              className="bg-sky-500/20 border border-sky-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
-            >
+            <button onClick={() => { if (!isLoggedIn) setShowAuth(true); else alert("Live ad system triggered."); }} className="bg-sky-500/20 border border-sky-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all" >
               <span className="text-sm">📢</span>
               <span className="text-[11px] font-black text-sky-400">{t.postAdBtn}</span>
             </button>
 
-            {/* BUTTON 6: Mandi Rates Engine */}
-            <button 
-              onClick={() => alert("Sliding framework to Local Mandi Rates.")} 
-              className="bg-amber-500/20 border border-amber-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all"
-            >
+            <button onClick={() => alert("Sliding framework to Local Mandi Rates.")} className="bg-amber-500/20 border border-amber-400/20 active:scale-95 rounded-xl py-1.5 px-2 flex items-center justify-center gap-1.5 transition-all">
               <span className="text-sm">💰</span>
               <span className="text-[11px] font-black text-amber-400">{t.ratesBtn}</span>
             </button>
-
           </div>
 
         </div>
       </header>
 
-      {/* 85% SCREEN HEIGHT REMAINING: INFINITE MARKETPLACE ADS FEED */}
+      {/* INFINITE MARKETPLACE ADS FEED */}
       <main className="max-w-xl mx-auto p-4 mt-2">
         <h2 className="text-base font-black text-slate-800 uppercase tracking-wide border-b pb-1.5 mb-3 flex items-center gap-2">
           <span>📋</span> {t.feedTitle}
@@ -170,21 +144,23 @@ export default function Home() {
               className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-md flex flex-col gap-3 hover:border-blue-400 transition-all cursor-pointer transform active:scale-[0.99]"
               onClick={() => alert(`Opening Ad Details: ${lang === 'ur' ? ad.titleUr : ad.titleEn}`)}
             >
-              <div className="flex items-center gap-4">
-                {/* Left Side: Half Screen Se Thoda Kam Size Picture Box */}
+              {/* 👑 FIXED ROW: Left to Right execution always */}
+              <div className="flex items-center gap-4 text-left">
+                
+                {/* Fixed Left Side: Picture Box */}
                 <div className="w-36 h-36 bg-slate-100 rounded-2xl flex items-center justify-center text-6xl shrink-0 border border-slate-200 shadow-inner">
                   {ad.icon}
                 </div>
 
-                {/* Right Side: Writing Details Layout Matrix */}
-                <div className="flex-1 space-y-2 overflow-hidden">
+                {/* Fixed Right Side: Writing Details Layout */}
+                <div className="flex-1 space-y-2 overflow-hidden text-left">
                   <h4 className="font-black text-base text-slate-800 leading-snug line-clamp-2">
                     {lang === 'ur' ? ad.titleUr : ad.titleEn}
                   </h4>
                   <div className="text-[11px] bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded-md inline-block">
                     {ad.category}
                   </div>
-                  <div className="space-y-1 text-xs font-bold text-slate-600">
+                  <div className="space-y-1 text-xs font-bold text-slate-600 text-left">
                     <div className="truncate">
                       <span className="text-slate-400 text-[10px] uppercase font-black">{t.weightLabel} </span>
                       <span className="text-slate-800">{ad.weight}</span>
@@ -195,10 +171,11 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
+
               </div>
 
               {/* Bottom Row: Cost Tag Display */}
-              <div className="flex justify-between items-center border-t border-slate-100 pt-2">
+              <div className="flex justify-between items-center border-t border-slate-100 pt-2 text-left">
                 <span className="text-xs text-slate-400 font-black uppercase">{t.priceLabel}</span>
                 <div className="text-right">
                   <span className="text-lg font-black text-green-600">Rs.{ad.price}</span>
@@ -217,7 +194,7 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Auth Modal Quick Bypasser */}
+      {/* Auth Modal */}
       {showAuth && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[300] flex flex-col justify-center p-4">
           <div className="max-w-md w-full mx-auto bg-white rounded-3xl shadow-2xl p-6 space-y-4 text-center">
