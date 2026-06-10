@@ -72,6 +72,22 @@ export default function Home() {
     }
   };
 
+  const handleAuthSubmit = () => { 
+    if (inputPhone) setShowOtpScreen(true); 
+  };
+
+  const handleVerifyOtpCode = () => {
+    if (inputOtp === "7861") {
+      setIsLoggedIn(true);
+      setUserPhone(inputPhone);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('scrap_user_session', inputPhone);
+      }
+      setShowOtpScreen(false);
+      setCurrentPage('home');
+    }
+  };
+
   // ☁️ REAL TIME CLOUD IMAGE UPLOAD TO SUPABASE BUCKET
   const handleSelectAndUploadImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -84,12 +100,10 @@ export default function Home() {
     const targetFile = files[0];
     setIsUploading(true);
 
-    // Create unique name for image file to prevent overwriting
     const fileExtension = targetFile.name.split('.').pop();
     const uniqueFileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
 
     try {
-      // API call to upload raw image binary directly into storage bucket
       const uploadUrl = `${SUPABASE_URL}/storage/v1/object/scrap-images/${uniqueFileName}`;
       const uploadResponse = await fetch(uploadUrl, {
         method: 'POST',
@@ -102,7 +116,6 @@ export default function Home() {
       });
 
       if (uploadResponse.ok) {
-        // Generate Public Global Internet URL for this uploaded picture
         const publicLiveUrl = `${SUPABASE_URL}/storage/v1/object/public/scrap-images/${uniqueFileName}`;
         setUploadedImages([...uploadedImages, publicLiveUrl]);
       } else {
@@ -133,7 +146,7 @@ export default function Home() {
       weight: adWeight,
       location: adLocation,
       icon: "📸",
-      images: uploadedImages, // Array of public internet image URLs
+      images: uploadedImages,
       phone: userPhone || "Verified Asset User"
     };
 
@@ -150,7 +163,7 @@ export default function Home() {
       });
 
       if (response.ok) {
-        fetchLiveAdsFromSupabase(); // Reload completely fresh global stream
+        fetchLiveAdsFromSupabase();
         setUploadedImages([]);
         setAdTitle('');
         setAdPrice('');
@@ -216,7 +229,7 @@ export default function Home() {
               {!showOtpScreen ? (
                 <div className="space-y-4">
                   <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="Mobile Number" className="w-full bg-white border-2 p-3 rounded-xl font-black text-slate-900" />
-                  <button onClick={() => if (inputPhone) setShowOtpScreen(true)} className="w-full bg-[#1a365d] text-white font-black py-3 rounded-xl text-xs uppercase">Send OTP 📲</button>
+                  <button onClick={handleAuthSubmit} className="w-full bg-[#1a365d] text-white font-black py-3 rounded-xl text-xs uppercase">Send OTP 📲</button>
                   <div className="border-t pt-4">
                     <button type="button" onClick={triggerGoogleLoginAuthentication} className="w-full bg-white hover:bg-slate-50 border-2 p-3 rounded-xl flex items-center justify-center gap-3 active:scale-95">
                       <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -232,7 +245,7 @@ export default function Home() {
               ) : (
                 <div className="space-y-4 text-center">
                   <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-white border-2 text-center text-slate-900 font-black p-3 rounded-xl" />
-                  <button onClick={() => { if (inputOtp === "7861") { setIsLoggedIn(true); localStorage.setItem('scrap_user_session', inputPhone); setUserPhone(inputPhone); setShowOtpScreen(false); setCurrentPage('home'); } }} className="w-full bg-emerald-600 text-white font-black py-3 rounded-xl text-xs">Verify Code ✓</button>
+                  <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-3 rounded-xl text-xs">Verify Code ✓</button>
                 </div>
               )}
             </div>
@@ -241,7 +254,7 @@ export default function Home() {
           {currentPage === 'page2' && <div className="bg-white p-4 rounded-xl border">📞 WhatsApp Support: +923008641994</div>}
           {currentPage === 'page3' && <div className="bg-white p-4 rounded-xl border">🏭 Registered Plants List Active.</div>}
 
-          {/* 📢 PRODUCTION CLOUD IMAGE PICKER */}
+          {/* 📢 CLOUD IMAGE PICKER CONTAINER */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl p-5 border shadow-md space-y-4">
               <h3 className="text-sm font-black text-[#1a365d] uppercase">📢 Post New Scrap Ad</h3>
