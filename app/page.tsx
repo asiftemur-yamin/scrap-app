@@ -238,9 +238,11 @@ export default function Home() {
       alert("Invalid Code! Please try again.");
     }
   };
-
-  const handleGoogleLoginMock = () => {
-    setIsLoggedIn(true);
+const handleGoogleLoginReal = () => {
+    const oauthUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
+    window.location.href = oauthUrl;
+  };
+ 
     setUserPhone("Google Account User");
     if (typeof window !== 'undefined') {
       localStorage.setItem('scrap_user_session', "Google Trader");
