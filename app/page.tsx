@@ -84,7 +84,6 @@ export default function Home() {
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
   const [currentPage, setCurrentPage] = useState<string>('home'); 
   
-  // Dynamic State Engine Connected with Cloud Database
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
   const [filteredAds, setFilteredAds] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -118,7 +117,6 @@ export default function Home() {
       });
       if (response.ok) {
         const data = await response.json();
-        // Merge Supabase production records with structural fallbacks
         const combined = data.length > 0 ? data : initial10Ads;
         setVisibleAds(combined);
         setFilteredAds(combined);
@@ -238,17 +236,11 @@ export default function Home() {
       alert("Invalid Code! Please try again.");
     }
   };
-const handleGoogleLoginReal = () => {
+
+  // 🔥 📲 REAL GOOGLE LOGIN ROUTER LINK (ACCOUNTS PAGER FIX)
+  const handleGoogleLoginReal = () => {
     const oauthUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
     window.location.href = oauthUrl;
-  };
- 
-    setUserPhone("Google Account User");
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('scrap_user_session', "Google Trader");
-    }
-    setCurrentPage('home');
-    alert("Google Service Connection Successful!");
   };
 
   const handlePostAdLiveSubmit = async () => {
@@ -423,7 +415,7 @@ const handleGoogleLoginReal = () => {
             {t.backBtn}
           </button>
 
-          {/* PAGE 1: AUTHENTICATION FLOW (WAZEH LOGINS CONTROL) */}
+          {/* PAGE 1: AUTHENTICATION FLOW (REAL GOOGLE INTERFACE LOADED) */}
           {currentPage === 'page1' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-4">
               {!showOtpScreen ? (
@@ -440,7 +432,8 @@ const handleGoogleLoginReal = () => {
                     <div className="flex-grow border-t-2 border-slate-300"></div>
                   </div>
 
-                  <button onClick={handleGoogleLoginMock} className="w-full bg-white text-slate-800 border-2 border-slate-500 font-black py-3.5 rounded-xl text-xs uppercase flex items-center justify-center gap-2 shadow-sm">
+                  {/* 🌐 DIRECT TO REAL GOOGLE ACCOUNTS PAGE CHANNELS */}
+                  <button onClick={handleGoogleLoginReal} className="w-full bg-white text-slate-800 border-2 border-slate-500 font-black py-3.5 rounded-xl text-xs uppercase flex items-center justify-center gap-2 shadow-sm active:bg-slate-100">
                     🌐 Sign In With Google Account
                   </button>
                 </div>
