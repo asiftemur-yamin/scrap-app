@@ -48,14 +48,13 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en'); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // USER PROFILE STATES
   const [userPhone, setUserPhone] = useState('');
   const [profileName, setProfileName] = useState('Scrap Trader');
 
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
   const [currentPage, setCurrentPage] = useState<string>('home'); 
   
-  // CHAT BOX POPUP SYSTEM STATES
+  // CHAT SYSTEM STATES
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<any[]>([
     { id: 1, sender: "Zubair (Gujranwala)", text: "Loha HMS 1 ka kya rate chal raha hai aaj?", time: "10:15 AM" },
@@ -63,20 +62,20 @@ export default function Home() {
   ]);
   const [newChatText, setNewChatText] = useState('');
 
-  // DATA FILTER CORES
+  // DATA FILTERS MATRIX
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
   const [filteredAds, setFilteredAds] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [sortBy, setSortBy] = useState<string>('latest');
 
-  // FORM INPUTS
+  // FORM STATES
   const [adTitle, setAdTitle] = useState('');
   const [adWeight, setAdWeight] = useState('');
   const [adPrice, setAdPrice] = useState('');
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]); 
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // SECURITY AND STEP CONTEXTS
+  // REGISTRATION & OTP CONTEXTS
   const [inputPhone, setInputPhone] = useState('');
   const [inputProfileNameForm, setInputProfileNameForm] = useState('');
   const [showOtpScreen, setShowOtpScreen] = useState(false);
@@ -110,15 +109,17 @@ export default function Home() {
     }
   };
 
-  // 🔄 URL AUTH TOKEN READING FOR REAL GOOGLE REDIRECT SUCCESS
+  // 🔄 SPLASH AND AUTH TOKEN REALTIME LOOKUP
   useEffect(() => {
+    const timer = setTimeout(() => { setShowSplash(false); }, 1500);
+
     if (typeof window !== 'undefined') {
       const hash = window.location.hash;
       if (hash && hash.includes('access_token')) {
         setIsLoggedIn(true);
-        setProfileName("Google verified User");
-        setUserPhone("Google Secure Account");
-        localStorage.setItem('scrap_user_session', "Google Secure Account");
+        setProfileName("Google Verified User");
+        setUserPhone("Google Account");
+        localStorage.setItem('scrap_user_session', "Google Account");
         localStorage.setItem('scrap_profile_name', "Google Verified User");
         window.location.hash = ""; 
       } else {
@@ -131,12 +132,13 @@ export default function Home() {
         }
       }
     }
-    setRatesUpdateTime("12 Jun 2026 at 12:05 AM");
+    setRatesUpdateTime("12 Jun 2026 at 12:40 AM");
     fetchCloudAdsLive();
-    const timer = setTimeout(() => { setShowSplash(false); }, 1500);
+
     return () => clearTimeout(timer);
   }, []);
 
+  // Live Sorting & Filter Process Engine
   useEffect(() => {
     let result = [...visibleAds];
     if (selectedCategory !== 'All') {
@@ -210,7 +212,7 @@ export default function Home() {
 
   const handleCompleteNameRegistration = () => {
     if (!inputProfileNameForm.trim()) {
-      alert("Please enter your name to complete setup!");
+      alert("Please enter your name!");
       return;
     }
     setIsLoggedIn(true);
@@ -264,14 +266,18 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#f2f6fa] text-left font-sans pb-24 relative">
 
-      {/* SPLASH SCREEN */}
+      {/* SPLASH SCREEN (FIXED FOR AIRTIGHT PRODUCTION TRIGGER) */}
       {showSplash && (
         <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
-          <h1 className="text-4xl font-black">SCRAP WORLD</h1>
+          <div className="text-center space-y-3">
+            <div className="text-7xl animate-bounce">🏭♻️</div>
+            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400 tracking-wider">SCRAP WORLD</h1>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Live Database Connection Engine</p>
+          </div>
         </div>
       )}
 
-      {/* TOP HEADER COMPACT SYSTEM */}
+      {/* TOP HEADER SYSTEM */}
       <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 shadow-xl sticky top-0 z-50 rounded-b-2xl">
         <div className="max-w-xl mx-auto space-y-2">
           <div className="flex items-center justify-between">
@@ -298,22 +304,29 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 🏠 HOME FEED CHANNELS */}
+      {/* 🏠 MAIN HOME FEED VIEW LINK */}
       {currentPage === 'home' && (
         <main className="max-w-xl mx-auto p-4 space-y-4">
-          <div className="bg-[#142d52] rounded-2xl p-3.5 text-white shadow-lg">
-            <div className="grid grid-cols-3 gap-2">
-              {['All', 'Loha', 'Plastic', 'Copper', 'Batteries', 'Paper'].map((cat) => (
-                <button key={cat} onClick={() => setSelectedCategory(cat)} className={`py-2 rounded-xl font-black text-xs border transition-all ${selectedCategory === cat ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-white/10 text-white border-white/5'}`}>{cat === 'All' ? '✨ All' : cat}</button>
-              ))}
+          
+          {/* CONTROL PANEL ROW */}
+          <div className="grid grid-cols-2 gap-3">
+            <button onClick={() => setSortBy(sortBy === 'latest' ? 'price-low' : sortBy === 'price-low' ? 'price-high' : 'latest')} className="bg-white border-2 border-slate-300 rounded-xl py-3 px-4 text-slate-700 text-xs font-black shadow-sm active:bg-slate-50">
+              📊 Sort: {sortBy === 'latest' ? 'Latest' : sortBy === 'price-low' ? 'Low Price' : 'High Price'}
+            </button>
+            <button onClick={() => setCurrentPage('page7')} className="bg-gradient-to-r from-[#1a365d] to-[#142d52] text-white rounded-xl py-3 px-4 text-xs font-black shadow-sm flex items-center justify-center gap-2">
+              🎛️ {t.filterSimple}
+            </button>
+          </div>
+
+          {/* ACTIVE FILTER DISPLAYER ROW */}
+          {selectedCategory !== 'All' && (
+            <div className="flex items-center justify-between bg-indigo-50 border-2 border-indigo-200 p-3 rounded-xl">
+              <span className="text-xs font-black text-indigo-900">Active Filter: <b>{selectedCategory}</b></span>
+              <button onClick={() => setSelectedCategory('All')} className="text-xs font-black text-red-600 bg-white border px-2 py-0.5 rounded-md">Clear ✕</button>
             </div>
-          </div>
+          )}
 
-          <div className="flex items-center justify-between bg-white p-3 rounded-xl border-2 border-slate-300 shadow-sm">
-            <button onClick={() => setSortBy(sortBy === 'latest' ? 'price-low' : sortBy === 'price-low' ? 'price-high' : 'latest')} className="bg-slate-100 px-3 py-1.5 rounded-lg text-xs font-black text-slate-700">📊 Sort: {sortBy}</button>
-            <button onClick={() => { setSelectedCategory('All'); setSortBy('latest'); }} className="text-xs font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg">Reset 🎛️</button>
-          </div>
-
+          {/* ADS STREAM */}
           <div className="space-y-4">
             {filteredAds.map((ad) => (
               <div key={ad.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-md flex flex-col gap-3">
@@ -341,12 +354,15 @@ export default function Home() {
         </main>
       )}
 
-      {/* SUBPAGE FRAMEWORKS CONTROLS */}
+      {/* SUBPAGE TERMINAL MATRIX */}
       {currentPage !== 'home' && (
         <main className="max-w-xl mx-auto p-4 mt-2">
-          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">← Back Feed</button>
+          
+          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">
+            {t.backBtn}
+          </button>
 
-          {/* PAGE 1: AUTH CHANNELS WITH NAME REQUEST FLUID FORM */}
+          {/* PAGE 1: AUTHENTICATION FLOW */}
           {currentPage === 'page1' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-4">
               {!showOtpScreen && !showNameFormScreen && (
@@ -382,23 +398,22 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 2: MORE OPTIONS WITH PROFILE INJECTION MODULE */}
+          {/* PAGE 2: PROFILE VIEW NODE */}
           {currentPage === 'page2' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-md space-y-6 text-left">
               <div className="border-b-2 border-slate-100 pb-4">
                 <h3 className="font-black text-xl text-slate-900">👤 PROFILE TERMINAL</h3>
-                <p className="text-xs text-slate-400 font-bold mt-0.5">Scrap World Verified Access Profile Node</p>
               </div>
               <div className="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 space-y-3 font-black text-sm text-slate-800">
-                <div>📌 Status: <span className={isLoggedIn ? "text-emerald-600 font-black" : "text-red-500"}>{isLoggedIn ? "Active Session (Logged In)" : "Guest Mode"}</span></div>
-                <div>👤 Account Name: <span className="text-slate-900">{isLoggedIn ? profileName : "Guest Trader"}</span></div>
-                <div>📱 Registration ID: <span className="text-slate-900">{isLoggedIn ? userPhone : "Not Registered"}</span></div>
+                <div>📌 Status: <span className={isLoggedIn ? "text-emerald-600 font-black" : "text-red-500"}>{isLoggedIn ? "Active Session" : "Guest Mode"}</span></div>
+                <div>👤 Account Name: <span className="text-slate-900">{profileName}</span></div>
+                <div>📱 Registration ID: <span className="text-slate-900">{userPhone || "None"}</span></div>
                 <div>🏅 Member Rank: <span className="text-amber-500">Premium Scrap Partner</span></div>
               </div>
             </div>
           )}
 
-          {/* PAGE 3: INDUSTRIES */}
+          {/* PAGE 3: REGISTERED INDUSTRIES */}
           {currentPage === 'page3' && (
             <div className="space-y-3 text-left">
               {registeredIndustries.map((ind) => (
@@ -410,7 +425,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 4: POST AD */}
+          {/* PAGE 4: POST AD LIVE STATION */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left">
               <label className="text-xs font-black text-slate-700 uppercase tracking-wider">Photos (Max 3)</label>
@@ -437,7 +452,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 5: RATES HUB */}
+          {/* PAGE 5: LIVE MARKET RATES */}
           {currentPage === 'page5' && (
             <div className="bg-white rounded-2xl border-2 border-slate-200 p-4 shadow-md divide-y-2 divide-slate-100 text-left">
               {marketRateItems.map((item) => (
@@ -455,10 +470,35 @@ export default function Home() {
             </div>
           )}
 
+          {/* 🎛️ PAGE 7: MASTER CATEGORY FILTER HUB (INTEGRATED INSIDE BUTTON) */}
+          {currentPage === 'page7' && (
+            <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left animate-fade-in">
+              <div>
+                <h3 className="font-black text-lg text-[#1a365d] uppercase">Select Scrap Category</h3>
+                <p className="text-xs text-slate-400 font-bold mt-0.5">Choose a precise material type to filter the current market load stream.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { name: 'All Items', filterKey: 'All', icon: '✨' },
+                  { name: 'Loha / Iron', filterKey: 'Loha', icon: '🔩' },
+                  { name: 'Plastic Material', filterKey: 'Plastic', icon: '🥤' },
+                  { name: 'Copper / Tamba', filterKey: 'Copper', icon: '⚡' },
+                  { name: 'Batteries Scrap', filterKey: 'Batteries', icon: '🔋' },
+                  { name: 'Paper / Gatta', filterKey: 'Paper', icon: '📦' }
+                ].map((catItem) => (
+                  <button key={catItem.filterKey} onClick={() => { setSelectedCategory(catItem.filterKey); setCurrentPage('home'); }} className={`p-4 border-2 rounded-2xl font-black text-xs flex flex-col items-center justify-center gap-2 shadow-sm transition-all active:scale-95 ${selectedCategory === catItem.filterKey ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-slate-50 text-slate-800 border-slate-200 hover:bg-slate-100'}`}>
+                    <span className="text-3xl">{catItem.icon}</span>
+                    <span>{catItem.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
         </main>
       )}
 
-      {/* 💬 FLOATING POPUP TRADER CHAT SYSTEM (BOTTOM-LEFT DESIGNATED CORNER FIXED) */}
+      {/* 💬 FLOATING TRADER CHAT POPUP SYSTEM */}
       <div className="fixed bottom-6 left-6 z-[99]">
         {!isChatOpen ? (
           <button onClick={() => setIsChatOpen(true)} className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white rounded-full p-4 shadow-2xl flex items-center justify-center gap-2 border-2 border-white animate-pulse">
@@ -467,7 +507,6 @@ export default function Home() {
           </button>
         ) : (
           <div className="bg-white rounded-2xl shadow-2xl border-2 border-slate-400 w-80 h-96 flex flex-col overflow-hidden">
-            {/* Chat Box Header Channel */}
             <div className="bg-gradient-to-r from-[#1a365d] to-[#0f2444] p-3 text-white flex justify-between items-center border-b font-black">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 bg-emerald-400 rounded-full inline-block animate-ping"></span>
@@ -475,8 +514,6 @@ export default function Home() {
               </div>
               <button onClick={() => setIsChatOpen(false)} className="text-white bg-white/10 w-6 h-6 rounded-full text-xs font-bold">✕</button>
             </div>
-            
-            {/* Chat Content Messages Block */}
             <div className="flex-1 p-3 overflow-y-auto space-y-2.5 bg-slate-50 text-left text-xs">
               {chatMessages.map((msg) => (
                 <div key={msg.id} className="bg-white p-2.5 rounded-xl border border-slate-200 space-y-1 shadow-sm">
@@ -488,8 +525,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-
-            {/* Chat Input Footer Controls */}
             <div className="p-2 bg-white border-t-2 flex gap-1.5 items-center">
               <input type="text" value={newChatText} onChange={(e) => setNewChatText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleTriggerSendMessage(); }} placeholder="Type rate/message..." className="flex-1 bg-slate-100 text-slate-900 border border-slate-300 rounded-xl px-3 py-2 text-xs font-black outline-none" />
               <button onClick={handleTriggerSendMessage} className="bg-indigo-600 text-white font-black text-xs px-3 py-2 rounded-xl">Send</button>
