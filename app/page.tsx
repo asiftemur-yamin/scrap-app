@@ -2,13 +2,12 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-// 👑 LIVE CONNECTED DATABASE CONFIG
+// 👑 LIVE CONNECTED CLOUD DATABASE CONFIG (SUPABASE)
 const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 
 // 🔑 SIMPAPP SMS GATEWAY CONFIGURATION
 const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
-
 const PART1 = "sk_live_bf8247ae6c3848449222f6f";
 const PART2 = "eab290da8020171b4f4df3e06247806b62d56be2a";
 const SMS_API_KEY = PART1 + PART2; 
@@ -19,20 +18,52 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userPhone, setUserPhone] = useState('');
   const [currentPage, setCurrentPage] = useState<string>('home'); 
+  
+  // 📢 REAL-TIME CLOUD ADS STORAGE STATE
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
+
+  // FORM INPUTS
   const [adTitle, setAdTitle] = useState('');
   const [adWeight, setAdWeight] = useState('');
   const [adPrice, setAdPrice] = useState('');
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]); 
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // 🔐 STATE BASED OTP STORAGE (FIXED MATCHING ERROR)
+  // AUTHENTICATION SECURITY STATES
   const [inputPhone, setInputPhone] = useState('');
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [inputOtp, setInputOtp] = useState('');
   const [secureActiveOtp, setSecureActiveOtp] = useState('');
 
+  // 🔄 FETCH DATA FROM CLOUD DATABASE ON REFRESH
+  const fetchCloudAdsLive = async () => {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads?select=*&order=created_at.desc`, {
+        method: "GET",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json"
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setVisibleAds(data);
+      }
+    } catch (err) {
+      console.error("Cloud Fetch Error:", err);
+    }
+  };
+
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedUser = localStorage.getItem('scrap_user_session');
+      if (savedUser) {
+        setIsLoggedIn(true);
+        setUserPhone(savedUser);
+      }
+    }
+    fetchCloudAdsLive(); // Pull data from cloud database immediately
     const timer = setTimeout(() => { setShowSplash(false); }, 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -61,7 +92,6 @@ export default function Home() {
       return;
     }
 
-    // Securely set the generated token in state memory
     const generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
     setSecureActiveOtp(generatedOtp);
 
@@ -70,7 +100,7 @@ export default function Home() {
     else if (!formattedNumber.startsWith('+')) formattedNumber = '+' + formattedNumber;
 
     try {
-      const response = await fetch(SMS_API_URL, {
+      await fetch(SMS_API_URL, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -78,7 +108,7 @@ export default function Home() {
         },
         body: JSON.stringify({
           phoneNumber: formattedNumber,
-          message: `Scrap World Verification Code: ${generatedOtp}. Powered by R-H-A-F Recycling.`
+          message: `Scrap World Verification Code: ${generatedOtp}`
         })
       });
 
@@ -93,10 +123,12 @@ export default function Home() {
   };
 
   const handleVerifyOtpCode = () => {
-    // Exact structural matching logic
     if (inputOtp === secureActiveOtp || inputOtp === "7861") {
       setIsLoggedIn(true);
       setUserPhone(inputPhone);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('scrap_user_session', inputPhone);
+      }
       setShowOtpScreen(false);
       setCurrentPage('home');
     } else {
@@ -104,23 +136,45 @@ export default function Home() {
     }
   };
 
-  const handlePostAdLiveSubmit = () => {
+  // 📢 🚀 INJECT ADS DIRECTLY INTO SUPABASE CLOUD DATABASE
+  const handlePostAdLiveSubmit = async () => {
     if (!adTitle || !adWeight || !adPrice) {
       alert("Please fill all fields");
       return;
     }
-    const newAdRow = {
-      id: visibleAds.length + 1,
-      titleEn: adTitle, titleUr: adTitle,
-      price: Number(adPrice).toLocaleString(),
-      weight: adWeight, location: "Gujranwala",
-      icon: "🔩", image: uploadedPhotos.length > 0 ? uploadedPhotos[0] : null
-    };
 
-    setVisibleAds((prev) => [newAdRow, ...prev]); 
-    alert("Ad posted live on the homepage successfully!");
-    setAdTitle(''); setAdWeight(''); setAdPrice(''); setUploadedPhotos([]);
-    setCurrentPage('home');
+    const base64Image = uploadedPhotos.length > 0 ? uploadedPhotos[0] : null;
+
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads`, {
+        method: "POST",
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=representation"
+        },
+        body: JSON.stringify({
+          title: adTitle,
+          weight: adWeight,
+          price: Number(adPrice).toLocaleString(),
+          image_url: base64Image,
+          user_phone: userPhone || "Anonymous Trader"
+        })
+      });
+
+      if (response.ok) {
+        alert("Mubarak ho! Ad successfully pushed to Cloud Database!");
+        setAdTitle(''); setAdWeight(''); setAdPrice(''); setUploadedPhotos([]);
+        fetchCloudAdsLive(); // Refresh the list from cloud instantly
+        setCurrentPage('home');
+      } else {
+        alert("Cloud Save Failed. Check if RLS is disabled in Supabase.");
+      }
+    } catch (err) {
+      console.error("Network Error:", err);
+      alert("Database connectivity error.");
+    }
   };
 
   return (
@@ -140,7 +194,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-3 gap-1.5">
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 rounded-xl py-1.5 px-2 text-[11px] font-black text-amber-400">🌐 {lang === 'en' ? 'اردو' : 'English'}</button>
-            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); } else { setCurrentPage('page1'); setShowOtpScreen(false); } }} className="rounded-xl py-1.5 px-2 text-[11px] font-black bg-emerald-600/20 text-emerald-400">
+            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); localStorage.removeItem('scrap_user_session'); } else { setCurrentPage('page1'); setShowOtpScreen(false); } }} className="rounded-xl py-1.5 px-2 text-[11px] font-black bg-emerald-600/20 text-emerald-400">
               {isLoggedIn ? 'Logout 👤' : 'Login'}
             </button>
             <button onClick={() => setCurrentPage('page4')} className="bg-sky-500/20 border text-sky-400 rounded-xl py-1.5 px-2 text-[11px] font-black">Post Ad 📢</button>
@@ -160,11 +214,12 @@ export default function Home() {
                 <div key={ad.id} className="bg-white rounded-2xl p-4 border shadow-md flex flex-col gap-3">
                   <div className="flex items-center gap-4">
                     <div className="w-36 h-36 bg-slate-100 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 border">
-                      {ad.image ? <img src={ad.image} alt="Scrap" className="w-full h-full object-cover" /> : <span className="text-6xl">{ad.icon}</span>}
+                      {ad.image_url ? <img src={ad.image_url} alt="Scrap" className="w-full h-full object-cover" /> : <span className="text-6xl">🔩</span>}
                     </div>
                     <div className="flex-1 space-y-2">
-                      <h4 className="font-black text-base text-slate-800">{ad.titleEn}</h4>
+                      <h4 className="font-black text-base text-slate-800">{ad.title}</h4>
                       <div className="text-[11px] bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded-md inline-block">{ad.weight} | Rs. {ad.price}</div>
+                      <div className="text-[9px] text-slate-400 font-bold">Seller: {ad.user_phone}</div>
                     </div>
                   </div>
                 </div>
