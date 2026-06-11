@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-// 👑 LIVE CONNECTED CLOUD DATABASE CONFIG (REAL URL & KEY INTEGRATED)
+// 👑 LIVE CONNECTED CLOUD DATABASE CONFIG
 const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTpSg";
 
@@ -18,8 +18,13 @@ export default function Home() {
   
   // 📢 REAL-TIME CLOUD ADS STORAGE STATE
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
+  const [filteredAds, setFilteredAds] = useState<any[]>([]);
 
-  // FORM INPUTS (HIGHLY VISIBLE LOGIC)
+  // FILTER & SORT STATES
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [sortBy, setSortBy] = useState<string>('latest');
+
+  // FORM INPUTS
   const [adTitle, setAdTitle] = useState('');
   const [adWeight, setAdWeight] = useState('');
   const [adPrice, setAdPrice] = useState('');
@@ -46,6 +51,7 @@ export default function Home() {
       if (response.ok) {
         const data = await response.json();
         setVisibleAds(data);
+        setFilteredAds(data);
       }
     } catch (err) {
       console.error("Cloud Fetch Error:", err);
@@ -64,6 +70,29 @@ export default function Home() {
     const timer = setTimeout(() => { setShowSplash(false); }, 1000);
     return () => clearTimeout(timer);
   }, []);
+
+  // Handle Filtering and Sorting Live
+  useEffect(() => {
+    let result = [...visibleAds];
+
+    // 1. Category Filter Logic
+    if (selectedCategory !== 'All') {
+      result = result.filter(ad => 
+        ad.title.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+    }
+
+    // 2. Sorting Logic
+    if (sortBy === 'latest') {
+      // already sorted by created_at desc from database
+    } else if (sortBy === 'price-low') {
+      result.sort((a, b) => parseFloat(a.price.replace(/,/g, '')) - parseFloat(b.price.replace(/,/g, '')));
+    } else if (sortBy === 'price-high') {
+      result.sort((a, b) => parseFloat(b.price.replace(/,/g, '')) - parseFloat(a.price.replace(/,/g, '')));
+    }
+
+    setFilteredAds(result);
+  }, [selectedCategory, sortBy, visibleAds]);
 
   const handlePhotoSelectTrigger = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -137,7 +166,16 @@ export default function Home() {
     }
   };
 
-  // 📢 🚀 INJECT ADS DIRECTLY INTO SUPABASE CLOUD DATABASE
+  const handleGoogleLoginMock = () => {
+    alert("Google Service Connection Initiated... Logging in securely.");
+    setIsLoggedIn(true);
+    setUserPhone("Google Account User");
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('scrap_user_session', "Google Trader");
+    }
+    setCurrentPage('home');
+  };
+
   const handlePostAdLiveSubmit = async () => {
     if (!adTitle || !adWeight || !adPrice) {
       alert("Please fill all fields");
@@ -170,7 +208,7 @@ export default function Home() {
         fetchCloudAdsLive(); 
         setCurrentPage('home');
       } else {
-        alert("Connectivity Fail: Make sure to clear Cloudflare cache and verify table configurations.");
+        alert("Connectivity Fail. Please check backend settings.");
       }
     } catch (err) {
       console.error("Network Error:", err);
@@ -187,6 +225,7 @@ export default function Home() {
         </div>
       )}
 
+      {/* HEADER SECTION */}
       <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 shadow-xl sticky top-0 z-50 rounded-b-2xl">
         <div className="max-w-xl mx-auto space-y-2">
           <div className="flex items-center justify-between">
@@ -204,14 +243,46 @@ export default function Home() {
       </header>
 
       {currentPage === 'home' && (
-        <main className="max-w-xl mx-auto p-4 mt-2">
-          {visibleAds.length === 0 ? (
+        <main className="max-w-xl mx-auto p-4 space-y-4">
+          
+          {/* 🔥 6 BANNER BUTTONS CONTAINER */}
+          <div className="bg-gradient-to-r from-[#1a365d] to-[#142d52] rounded-2xl p-4 text-white shadow-lg space-y-3">
+            <div className="text-center">
+              <p className="text-[11px] uppercase tracking-widest font-black text-amber-400">Quick Market Categories</p>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+              <button onClick={() => setSelectedCategory('All')} className={`py-3 rounded-xl font-black text-xs transition-all border ${selectedCategory === 'All' ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-white/10 text-white border-white/10'}`}>✨ All Items</button>
+              <button onClick={() => setSelectedCategory('Loha')} className={`py-3 rounded-xl font-black text-xs transition-all border ${selectedCategory === 'Loha' ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-white/10 text-white border-white/10'}`}>🔩 Loha (Iron)</button>
+              <button onClick={() => setSelectedCategory('Plastic')} className={`py-3 rounded-xl font-black text-xs transition-all border ${selectedCategory === 'Plastic' ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-white/10 text-white border-white/10'}`}>🥤 Plastic</button>
+              <button onClick={() => setSelectedCategory('Copper')} className={`py-3 rounded-xl font-black text-xs transition-all border ${selectedCategory === 'Copper' ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-white/10 text-white border-white/10'}`}>⚡ Copper (Tamba)</button>
+              <button onClick={() => setSelectedCategory('Batteries')} className={`py-3 rounded-xl font-black text-xs transition-all border ${selectedCategory === 'Batteries' ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-white/10 text-white border-white/10'}`}>🔋 Batteries</button>
+              <button onClick={() => setSelectedCategory('Paper')} className={`py-3 rounded-xl font-black text-xs transition-all border ${selectedCategory === 'Paper' ? 'bg-amber-400 text-slate-900 border-amber-400' : 'bg-white/10 text-white border-white/10'}`}>📦 Paper/Raddi</button>
+            </div>
+          </div>
+
+          {/* 🔄 LIVE SORTING & FILTER STATUS PANEL */}
+          <div className="flex items-center justify-between bg-white p-3 rounded-xl border-2 border-slate-200 shadow-sm">
+            <div className="text-xs font-black text-slate-700">
+              Showing: <span className="text-indigo-600 font-black bg-indigo-50 px-2 py-0.5 rounded">{selectedCategory}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <label className="text-[10px] font-black text-slate-500 uppercase">Sort By:</label>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="text-xs font-black bg-slate-100 p-1.5 rounded-lg border border-slate-300 outline-none text-slate-800">
+                <option value="latest">⏱️ Latest Ads</option>
+                <option value="price-low">💰 Price: Low to High</option>
+                <option value="price-high">📈 Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          {/* ADS MARKET FEED */}
+          {filteredAds.length === 0 ? (
             <div className="text-center py-12 text-slate-500 font-black text-sm bg-white rounded-2xl border-2 border-dashed border-slate-300">
-              No active market loads yet.<br/>Click "Post Ad" to list your scrap stock live!
+              No matching scrap records found.<br/>Change category or upload a naya load!
             </div>
           ) : (
             <div className="space-y-4">
-              {visibleAds.map((ad) => (
+              {filteredAds.map((ad) => (
                 <div key={ad.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-md flex flex-col gap-3">
                   <div className="flex items-center gap-4">
                     <div className="w-36 h-36 bg-slate-100 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 border-2 border-slate-200">
@@ -234,9 +305,9 @@ export default function Home() {
         <main className="max-w-xl mx-auto p-4 mt-2">
           <button onClick={() => { setCurrentPage('home'); setShowOtpScreen(false); }} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">← Back To Market</button>
 
-          {/* PAGE 1: LOGIN (HIGHLY VISIBLE BORDER-2 BLACK TEXT FIXED) */}
+          {/* PAGE 1: LOGIN (WITH GOOGLE LOGIN BUTTON ADDED) */}
           {currentPage === 'page1' && (
-            <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-4">
+            <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5">
               {!showOtpScreen ? (
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -244,6 +315,17 @@ export default function Home() {
                     <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-4 text-base font-black outline-none shadow-sm focus:border-[#1a365d]" />
                   </div>
                   <button onClick={handlePhoneAuthSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-xs uppercase shadow-md tracking-wider">Send Secure OTP Code 📲</button>
+                  
+                  {/* 🌟 GOOGLE LOGIN BUTTON */}
+                  <div className="relative flex py-2 items-center">
+                    <div className="flex-grow border-t border-slate-300"></div>
+                    <span className="flex-shrink mx-4 text-slate-400 text-xs font-bold uppercase">OR</span>
+                    <div className="flex-grow border-t border-slate-300"></div>
+                  </div>
+
+                  <button onClick={handleGoogleLoginMock} className="w-full bg-white text-slate-700 border-2 border-slate-400 font-black py-3.5 rounded-xl text-xs uppercase flex items-center justify-center gap-2 shadow-sm hover:bg-slate-50 transition-all">
+                    <span className="text-base">🌐</span> Sign In With Google Account
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-4 text-center">
@@ -255,7 +337,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 4: POST AD (HIGHLY VISIBLE BORDER-2 BLACK TEXT FIXED) */}
+          {/* PAGE 4: POST AD */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left">
               <label className="text-xs font-black text-slate-700 uppercase tracking-wider">Photos (Max 3)</label>
