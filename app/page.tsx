@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-// 👑 LIVE CONNECTED CLOUD DATABASE CONFIG (CORRECTED REAL URL FIXED)
+// 👑 LIVE CONNECTED CLOUD DATABASE CONFIG (YOUR NEW REAL KEY INTEGRATED)
 const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
-const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
+const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTpSg"; // Aap ki real key fix kar di hai
 
 // 🔑 SIMPAPP SMS GATEWAY CONFIGURATION
 const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
@@ -63,7 +63,7 @@ export default function Home() {
         setUserPhone(savedUser);
       }
     }
-    fetchCloudAdsLive(); // Pull data from cloud database immediately
+    fetchCloudAdsLive(); 
     const timer = setTimeout(() => { setShowSplash(false); }, 1000);
     return () => clearTimeout(timer);
   }, []);
@@ -136,7 +136,6 @@ export default function Home() {
     }
   };
 
-  // 📢 🚀 INJECT ADS DIRECTLY INTO SUPABASE CLOUD DATABASE
   const handlePostAdLiveSubmit = async () => {
     if (!adTitle || !adWeight || !adPrice) {
       alert("Please fill all fields");
@@ -166,10 +165,10 @@ export default function Home() {
       if (response.ok) {
         alert("Mubarak ho! Ad successfully pushed to Cloud Database!");
         setAdTitle(''); setAdWeight(''); setAdPrice(''); setUploadedPhotos([]);
-        fetchCloudAdsLive(); // Refresh the list from cloud instantly
+        fetchCloudAdsLive(); 
         setCurrentPage('home');
       } else {
-        alert("Cloud Save Failed. Check if RLS is disabled in Supabase.");
+        alert("Cloud Save Failed. Make sure you completed the Supabase steps.");
       }
     } catch (err) {
       console.error("Network Error:", err);
@@ -178,11 +177,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f2f6fa] text-left" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
+    <div className="min-h-screen bg-[#f2f6fa] text-left font-sans">
       
       {showSplash && (
         <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
-          <h1 className="text-4xl font-black">SCRAP WORLD</h1>
+          <h1 className="text-4xl font-black tracking-widest">SCRAP WORLD</h1>
         </div>
       )}
 
@@ -205,21 +204,21 @@ export default function Home() {
       {currentPage === 'home' && (
         <main className="max-w-xl mx-auto p-4 mt-2">
           {visibleAds.length === 0 ? (
-            <div className="text-center py-12 text-slate-400 font-bold text-sm bg-white rounded-2xl border border-dashed border-slate-300">
+            <div className="text-center py-12 text-slate-500 font-black text-sm bg-white rounded-2xl border-2 border-dashed border-slate-300">
               No active market loads yet.<br/>Click "Post Ad" to list your scrap stock live!
             </div>
           ) : (
             <div className="space-y-4">
               {visibleAds.map((ad) => (
-                <div key={ad.id} className="bg-white rounded-2xl p-4 border shadow-md flex flex-col gap-3">
+                <div key={ad.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-md flex flex-col gap-3">
                   <div className="flex items-center gap-4">
-                    <div className="w-36 h-36 bg-slate-100 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 border">
+                    <div className="w-36 h-36 bg-slate-100 rounded-2xl flex items-center justify-center overflow-hidden shrink-0 border-2 border-slate-200">
                       {ad.image_url ? <img src={ad.image_url} alt="Scrap" className="w-full h-full object-cover" /> : <span className="text-6xl">🔩</span>}
                     </div>
                     <div className="flex-1 space-y-2">
-                      <h4 className="font-black text-base text-slate-800">{ad.title}</h4>
-                      <div className="text-[11px] bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded-md inline-block">{ad.weight} | Rs. {ad.price}</div>
-                      <div className="text-[9px] text-slate-400 font-bold">Seller: {ad.user_phone}</div>
+                      <h4 className="font-black text-lg text-slate-900">{ad.title}</h4>
+                      <div className="text-xs bg-indigo-100 text-indigo-900 font-black px-2 py-1 rounded-md inline-block">{ad.weight} | Rs. {ad.price}</div>
+                      <div className="text-[10px] text-slate-600 font-extrabold block">Seller Phone: {ad.user_phone}</div>
                     </div>
                   </div>
                 </div>
@@ -231,52 +230,66 @@ export default function Home() {
 
       {currentPage !== 'home' && (
         <main className="max-w-xl mx-auto p-4 mt-2">
-          <button onClick={() => { setCurrentPage('home'); setShowOtpScreen(false); }} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-4 py-2.5 rounded-xl">← Back</button>
+          <button onClick={() => { setCurrentPage('home'); setShowOtpScreen(false); }} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">← Back To Market</button>
 
+          {/* PAGE 1: LOGIN (WAZEH INPUTS FIXED) */}
           {currentPage === 'page1' && (
-            <div className="bg-white rounded-2xl border p-6 shadow-md space-y-4">
+            <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-4">
               {!showOtpScreen ? (
                 <div className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-black text-slate-500 uppercase">Mobile Number</label>
-                    <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-slate-50 border rounded-xl p-3.5 text-sm font-black outline-none" />
+                  <div className="space-y-2">
+                    <label className="text-xs font-black text-slate-700 uppercase tracking-wider">Enter Mobile Number</label>
+                    {/* 👁️ INPUT WAZEH BLACK COLOR & STRONG BORDER */}
+                    <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-4 text-base font-black outline-none shadow-sm focus:border-[#1a365d]" />
                   </div>
-                  <button onClick={handlePhoneAuthSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-xs uppercase shadow-sm">Send Secure OTP Code 📲</button>
+                  <button onClick={handlePhoneAuthSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-xs uppercase shadow-md tracking-wider">Send Secure OTP Code 📲</button>
                 </div>
               ) : (
                 <div className="space-y-4 text-center">
                   <h3 className="font-black text-sm text-[#1a365d] uppercase tracking-wider">Enter Verification OTP</h3>
-                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-slate-50 border text-center font-black text-2xl p-3.5 rounded-xl outline-none tracking-widest text-indigo-600" />
+                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-white text-slate-900 border-2 border-slate-500 text-center font-black text-2xl p-4 rounded-xl outline-none tracking-widest text-indigo-700" />
                   <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-4 rounded-xl text-xs uppercase shadow-md">Verify & Access System ✓</button>
                 </div>
               )}
             </div>
           )}
 
+          {/* PAGE 4: POST AD (WAZEH INPUTS FIXED) */}
           {currentPage === 'page4' && (
-            <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-md space-y-5 text-left">
-              <label className="text-xs font-black text-slate-500 uppercase">Photos (Max 3)</label>
+            <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left">
+              <label className="text-xs font-black text-slate-700 uppercase tracking-wider">Photos (Max 3)</label>
               <input type="file" accept="image/*" multiple ref={fileInputRef} onChange={handlePhotoSelectTrigger} className="hidden" />
               <div className="grid grid-cols-3 gap-3">
                 {uploadedPhotos.map((photoUrl, index) => (
-                  <div key={index} className="relative aspect-square bg-slate-50 border rounded-xl overflow-hidden">
+                  <div key={index} className="relative aspect-square bg-slate-100 border-2 border-slate-300 rounded-xl overflow-hidden">
                     <img src={photoUrl} alt="Preview" className="w-full h-full object-cover" />
-                    <button onClick={() => setUploadedPhotos(uploadedPhotos.filter((_, idx) => idx !== index))} className="absolute top-1 right-1 bg-red-600 text-white w-5 h-5 rounded-full text-[10px] font-black">✕</button>
+                    <button onClick={() => setUploadedPhotos(uploadedPhotos.filter((_, idx) => idx !== index))} className="absolute top-1 right-1 bg-red-600 text-white w-6 h-6 rounded-full text-xs font-black shadow-md">✕</button>
                   </div>
                 ))}
                 {uploadedPhotos.length < 3 && (
-                  <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed rounded-xl flex flex-col items-center justify-center cursor-pointer">
-                    <span className="text-2xl">📸</span>
+                  <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex flex-col items-center justify-center cursor-pointer shadow-sm hover:bg-slate-100">
+                    <span className="text-3xl">📸</span>
                   </div>
                 )}
               </div>
+              
+              {/* 👁️ WAZEH AD FORM FIELDS WITH STRONG BORDER & BOLD TEXT */}
               <div className="space-y-4 pt-2">
-                <input type="text" value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="Scrap Title (e.g. Loha HMS 1)" className="w-full bg-slate-50 border rounded-xl p-3 text-sm font-bold outline-none" />
-                <div className="grid grid-cols-2 gap-3">
-                  <input type="text" value={adWeight} onChange={(e) => setAdWeight(e.target.value)} placeholder="Weight (e.g. 10 Tons)" className="w-full bg-slate-50 border rounded-xl p-3 text-sm font-bold outline-none" />
-                  <input type="number" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} placeholder="Price per kg" className="w-full bg-slate-50 border rounded-xl p-3 text-sm font-bold outline-none" />
+                <div className="space-y-1">
+                  <label className="text-[11px] font-black text-slate-600 uppercase">Item Title</label>
+                  <input type="text" value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="Scrap Title (e.g. Loha HMS 1)" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none" />
                 </div>
-                <button onClick={handlePostAdLiveSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-sm uppercase">Upload Live ✓</button>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-black text-slate-600 uppercase">Weight</label>
+                    <input type="text" value={adWeight} onChange={(e) => setAdWeight(e.target.value)} placeholder="Weight (e.g. 10 Tons)" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-black text-slate-600 uppercase">Price per kg</label>
+                    <input type="number" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} placeholder="Price per kg" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none" />
+                  </div>
+                </div>
+                <button onClick={handlePostAdLiveSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-sm uppercase shadow-md tracking-wider mt-2">Upload Live To Cloud ✓</button>
               </div>
             </div>
           )}
