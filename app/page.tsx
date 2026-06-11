@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-// 👑 LIVE CONNECTED CLOUD DATABASE CONFIG (SUPABASE)
+// 👑 LIVE CONNECTED CLOUD DATABASE CONFIG (CORRECTED REAL URL FIXED)
 const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 
