@@ -28,6 +28,21 @@ const marketRateItems = [
   { id: 2, type: "metal", nameEn: "Iron Scrap (HMS 1 & 2)", nameUr: "لوہا اسکریپ HMS", icon: "🔩" }
 ];
 
+const translations: any = {
+  en: {
+    appName: "SCRAP WORLD", loginBtn: "Login", logoutBtn: "Logout 👤", moreBtn: "More Options", currentLang: "اردو",
+    priceLabel: "Price:", weightLabel: "Qty/Weight:", locLabel: "Location:", catLabel: "Category:",
+    postAdBtn: "Post Ad 📢", ratesBtn: "Rates 💰", sortSimple: "Sort 📊", filterSimple: "Filters 🎛️", industriesBtn: "Industries 🏭",
+    backBtn: "← Back to Feed"
+  },
+  ur: {
+    appName: "اسکریپ ورلڈ", loginBtn: "لاگ ان", logoutBtn: "لاگ آؤٹ 👤", moreBtn: "مزید آپشنز", currentLang: "English",
+    priceLabel: "قیمت:", weightLabel: "وزن / تعداد:", locLabel: "لوکیشن:", catLabel: "کیٹیگری:",
+    postAdBtn: "اشتہار 📢", ratesBtn: "ریٹس 💰", sortSimple: "ترتیب 📊", filterSimple: "فلٹرز 🎛️", industriesBtn: "انڈسٹریز 🏭",
+    backBtn: "← واپس ہوم فیڈ"
+  }
+};
+
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [lang, setLang] = useState<'en' | 'ur'>('en'); 
@@ -69,34 +84,9 @@ export default function Home() {
   const [inputOtp, setInputOtp] = useState('');
   const [secureActiveOtp, setSecureActiveOtp] = useState('');
 
-  // 🔄 URL AUTH TOKEN READING FOR REAL GOOGLE REDIRECT SUCCESS
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash;
-      if (hash && hash.includes('access_token')) {
-        // Automatically capture login session from real Google routing
-        setIsLoggedIn(true);
-        setProfileName("Google verified User");
-        setUserPhone("Google Secure Account");
-        localStorage.setItem('scrap_user_session', "Google Secure Account");
-        localStorage.setItem('scrap_profile_name', "Google Verified User");
-        window.location.hash = ""; // Clear clean token from address bar
-      } else {
-        const savedUser = localStorage.getItem('scrap_user_session');
-        const savedName = localStorage.getItem('scrap_profile_name');
-        if (savedUser) {
-          setIsLoggedIn(true);
-          setUserPhone(savedUser);
-          if (savedName) setProfileName(savedName);
-        }
-      }
-    }
-    setRatesUpdateTime("12 Jun 2026 at 12:05 AM");
-    fetchCloudAdsLive();
-    const timer = setTimeout(() => { setShowSplash(false); }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
+  const t = translations[lang];
 
+  // 🔄 FETCH DATA FROM CLOUD DATABASE ON REFRESH
   const fetchCloudAdsLive = async () => {
     try {
       const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads?select=*&order=created_at.desc`, {
@@ -120,6 +110,33 @@ export default function Home() {
     }
   };
 
+  // 🔄 URL AUTH TOKEN READING FOR REAL GOOGLE REDIRECT SUCCESS
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash;
+      if (hash && hash.includes('access_token')) {
+        setIsLoggedIn(true);
+        setProfileName("Google verified User");
+        setUserPhone("Google Secure Account");
+        localStorage.setItem('scrap_user_session', "Google Secure Account");
+        localStorage.setItem('scrap_profile_name', "Google Verified User");
+        window.location.hash = ""; 
+      } else {
+        const savedUser = localStorage.getItem('scrap_user_session');
+        const savedName = localStorage.getItem('scrap_profile_name');
+        if (savedUser) {
+          setIsLoggedIn(true);
+          setUserPhone(savedUser);
+          if (savedName) setProfileName(savedName);
+        }
+      }
+    }
+    setRatesUpdateTime("12 Jun 2026 at 12:05 AM");
+    fetchCloudAdsLive();
+    const timer = setTimeout(() => { setShowSplash(false); }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     let result = [...visibleAds];
     if (selectedCategory !== 'All') {
@@ -135,6 +152,24 @@ export default function Home() {
     }
     setFilteredAds(result);
   }, [selectedCategory, sortBy, visibleAds]);
+
+  const handlePhotoSelectTrigger = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    if (uploadedPhotos.length + files.length > 3) {
+      alert("Max 3 Photos allowed");
+      return;
+    }
+    for (let i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (reader.result) {
+          setUploadedPhotos((prev) => [...prev, reader.result as string]);
+        }
+      };
+      reader.readAsDataURL(files[i]); 
+    }
+  };
 
   const handlePhoneAuthSubmit = async () => {
     if (!inputPhone || inputPhone.length < 10) {
@@ -167,7 +202,6 @@ export default function Home() {
   const handleVerifyOtpCode = () => {
     if (inputOtp === secureActiveOtp || inputOtp === "7861") {
       setShowOtpScreen(false);
-      // Ask name for mobile user registration setup
       setShowNameFormScreen(true);
     } else {
       alert("Invalid Code!");
@@ -191,15 +225,18 @@ export default function Home() {
   };
 
   const handleGoogleLoginReal = () => {
-    const oauthUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
-    window.location.href = oauthUrl;
+    if (typeof window !== 'undefined') {
+      const oauthUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
+      window.location.href = oauthUrl;
+    }
   };
 
   const handleTriggerSendMessage = () => {
     if (!newChatText.trim()) return;
+    const senderIdentity = isLoggedIn ? profileName : "Guest Trader";
     const newMsg = {
       id: chatMessages.length + 1,
-      sender: isLoggedIn ? profileName : "Guest Trader",
+      sender: senderIdentity,
       text: newChatText,
       time: "Just Now"
     };
@@ -227,6 +264,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#f2f6fa] text-left font-sans pb-24 relative">
 
+      {/* SPLASH SCREEN */}
       {showSplash && (
         <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
           <h1 className="text-4xl font-black">SCRAP WORLD</h1>
@@ -247,7 +285,7 @@ export default function Home() {
           
           <div className="grid grid-cols-3 gap-1.5">
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-amber-400">🌐 {lang === 'en' ? 'اردو' : 'English'}</button>
-            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); localStorage.clear(); } else { setCurrentPage('page1'); setShowOtpScreen(false); setShowNameFormScreen(false); } }} className="rounded-xl py-1.5 text-[11px] font-black bg-emerald-600/20 border border-emerald-500/20 text-emerald-400">
+            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); if (typeof window !== 'undefined') localStorage.clear(); } else { setCurrentPage('page1'); setShowOtpScreen(false); setShowNameFormScreen(false); } }} className="rounded-xl py-1.5 text-[11px] font-black bg-emerald-600/20 border border-emerald-500/20 text-emerald-400">
               {isLoggedIn ? 'Logout' : 'Login'}
             </button>
             <button onClick={() => setCurrentPage('page2')} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-slate-200">☰ Options</button>
@@ -315,7 +353,7 @@ export default function Home() {
                 <div className="space-y-4">
                   <div className="space-y-1">
                     <label className="text-xs font-black text-slate-700 uppercase">Mobile Number</label>
-                    <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-4 text-base font-black outline-none" />
+                    <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-4 text-base font-black outline-none shadow-sm" />
                   </div>
                   <button onClick={handlePhoneAuthSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-xs uppercase tracking-wider">Send Secure OTP 📲</button>
                   <div className="relative flex py-1 items-center"><div className="flex-grow border-t-2 border-slate-300"></div><span className="mx-4 text-slate-400 text-xs font-bold">OR</span><div className="flex-grow border-t-2 border-slate-300"></div></div>
@@ -385,7 +423,7 @@ export default function Home() {
                   </div>
                 ))}
                 {uploadedPhotos.length < 3 && (
-                  <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>
+                  <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex flex-col items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>
                 )}
               </div>
               <div className="space-y-4 pt-2">
@@ -420,7 +458,7 @@ export default function Home() {
         </main>
       )}
 
-      {/* 💬 👑 FLOATING POPUP TRADER CHAT SYSTEM (BOTTOM-LEFT DESIGNATED CORNER FIXED) */}
+      {/* 💬 FLOATING POPUP TRADER CHAT SYSTEM (BOTTOM-LEFT DESIGNATED CORNER FIXED) */}
       <div className="fixed bottom-6 left-6 z-[99]">
         {!isChatOpen ? (
           <button onClick={() => setIsChatOpen(true)} className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white rounded-full p-4 shadow-2xl flex items-center justify-center gap-2 border-2 border-white animate-pulse">
@@ -428,7 +466,7 @@ export default function Home() {
             <span className="text-xs font-black uppercase tracking-wider pr-1">Traders Chat</span>
           </button>
         ) : (
-          <div className="bg-white rounded-2xl shadow-2xl border-2 border-slate-400 w-80 h-96 flex flex-col overflow-hidden animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl border-2 border-slate-400 w-80 h-96 flex flex-col overflow-hidden">
             {/* Chat Box Header Channel */}
             <div className="bg-gradient-to-r from-[#1a365d] to-[#0f2444] p-3 text-white flex justify-between items-center border-b font-black">
               <div className="flex items-center gap-2">
