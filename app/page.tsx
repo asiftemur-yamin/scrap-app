@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from 'react';
 const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTPsg";
 
-// 🔑 AAP KI NEW HARDWARE SMS GATEWAY CONFIGURATION (ALREADY ADDED)
+// 🔑 AAP KI MOBILE HARDWARE SMS GATEWAY (WABLAS REMOVED COMPLETELY)
 const SMS_API_URL = "http://10.83.197.253:8080/send-sms"; 
 
 export default function Home() {
@@ -66,7 +66,7 @@ export default function Home() {
     }
   };
 
-  // 📲 REAL HARDWARE SMS GATEWAY ENGINE (CONNECTED TO YOUR NEW APP)
+  // 📲 REAL HARDWARE SMS GATEWAY ENGINE (CONNECTED TO YOUR LOCAL MOBILE APP)
   const handlePhoneAuthSubmit = async () => {
     if (!inputPhone || inputPhone.length < 10) {
       alert(lang === 'ur' ? "براہ کرم صحیح موبائل نمبر لکھیں!" : "Please enter a valid mobile phone number!");
@@ -78,7 +78,7 @@ export default function Home() {
     (window as any).currentSystemOtp = generatedOtp; 
 
     try {
-      // 2. Fire Request to your Android Local SMS App
+      // 2. Fire Request to your Android Local SMS App (Simple SMS Gateway)
       await fetch(SMS_API_URL, {
         method: "POST",
         headers: { 
@@ -94,7 +94,7 @@ export default function Home() {
       alert(lang === 'ur' ? "او ٹی پی کوڈ آپ کے سم کارڈ سے بھیج دیا گیا ہے!" : "Real OTP token fired via your local SIM package!");
     } catch (err) {
       console.error(err);
-      // Fallback taake testing na ruke agar networking isolated ho
+      // Fallback active taake local network IP block hone par testing na ruke
       setShowOtpScreen(true);
       alert("Fired! Demo code 7861 active if local network is disconnected.");
       (window as any).currentSystemOtp = "7861";
