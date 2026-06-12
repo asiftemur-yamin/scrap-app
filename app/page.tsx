@@ -5,7 +5,22 @@ import Header from './components/Header';
 import Ticker from './components/Ticker';
 import AdCard from './components/AdCard';
 
+export default function Home() {'use client';
+import { useState, useEffect } from 'react';
+// ... baqi imports wahi rahen ge
+
 export default function Home() {
+  const [ads, setAds] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Yahan hum dummy data set kar rahe hain taake aapko app mein kuch nazar aaye
+    setAds([
+      { id: 1, title: 'Aluminum Scrap', price: '450', location_text: 'Gujranwala', image_url: '' },
+      { id: 2, title: 'Copper Wire', price: '8900', location_text: 'Lahore', image_url: '' }
+    ]);
+  }, []);
+
+  // ... baqi return wala code wahi rahe ga
   const [currentPage, setCurrentPage] = useState('home');
   const [showHelp, setShowHelp] = useState(false);
   const [ads] = useState([]); // Aap ka purana ads data yahan rahe ga
