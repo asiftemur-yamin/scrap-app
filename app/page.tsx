@@ -11,7 +11,7 @@ const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions
 
 // 📦 REAL PRODUCTION DATA STACKS WITH GPS COORDINATES
 const initial10Ads = [
-  { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location_text: "Gujranwala Scrap Market", lat: 32.1617, lng: 74.1883, icon: "🔩", user_phone: "03006558837" },
+  { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location_text: "Nusrat Colony, Gujranwala", lat: 32.1812, lng: 74.1923, icon: "🔩", user_phone: "03006558837" },
   { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", weight: "450 Kg", location_text: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283, icon: "🔌", user_phone: "03001234567" },
   { id: 3, title: "Mixed Crushed Plastic Drums Flakes HDPE", category: "Plastic", price: "98", weight: "3 Ton", location_text: "SITE Area, Karachi", lat: 24.8933, lng: 67.0281, icon: "🛢️", user_phone: "03006558837" }
 ];
@@ -20,13 +20,25 @@ const registeredIndustries = [
   { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister & Metal Separation", capacity: "30 Tons/Month", status: "Verified ✓", badge: "🥇 Premium" }
 ];
 
-// 💹 REAL LIVE LME METALS STOCKS MARKET DATA (IN USD PER TON & KG BASIS)
-const initialLmeItems = [
+const marketOriginalRates = [
   { id: 1, name: "Loha / HMS Iron", usdPerTon: 390, icon: "🔩", trend: "up" },
   { id: 2, name: "Copper / Tamba (Grade A)", usdPerTon: 8950, icon: "⚡", trend: "up" },
   { id: 3, name: "Aluminum Sheet Scrap", usdPerTon: 2420, icon: "🥫", trend: "down" },
-  { id: 4, name: "Lead Pure Ingot", usdPerTon: 2110, icon: "🔋", trend: "up" },
-  { id: 5, name: "Zinc Metal", usdPerTon: 2780, icon: "⛓️", trend: "down" }
+  { id: 4, name: "Lead Pure Ingot", usdPerTon: 2110, icon: "🔋", trend: "up" }
+];
+
+// 🇵🇰 PAKISTAN MAJOR SCRAP HUBS AUTO-COMPLETE DATABASE SUGGESTIONS
+const pakistanScrapLocations = [
+  { name: "Nusrat Colony, Gujranwala", lat: 32.1812, lng: 74.1923 },
+  { name: "Gondlanwala Road, Gujranwala", lat: 32.1444, lng: 74.1722 },
+  { name: "Khiali Gate Scrap Market, Gujranwala", lat: 32.1725, lng: 74.1641 },
+  { name: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283 },
+  { name: "Misri Shah Iron Market, Lahore", lat: 31.5794, lng: 74.3412 },
+  { name: "SITE Industrial Area, Karachi", lat: 24.8933, lng: 67.0281 },
+  { name: "Sher Shah Scrap Market, Karachi", lat: 24.8825, lng: 66.9845 },
+  { name: "Small Industrial Estate, Sialkot", lat: 32.4945, lng: 74.5229 },
+  { name: "Sargodha Road Cluster, Faisalabad", lat: 31.4504, lng: 73.1350 },
+  { name: "I-9 Industrial Area, Islamabad", lat: 33.6594, lng: 73.0531 }
 ];
 
 const calculateRealKM = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -46,7 +58,7 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en'); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // USER PROFILE STATES
+  // SESSION CONTROLS
   const [userPhone, setUserPhone] = useState('');
   const [profileName, setProfileName] = useState('Scrap Trader');
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
@@ -55,14 +67,18 @@ export default function Home() {
   // GEOLOCATION STATES
   const [currentLat, setCurrentLat] = useState<number>(32.1617); 
   const [currentLng, setCurrentLng] = useState<number>(74.1883);
-  const [detectedLocationText, setDetectedLocationText] = useState<string>("Detecting live location...");
+  const [detectedLocationText, setDetectedLocationText] = useState<string>("Gujranwala");
   const [showLocationOverrideModal, setShowLocationOverrideModal] = useState(false);
 
-  // 💱 REAL FIXED CONTEXT VARIABLES FOR USD/PKR EXCHANGE DATA
+  // SEARCH AND SUGGESTIONS MATRIX
+  const [locationSearchInput, setLocationSearchInput] = useState('');
+  const [filteredSuggestions, setFilteredSuggestions] = useState<any[]>([]);
+
+  // LME VARIABLES
   const [usdToPkrRate, setUsdToPkrRate] = useState<number>(278.50);
-  const [lmeItems, setLmeItems] = useState<any[]>(initialLmeItems);
+  const [lmeItems, setLmeItems] = useState<any[]>(marketOriginalRates);
   
-  // CHAT POPUP STATES
+  // CHAT SYSTEM
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<any[]>([
     { id: 1, sender: "Zubair (Gujranwala)", text: "Loha HMS 1 ka kya rate chal raha hai aaj?", time: "10:15 AM" },
@@ -70,7 +86,7 @@ export default function Home() {
   ]);
   const [newChatText, setNewChatText] = useState('');
 
-  // FILTERS ENGINE
+  // DATA FILTERS MATRIX
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
   const [filteredAds, setFilteredAds] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -84,7 +100,7 @@ export default function Home() {
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]); 
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // SECURITY & OTP CONTEXTS
+  // SECURITY OVERLAYS
   const [inputPhone, setInputPhone] = useState('');
   const [inputProfileNameForm, setInputProfileNameForm] = useState('');
   const [showOtpScreen, setShowOtpScreen] = useState(false);
@@ -92,9 +108,6 @@ export default function Home() {
   const [inputOtp, setInputOtp] = useState('');
   const [secureActiveOtp, setSecureActiveOtp] = useState('');
 
-  const t = translations[lang];
-
-  // FETCH DATA LIVE FROM CLOUD
   const fetchCloudAdsLive = async () => {
     try {
       const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads?select=*&order=created_at.desc`, {
@@ -117,7 +130,7 @@ export default function Home() {
           (position) => {
             setCurrentLat(position.coords.latitude);
             setCurrentLng(position.coords.longitude);
-            setDetectedLocationText(`Live GPS Area (${position.coords.latitude.toFixed(3)}, ${position.coords.longitude.toFixed(3)})`);
+            setDetectedLocationText("Nusrat Colony, Gujranwala");
           },
           () => { setDetectedLocationText("Nusrat Colony, Gujranwala"); }
         );
@@ -145,7 +158,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // MATRIX SORT EXECUTION
+  // MATRIX FILTERS EXECUTION LOOP
   useEffect(() => {
     let result = [...visibleAds];
     result = result.map(ad => {
@@ -166,6 +179,28 @@ export default function Home() {
 
     setFilteredAds(result);
   }, [selectedCategory, sortBy, visibleAds, currentLat, currentLng]);
+
+  // 🔍 TYPE-AHEAD SEARCH SUGGESTIONS HANDLER FOR AREA SEARCH INPUT
+  const handleLocationSearchType = (val: string) => {
+    setLocationSearchInput(val);
+    if (!val.trim()) {
+      setFilteredSuggestions([]);
+      return;
+    }
+    const filtered = pakistanScrapLocations.filter(loc => 
+      loc.name.toLowerCase().includes(val.toLowerCase())
+    );
+    setFilteredSuggestions(filtered);
+  };
+
+  const handleManualLocationSet = (city: string, lat: number, lng: number) => {
+    setCurrentLat(lat);
+    setCurrentLng(lng);
+    setDetectedLocationText(city);
+    setLocationSearchInput('');
+    setFilteredSuggestions([]);
+    setShowLocationOverrideModal(false);
+  };
 
   const handlePhoneAuthSubmit = async () => {
     if (inputPhone === "03000000000") {
@@ -251,10 +286,6 @@ export default function Home() {
     } catch (err) { alert("Connection failed."); }
   };
 
-  const handleManualLocationSet = (city: string, lat: number, lng: number) => {
-    setCurrentLat(lat); setCurrentLng(lng); setDetectedLocationText(city); setShowLocationOverrideModal(false);
-  };
-
   const handlePhotoSelectTrigger = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files; if (!files) return;
     for (let i = 0; i < files.length; i++) {
@@ -270,19 +301,26 @@ export default function Home() {
       {showSplash && (
         <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
           <div className="text-center space-y-2">
-            <div className="text-7xl animate-bounce">♻️💹</div>
+            <div className="text-7xl animate-bounce">♻️📍</div>
             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">SCRAP WORLD</h1>
-            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Premium LME Terminal Connected Live</p>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Premium Auto Suggest Terminal Live</p>
           </div>
         </div>
       )}
 
-      {/* HEADER CONTROLS */}
+      {/* TOP HEADER SYSTEM */}
       <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 shadow-xl sticky top-0 z-50 rounded-b-2xl">
         <div className="max-w-xl mx-auto space-y-2">
+          
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-black tracking-wide">SCRAP WORLD</h1>
-            {isLoggedIn && <span className="text-xs text-amber-300 font-black bg-white/10 px-3 py-1 rounded-xl truncate max-w-[200px]">👤 {profileName}</span>}
+            
+            {/* 📍 RE-DESIGNED CLICKABLE LOCATION LINK INTEGRATION */}
+            <div className="flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-xl cursor-pointer max-w-[240px] overflow-hidden active:scale-95 transition-all" onClick={() => setShowLocationOverrideModal(true)}>
+              <span className="text-xs truncate font-black text-amber-300">
+                👤 {isLoggedIn ? profileName : "Guest"} | 📍 {detectedLocationText}
+              </span>
+            </div>
           </div>
           
           <div className="grid grid-cols-3 gap-1.5">
@@ -293,61 +331,83 @@ export default function Home() {
             <button onClick={() => setCurrentPage('page2')} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-slate-200">☰ Options</button>
           </div>
           <div className="grid grid-cols-3 gap-1.5 pt-0.5">
-            <button onClick={() => setCurrentPage('page3')} className="bg-indigo-600/20 border border-indigo-500/20 text-indigo-400 rounded-xl py-1.5 text-[11px] font-black">🏭 Industries</button>
+            {/* ⚙️ UPDATED BUTTON TEXT FROM INDUSTRIES TO INDUSTRIES & TRADERS */}
+            <button onClick={() => setCurrentPage('page3')} className="bg-indigo-600/20 border border-indigo-500/20 text-indigo-400 rounded-xl py-1.5 text-[10px] font-black tracking-tighter truncate">🏭 Industries & Traders</button>
             <button onClick={() => { if (!isLoggedIn) { alert("Please login first!"); setCurrentPage('page1'); } else { setCurrentPage('page4'); } }} className="bg-sky-500/20 border border-sky-400/20 text-sky-400 rounded-xl py-1.5 text-[11px] font-black">📢 Post Ad</button>
             <button onClick={() => setCurrentPage('page5')} className="bg-amber-500/20 border border-amber-400/20 text-amber-400 rounded-xl py-1.5 text-[11px] font-black">💰 Rates Hub</button>
           </div>
         </div>
       </header>
 
-      {/* 🚀 💹 HIGH-END REAL-TIME LME METALS & USD-PKR TICKER MARQUEE */}
-      <div className="w-full bg-slate-900 border-b border-slate-800 text-white py-2 overflow-hidden sticky top-[125px] z-40 shadow-md">
+      {/* 🚀 HIGH-END REAL-TIME LME METALS & USD-PKR TICKER MARQUEE */}
+      <div className="w-full bg-slate-900 border-b border-slate-800 text-white py-2 overflow-hidden shadow-md">
         <div className="animate-marquee whitespace-nowrap flex items-center gap-8 text-xs font-black tracking-wide">
           <span className="text-amber-400 flex items-center gap-1">💵 USD / PKR: <b className="text-white">Rs.{usdToPkrRate.toFixed(2)}</b></span>
           {lmeItems.map((item) => (
             <span key={item.id} className="flex items-center gap-1.5">
               {item.icon} {item.name}: 
               <b className="text-white">${item.usdPerTon.toLocaleString()} /Ton</b>
-              <span className={item.trend === 'up' ? 'text-emerald-400' : 'text-red-400'}>
-                {item.trend === 'up' ? '▲' : '▼'}
-              </span>
+              <span className={item.trend === 'up' ? 'text-emerald-400' : 'text-red-400'}>{item.trend === 'up' ? '▲' : '▼'}</span>
             </span>
           ))}
         </div>
       </div>
 
+      {/* 🗺️ OVERRIDE MODAL POPUP (INTEGRATED WITH REALTIME AUTO-SUGGEST LIST ENGINE) */}
+      {showLocationOverrideModal && (
+        <div className="fixed inset-0 bg-black/60 z-[999] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border-2 border-slate-400 w-full max-w-md p-5 space-y-4 text-left animate-fade-in relative">
+            <div>
+              <h4 className="font-black text-base text-slate-900 uppercase">Change Search Center Location</h4>
+              <p className="text-xs text-slate-400 font-bold">Type any area or city name in Pakistan below.</p>
+            </div>
+
+            {/* Live Search Input Line */}
+            <div className="relative space-y-1">
+              <input 
+                type="text" 
+                value={locationSearchInput} 
+                onChange={(e) => handleLocationSearchType(e.target.value)} 
+                placeholder="Type location (e.g., Nusrat Colony, Model Town...)" 
+                className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3 text-sm font-black outline-none focus:border-indigo-600"
+              />
+
+              {/* Dynamic Suggestions List Output Dropdown Array */}
+              {filteredSuggestions.length > 0 && (
+                <div className="absolute top-12 left-0 right-0 bg-white border-2 border-slate-300 rounded-xl shadow-2xl max-h-48 overflow-y-auto z-50 divide-y">
+                  {filteredSuggestions.map((loc, idx) => (
+                    <div 
+                      key={idx} 
+                      onClick={() => handleManualLocationSet(loc.name, loc.lat, loc.lng)}
+                      className="p-3 text-xs font-black text-slate-800 hover:bg-indigo-50 cursor-pointer flex items-center gap-2"
+                    >
+                      <span>📍</span> {loc.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Quick Fast Options Matrix Grid */}
+            <div className="space-y-1 pt-1">
+              <span className="text-[10px] uppercase font-black text-slate-400 block">Quick Scrap Hubs</span>
+              <div className="grid grid-cols-2 gap-1.5">
+                <button onClick={() => handleManualLocationSet("Nusrat Colony, Gujranwala", 32.1812, 74.1923)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 Nusrat Colony, GRW</button>
+                <button onClick={() => handleManualLocationSet("Badami Bagh, Lahore", 31.5822, 74.3283)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 Badami Bagh, LHR</button>
+                <button onClick={() => handleManualLocationSet("SITE Area, Karachi", 24.8933, 67.0281)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 SITE Area, KHI</button>
+                <button onClick={() => handleManualLocationSet("Small Industrial, SKT", 32.4945, 74.5229)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 Industrial, SKT</button>
+              </div>
+            </div>
+
+            <button onClick={() => { setShowLocationOverrideModal(false); setLocationSearchInput(''); setFilteredSuggestions([]); }} className="w-full bg-slate-900 text-white text-xs font-black py-2.5 rounded-xl">Cancel ✕</button>
+          </div>
+        </div>
+      )}
+
       {/* 🏠 MAIN HOME FEED VIEW */}
       {currentPage === 'home' && (
         <main className="max-w-xl mx-auto p-4 space-y-4">
           
-          {/* LOCATION DETECTION BANNER */}
-          <div className="bg-slate-900 text-white rounded-xl p-3 flex items-center justify-between shadow-md border border-slate-700">
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <span className="text-xl">📍</span>
-              <div className="overflow-hidden">
-                <p className="text-[9px] uppercase font-black text-amber-400 tracking-wider">Market Proximity Center</p>
-                <p className="text-xs font-black text-slate-100 truncate">{detectedLocationText}</p>
-              </div>
-            </div>
-            <button onClick={() => setShowLocationOverrideModal(true)} className="bg-indigo-600 text-white font-black text-[10px] uppercase px-2.5 py-1.5 rounded-lg border border-indigo-400 shrink-0 ml-2">Change 🔄</button>
-          </div>
-
-          {/* OVERRIDE OVERLAY */}
-          {showLocationOverrideModal && (
-            <div className="fixed inset-0 bg-black/60 z-[999] flex items-center justify-center p-4">
-              <div className="bg-white rounded-2xl border-2 border-slate-400 w-full max-w-sm p-5 space-y-4 text-left">
-                <h4 className="font-black text-base text-slate-900 uppercase">Select Target City</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <button onClick={() => handleManualLocationSet("Gujranwala Hub", 32.1617, 74.1883)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Gujranwala</button>
-                  <button onClick={() => handleManualLocationSet("Lahore Center", 31.5204, 74.3587)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Lahore</button>
-                  <button onClick={() => handleManualLocationSet("Karachi Terminal", 24.8607, 67.0011)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Karachi</button>
-                  <button onClick={() => handleManualLocationSet("Sialkot Sector", 32.4945, 74.5229)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Sialkot</button>
-                </div>
-                <button onClick={() => setShowLocationOverrideModal(false)} className="w-full bg-slate-900 text-white text-xs font-black py-2.5 rounded-xl">Cancel ✕</button>
-              </div>
-            </div>
-          )}
-
           {/* CONTROL SORT GRID */}
           <div className="grid grid-cols-2 gap-3">
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-white border-2 border-slate-300 font-black text-xs rounded-xl p-3 text-slate-700 outline-none shadow-sm">
@@ -358,14 +418,20 @@ export default function Home() {
             <button onClick={() => setCurrentPage('page7')} className="bg-gradient-to-r from-[#1a365d] to-[#142d52] text-white rounded-xl py-3 px-4 text-xs font-black shadow-sm text-center">🎛️ Material Filters</button>
           </div>
 
-          {/* ADS STREAM */}
+          {selectedCategory !== 'All' && (
+            <div className="flex items-center justify-between bg-indigo-50 border border-indigo-200 p-2.5 rounded-xl text-xs font-black text-indigo-900">
+              <span>Filter Material: <b>{selectedCategory}</b></span>
+              <button onClick={() => setSelectedCategory('All')} className="text-red-600 bg-white border px-2 py-0.5 rounded-md">✕</button>
+            </div>
+          )}
+
+          {/* ADS AUTOMATIC PROXIMITY STREAM */}
           <div className="space-y-4">
             {filteredAds.map((ad) => {
               const adDistanceKm = calculateRealKM(currentLat, currentLng, ad.lat || 32.1617, ad.lng || 74.1883);
               return (
                 <div key={ad.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-md flex flex-col gap-3 relative">
                   
-                  {/* SECURITY CONTROLS AREA */}
                   <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
                     <button onClick={() => alert(`Reported ${ad.title}`)} className="bg-amber-100 text-amber-800 border border-amber-300 rounded-md text-[10px] font-black px-2 py-0.5">Report ⚠️</button>
                     {(userPhone === ad.user_phone || profileName === "Google Play Reviewer") && (
@@ -406,7 +472,7 @@ export default function Home() {
         <main className="max-w-xl mx-auto p-4 mt-2">
           <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">Back Feed</button>
 
-          {/* PAGE 1: AUTH */}
+          {/* PAGE 1: AUTH CHANNELS */}
           {currentPage === 'page1' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-4">
               {!showOtpScreen && !showNameFormScreen && (
@@ -441,16 +507,17 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 3: INDUSTRIES */}
+          {/* PAGE 3: INDUSTRIES & TRADERS NETWORK */}
           {currentPage === 'page3' && (
             <div className="space-y-3 text-left">
+              <div className="bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white rounded-2xl p-4 shadow-sm font-black text-sm uppercase">Verified Industries & Large Scale Scrap Traders Hub 🏭</div>
               {registeredIndustries.map((ind) => (
                 <div key={ind.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-sm"><h4 className="font-black text-base text-slate-900">{ind.name}</h4><p className="text-xs font-extrabold text-slate-600">📍 {ind.location}</p></div>
               ))}
             </div>
           )}
 
-          {/* PAGE 4: POST AD */}
+          {/* PAGE 4: POST AD LIVE STATION */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left">
               <label className="text-xs font-black text-slate-700 uppercase">Photos (Max 3)</label>
@@ -458,7 +525,7 @@ export default function Home() {
                 {uploadedPhotos.map((photoUrl, index) => (
                   <div key={index} className="relative aspect-square bg-slate-100 border-2 border-slate-300 rounded-xl overflow-hidden"><img src={photoUrl} alt="Preview" className="w-full h-full object-cover" /></div>
                 ))}
-                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex flex-col items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
+                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
               </div>
               <input type="file" accept="image/*" multiple ref={fileInputRef} onChange={handlePhotoSelectTrigger} className="hidden" />
               
@@ -474,7 +541,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* 💰 👑 PAGE 5: ADVANCED LME LIVE RATES HUB WITH AUTO PKR CALCULATOR */}
+          {/* PAGE 5: RATES */}
           {currentPage === 'page5' && (
             <div className="space-y-4 text-left animate-fade-in">
               <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white p-4 rounded-2xl border-2 border-slate-700 shadow-md flex justify-between items-center">
@@ -483,15 +550,13 @@ export default function Home() {
                   <h3 className="text-base font-black text-slate-100 mt-1">LME International Terminal</h3>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] text-slate-400 font-bold block">1 USD Value:</span>
+                  <span className="text-day text-slate-400 font-bold block">1 USD Value:</span>
                   <span className="text-sm font-black text-amber-400">Rs.{usdToPkrRate.toFixed(2)}</span>
                 </div>
               </div>
 
-              {/* LME Dynamic Converters Stack List */}
               <div className="bg-white rounded-2xl border-2 border-slate-300 shadow-xl overflow-hidden divide-y-2 divide-slate-100">
                 {lmeItems.map((item) => {
-                  // Math formula to convert USD/Ton to PKR/KG instantly
                   const pkrPerKgExact = Math.round((item.usdPerTon * usdToPkrRate) / 1000);
                   return (
                     <div key={item.id} className="p-4 flex justify-between items-center bg-white hover:bg-slate-50">
@@ -510,7 +575,6 @@ export default function Home() {
                   );
                 })}
               </div>
-              <p className="text-[10px] text-slate-400 font-black text-center uppercase">✓ Rates computed seamlessly using Haversine exchange framework matrix.</p>
             </div>
           )}
 
@@ -539,7 +603,7 @@ export default function Home() {
         </main>
       )}
 
-      {/* FLOATING CHAT POPUP */}
+      {/* 💬 FLOATING CHAT POPUP */}
       <div className="fixed bottom-6 left-6 z-[99]">
         {!isChatOpen ? (
           <button onClick={() => setIsChatOpen(true)} className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white rounded-full p-4 shadow-2xl flex items-center justify-center gap-2 border-2 border-white animate-pulse">
@@ -571,9 +635,3 @@ export default function Home() {
     </div>
   );
 }
-
-// Global translations helper object map cluster
-const translations: any = {
-  en: { appName: "SCRAP WORLD", filterSimple: "Filters 🎛️", backBtn: "← Back to Feed" },
-  ur: { appName: "اسکریپ ورلڈ", filterSimple: "فلٹرز 🎛️", backBtn: "← واپس ہوم فیڈ" }
-};
