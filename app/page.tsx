@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Header from './components/Header'; // <-- Ye import ho gaya
 import Ticker from './components/Ticker'; // <-- Ye import ho gaya
-
+import AdCard from './components/AdCard';
 export default function Home() {
   const [currentPage, setCurrentPage] = useState('home');
   const [showHelp, setShowHelp] = useState(false);
