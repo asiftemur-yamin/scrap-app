@@ -1,51 +1,38 @@
 'use client';
-import { useState } from 'react';
-import { auth } from '../firebaseConfig'; // Aapki pehli wali config file
-import { signInWithPhoneNumber, RecaptchaVerifier, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
-export default function AuthPage() {
-  const [phone, setPhone] = useState('');
+import { useState, useEffect } from 'react';
+import Header from './components/Header';
+import Ticker from './components/Ticker';
+import AdCard from './components/AdCard';
 
-  // Google Login Logic
-  const handleGoogleLogin = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-      alert("Google Login Successful!");
-      // Yahan navigate logic add ho sakta hai
-    } catch (error) {
-      console.error("Google Login Error:", error);
-      alert("Google login mein masla aaya.");
-    }
-  };
+export default function Home() {
+  const [ads, setAds] = useState<any[]>([]);
+  const [showHelp, setShowHelp] = useState(false);
+
+  useEffect(() => {
+    setAds([
+      { id: 1, title: 'Aluminum Scrap', price: '450', location_text: 'Gujranwala', image_url: '' },
+      { id: 2, title: 'Copper Wire', price: '8900', location_text: 'Lahore', image_url: '' }
+    ]);
+  }, []);
 
   return (
-    <div className="p-6 max-w-sm mx-auto bg-white min-h-screen">
-      <h2 className="text-xl font-black mb-6">Login with Scrap World</h2>
+    <div className="min-h-screen bg-slate-50 pb-24">
+      <Header setShowHelp={setShowHelp} />
+      <Ticker usdRate={278.50} />
       
-      {/* Google Login Button */}
-      <button 
-        onClick={handleGoogleLogin} 
-        className="w-full bg-slate-800 text-white p-4 rounded-xl font-black mb-6"
-      >
-        Login with Google
-      </button>
+      {showHelp && (
+        <div className="bg-amber-100 p-4 m-4 rounded-xl border border-amber-300 text-xs font-black text-amber-900">
+          <p>📧 Email: scrapworld92@gmail.com</p>
+          <p>💬 WhatsApp: 0300 8641994</p>
+        </div>
+      )}
 
-      {/* OTP Login Section */}
-      <div className="space-y-4">
-        <input 
-          type="tel"
-          placeholder="03001234567" 
-          className="w-full border-2 border-slate-300 p-4 rounded-xl font-black"
-          onChange={(e) => setPhone(e.target.value)}
-        />
-        <button className="w-full bg-indigo-600 text-white p-4 rounded-xl font-black">
-          Send OTP
-        </button>
+      <div className="space-y-4 p-4">
+        {ads.map((ad: any) => (
+          <AdCard key={ad.id} ad={ad} onClick={() => console.log("Ad clicked")} />
+        ))}
       </div>
-      
-      {/* Captcha container for OTP */}
-      <div id="recaptcha-container"></div>
     </div>
   );
 }
