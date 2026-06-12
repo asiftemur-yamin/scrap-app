@@ -9,15 +9,12 @@ const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTpSg";
 // 🔑 SIMPAPP SMS GATEWAY CONFIGURATION
 const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
 
-// 🗺️ LIVE GOOGLE MAPS PRODUCTION API KEY (INTEGRATED!)
-const GOOGLE_MAPS_API_KEY = "AIzaSyBckidZX7NHOkm_gQjyuApVliO3xpvysFQ";
-
-// 📦 REAL PRODUCTION DATA STACKS (WITH EXACT GPS COORDINATES)
+// 📦 REAL PRODUCTION DATA STACKS (WITH EXACT HUB COORDINATES)
 const initial10Ads = [
-  { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location_text: "Gujranwala Scrap Market", lat: 32.1617, lng: 74.1883, icon: "🔩", user_phone: "03006558837" },
-  { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", weight: "450 Kg", location_text: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283, icon: "🔌", user_phone: "03001234567" },
-  { id: 3, title: "Mixed Crushed Plastic Drums Flakes HDPE", category: "Plastic", price: "98", weight: "3 Ton", location_text: "SITE Area, Karachi", lat: 24.8933, lng: 67.0281, icon: "🛢️", user_phone: "03006558837" },
-  { id: 4, title: "Pure Aluminum Section Scrap Lot", category: "Aluminum", price: "465", weight: "1.5 Ton", location_text: "Small Industrial Estate, Sialkot", lat: 32.4945, lng: 74.5229, icon: "🥫", user_phone: "03217654321" }
+  { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", price_unit: "kg", weight: "12 Ton", location_text: "Gujranwala Scrap Market", lat: 32.1617, lng: 74.1883, icon: "🔩", user_phone: "03006558837" },
+  { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", price_unit: "kg", weight: "450 Kg", location_text: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283, icon: "🔌", user_phone: "03001234567" },
+  { id: 3, title: "Mixed Crushed Plastic Drums Flakes HDPE", category: "Plastic", price: "98", weight: "3 Ton", price_unit: "kg", location_text: "SITE Area, Karachi", lat: 24.8933, lng: 67.0281, icon: "🛢️", user_phone: "03006558837" },
+  { id: 4, title: "Pure Aluminum Section Scrap Lot", category: "Aluminum", price: "465", weight: "1.5 Ton", price_unit: "kg", location_text: "Small Industrial Estate, Sialkot", lat: 32.4945, lng: 74.5229, icon: "🥫", user_phone: "03217654321" }
 ];
 
 const registeredIndustries = [
@@ -56,22 +53,32 @@ const calculateRealKM = (lat1: number, lon1: number, lat2: number, lon2: number)
   return Math.round(R * c);
 };
 
+// 🗺️ DYNAMIC REVERSE GEO-FALLBACK LOGIC FOR Header Location Box
+const getApproximateAreaName = (lat: number, lng: number): string => {
+  // Approximate boundaries of cities for smooth user experience fallback
+  if (lat > 32.10 && lat < 32.25 && lng > 74.10 && lng < 74.30) return "Gujranwala";
+  if (lat > 31.40 && lat < 31.65 && lng > 74.20 && lng < 74.45) return "Lahore";
+  if (lat > 24.75 && lat < 25.05 && lng > 66.85 && lng < 67.25) return "Karachi";
+  if (lat > 32.40 && lat < 32.60 && lng > 74.40 && lng < 74.65) return "Sialkot";
+  if (lat > 31.35 && lat < 31.55 && lng > 73.00 && lng < 73.20) return "Faisalabad";
+  return "Pakistan"; // Ultimate broad radius fallback
+};
+
 export default function Home() {
   const [showSplash, setShowSplash] = useState(true);
   const [lang, setLang] = useState<'en' | 'ur'>('en'); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // USER PROFILE & ROUTING
+  // USER PROFILE STATES
   const [userPhone, setUserPhone] = useState('');
   const [profileName, setProfileName] = useState('Scrap Trader');
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
   const [currentPage, setCurrentPage] = useState<string>('home'); 
 
-  // DYNAMIC GEOLOCATION STATES (No fixed center, adapts to user)
+  // GEOLOCATION STATES
   const [currentLat, setCurrentLat] = useState<number>(32.1617); 
   const [currentLng, setCurrentLng] = useState<number>(74.1883);
-  const [detectedLocationText, setDetectedLocationText] = useState<string>("Detecting your live location...");
-  const [showLocationOverrideModal, setShowLocationOverrideModal] = useState(false);
+  const [headerLocationText, setHeaderLocationText] = useState<string>("Detecting...");
   
   // CHAT BOX POPUP STATES
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -81,17 +88,17 @@ export default function Home() {
   ]);
   const [newChatText, setNewChatText] = useState('');
 
-  // FILTERS AND FEEDS ENGINE
+  // FILTERS AND FEEDS ENGINE (Infinite Radius System Activated)
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
   const [filteredAds, setFilteredAds] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [maxRadius, setMaxRadius] = useState<number>(150); 
   const [sortBy, setSortBy] = useState<string>('nearest'); 
 
   // FORM INPUTS
   const [adTitle, setAdTitle] = useState('');
   const [adWeight, setAdWeight] = useState('');
   const [adPrice, setAdPrice] = useState('');
+  const [adPriceUnit, setAdPriceUnit] = useState('kg'); // Default price unit setup
   const [adLocationTextInput, setAdLocationTextInput] = useState('');
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]); 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -133,25 +140,29 @@ export default function Home() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            setCurrentLat(position.coords.latitude);
-            setCurrentLng(position.coords.longitude);
-            setDetectedLocationText(`Live Coordinates (${position.coords.latitude.toFixed(3)}, ${position.coords.longitude.toFixed(3)})`);
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+            setCurrentLat(userLat);
+            setCurrentLng(userLng);
+            // Dynamic check: Find approximate area name via expanding calculation checks
+            const areaName = getApproximateAreaName(userLat, userLng);
+            setHeaderLocationText(areaName);
           },
           () => {
-            setDetectedLocationText("Nusrat Colony, Gujranwala");
+            setHeaderLocationText("Gujranwala");
           }
         );
       } else {
-        setDetectedLocationText("Nusrat Colony, Gujranwala");
+        setHeaderLocationText("Gujranwala");
       }
 
       const hash = window.location.hash;
       if (hash && hash.includes('access_token')) {
         setIsLoggedIn(true);
-        setProfileName("Google Verified User");
+        setProfileName("Asif Temur");
         setUserPhone("Google Account");
         localStorage.setItem('scrap_user_session', "Google Account");
-        localStorage.setItem('scrap_profile_name', "Google Verified User");
+        localStorage.setItem('scrap_profile_name', "Asif Temur");
         window.location.hash = ""; 
       } else {
         const savedUser = localStorage.getItem('scrap_user_session');
@@ -164,12 +175,12 @@ export default function Home() {
       }
     }
 
-    setRatesUpdateTime("12 Jun 2026 at 09:20 AM");
+    setRatesUpdateTime("12 Jun 2026 at 10:02 AM");
     fetchCloudAdsLive();
     return () => clearTimeout(timer);
   }, []);
 
-  // 🗺️ DYNAMIC PROXIMITY SORT & SCROLL MATRIX
+  // 🗺️ DYNAMIC PROXIMITY SORT MATRIX (Infinite Radius Configured)
   useEffect(() => {
     let result = [...visibleAds];
 
@@ -185,8 +196,7 @@ export default function Home() {
       );
     }
 
-    result = result.filter(ad => ad.distance <= maxRadius);
-
+    // Radius Filter restriction completely hidden and opened to Infinity!
     if (sortBy === 'nearest') {
       result.sort((a, b) => a.distance - b.distance); 
     } else if (sortBy === 'price-low') {
@@ -196,14 +206,7 @@ export default function Home() {
     }
 
     setFilteredAds(result);
-  }, [selectedCategory, sortBy, maxRadius, visibleAds, currentLat, currentLng]);
-
-  const handleManualLocationSet = (city: string, lat: number, lng: number) => {
-    setCurrentLat(lat);
-    setCurrentLng(lng);
-    setDetectedLocationText(city);
-    setShowLocationOverrideModal(false);
-  };
+  }, [selectedCategory, sortBy, visibleAds, currentLat, currentLng]);
 
   const handlePhotoSelectTrigger = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -273,6 +276,7 @@ export default function Home() {
           title: adTitle, 
           weight: adWeight, 
           price: Number(adPrice).toLocaleString(), 
+          price_unit: adPriceUnit,
           image_url: base64Image, 
           user_phone: userPhone || "Anonymous", 
           location_text: adLocationTextInput,
@@ -281,7 +285,7 @@ export default function Home() {
         })
       });
       if (response.ok) {
-        alert("Ad live with your real GPS coordinates on Cloud!");
+        alert("Ad published live on Cloud!");
         setAdTitle(''); setAdWeight(''); setAdPrice(''); setAdLocationTextInput(''); setUploadedPhotos([]);
         fetchCloudAdsLive(); setCurrentPage('home');
       }
@@ -289,7 +293,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f2f6fa] text-left font-sans pb-24 relative">
+    <div className="min-h-screen bg-[#f2f6fa] text-left font-sans pb-24 relative" dir="ltr">
 
       {/* SPLASH SCREEN ENGINE */}
       {showSplash && (
@@ -297,17 +301,24 @@ export default function Home() {
           <div className="text-center space-y-2">
             <div className="text-7xl animate-bounce">♻️📍</div>
             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400 tracking-wider">SCRAP WORLD</h1>
-            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">OLX-Style Auto Proximity Tracking Active</p>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Infinite Proximity Range Operational</p>
           </div>
         </div>
       )}
 
-      {/* TOP NAVIGATION HEADER */}
+      {/* TOP NAVIGATION HEADER (WITH COMPACT NAME & EXPANDING RADIUS LOCATION BOX) */}
       <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 shadow-xl sticky top-0 z-50 rounded-b-2xl">
         <div className="max-w-xl mx-auto space-y-2">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-black tracking-wide">SCRAP WORLD</h1>
-            {isLoggedIn && <span className="text-xs text-amber-300 font-black bg-white/10 px-3 py-1 rounded-xl truncate max-w-[200px]">👤 {profileName}</span>}
+            <div className="flex items-center gap-1.5 max-w-[240px]">
+              <span className="text-xs text-amber-300 font-black bg-white/10 px-2.5 py-1 rounded-xl truncate">
+                👤 {isLoggedIn ? profileName : "Guest"}
+              </span>
+              <span className="text-[10px] bg-emerald-600 text-white font-black px-2 py-1 rounded-lg shadow-sm border border-emerald-400 shrink-0">
+                📍 {headerLocationText}
+              </span>
+            </div>
           </div>
           
           <div className="grid grid-cols-3 gap-1.5">
@@ -328,64 +339,17 @@ export default function Home() {
       {/* 🏠 MAIN HOME FEED VIEW */}
       {currentPage === 'home' && (
         <main className="max-w-xl mx-auto p-4 space-y-4">
-          
-          {/* 👀 OLX-STYLE LOCATION DETECTION ALERT BANNER WITH OVERRIDE */}
-          <div className="bg-slate-900 text-white rounded-xl p-3 flex items-center justify-between shadow-md border border-slate-700">
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <span className="text-xl">📍</span>
-              <div className="overflow-hidden">
-                <p className="text-[9px] uppercase font-black text-amber-400 tracking-wider">Current Marketplace Base</p>
-                <p className="text-xs font-black text-slate-100 truncate">{detectedLocationText}</p>
-              </div>
-            </div>
-            <button onClick={() => setShowLocationOverrideModal(true)} className="bg-indigo-600 text-white font-black text-[10px] uppercase px-2.5 py-1.5 rounded-lg border border-indigo-400 active:scale-95 shrink-0 ml-2">Change 🔄</button>
-          </div>
-
-          {/* 🗺️ LOCATION OVERRIDE MODAL POPUP */}
-          {showLocationOverrideModal && (
-            <div className="fixed inset-0 bg-black/60 z-[999] flex items-center justify-center p-4">
-              <div className="bg-white rounded-2xl border-2 border-slate-400 w-full max-w-sm p-5 space-y-4 text-left">
-                <div>
-                  <h4 className="font-black text-base text-slate-900 uppercase">Select Target City</h4>
-                  <p className="text-xs text-slate-400 font-bold">Choose a base to filter nearby ads first.</p>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <button onClick={() => handleManualLocationSet("Gujranwala Hub", 32.1617, 74.1883)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Gujranwala</button>
-                  <button onClick={() => handleManualLocationSet("Lahore Center", 31.5204, 74.3587)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Lahore</button>
-                  <button onClick={() => handleManualLocationSet("Karachi Terminal", 24.8607, 67.0011)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Karachi</button>
-                  <button onClick={() => handleManualLocationSet("Sialkot Sector", 32.4945, 74.5229)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Sialkot</button>
-                  <button onClick={() => handleManualLocationSet("Faisalabad Node", 31.4504, 73.1350)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Faisalabad</button>
-                  <button onClick={() => handleManualLocationSet("Rawalpindi Station", 33.5651, 73.0169)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Rawalpindi</button>
-                </div>
-                <button onClick={() => setShowLocationOverrideModal(false)} className="w-full bg-slate-900 text-white text-xs font-black py-2.5 rounded-xl">Cancel ✕</button>
-              </div>
-            </div>
-          )}
-
-          {/* MAPS CONTROL RADIUS RANGE SLIDER */}
-          <div className="bg-white border-2 border-slate-300 rounded-2xl p-4 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-slate-700 uppercase tracking-wider">🎛️ Radius Range Filter</span>
-              <span className="text-xs font-black bg-indigo-100 text-indigo-900 px-2.5 py-1 rounded-lg">{maxRadius} KM Range</span>
-            </div>
-            <input type="range" min="5" max="1500" value={maxRadius} onChange={(e) => setMaxRadius(Number(e.target.value))} className="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 rounded-lg" />
-            <div className="flex justify-between text-[9px] text-slate-400 font-black uppercase">
-              <span>Nearby (5km)</span>
-              <span>City Limits (50km)</span>
-              <span>All Pakistan (1500km)</span>
-            </div>
-          </div>
 
           {/* CONTROL SORT GRID */}
           <div className="grid grid-cols-2 gap-3">
-            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-white border-2 border-slate-300 font-black text-xs rounded-xl p-3 text-slate-700 outline-none shadow-sm">
-              <option value="nearest">📍 Auto Radius (Nearest First)</option>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="w-full bg-white border-2 border-slate-300 font-black text-xs rounded-xl p-3 text-slate-700定位 outline-none shadow-sm">
+              <option value="nearest">📍 Nearest First (Infinite Loop)</option>
               <option value="price-low">💰 Price: Low to High</option>
               <option value="price-high">📈 Price: High to Low</option>
             </select>
             
             <button onClick={() => setCurrentPage('page7')} className="bg-gradient-to-r from-[#1a365d] to-[#142d52] text-white rounded-xl py-3 px-4 text-xs font-black shadow-sm text-center">
-              🎛️ Material Filters
+              🎛 woods Material Filters
             </button>
           </div>
 
@@ -403,10 +367,8 @@ export default function Home() {
               return (
                 <div key={ad.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-md flex flex-col gap-3">
                   <div className="flex items-center gap-4 text-left">
-                    <div className="w-32 h-32 bg-slate-100 rounded-2xl flex items-center justify-center text-5xl shrink-0 border-2 border-slate-200 relative">
+                    <div className="w-32 h-32 bg-slate-100 rounded-2xl flex items-center justify-center text-6xl shrink-0 border-2 border-slate-200 relative">
                       {ad.image_url ? <img src={ad.image_url} alt="Scrap" className="w-full h-full object-cover rounded-2xl" /> : (ad.icon || "🔩")}
-                      
-                      {/* Dynamic Proximity Distance KM Tag Output */}
                       <span className="absolute bottom-1 right-1 bg-indigo-600 text-white font-black text-[9px] px-2 py-0.5 rounded shadow-md">
                         {adDistanceKM <= 2 ? "🟢 Nearby" : `${adDistanceKM} KM`}
                       </span>
@@ -422,8 +384,8 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex justify-between items-center border-t-2 border-slate-100 pt-2 font-black">
-                    <span className="text-xs text-slate-400 uppercase">Rate:</span>
-                    <span className="text-lg text-green-600">Rs.{ad.price} /kg</span>
+                    <span className="text-xs text-slate-400 uppercase">{t.priceLabel}</span>
+                    <span className="text-lg text-green-600">Rs.{ad.price} /{ad.price_unit || 'kg'}</span>
                   </div>
                 </div>
               );
@@ -435,7 +397,7 @@ export default function Home() {
       {/* SUBPAGES Subs SYSTEMS */}
       {currentPage !== 'home' && (
         <main className="max-w-xl mx-auto p-4 mt-2">
-          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">Back Feed</button>
+          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">{t.backBtn}</button>
 
           {/* PAGE 1: AUTH */}
           {currentPage === 'page1' && (
@@ -481,7 +443,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 4: POST AD LIVE WITH REAL GPS EMBEDDING */}
+          {/* PAGE 4: POST AD LIVE WITH PRICING CATEGORIES */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left">
               <label className="text-xs font-black text-slate-700 uppercase">Photos (Max 3)</label>
@@ -489,7 +451,7 @@ export default function Home() {
                 {uploadedPhotos.map((photoUrl, index) => (
                   <div key={index} className="relative aspect-square bg-slate-100 border-2 border-slate-300 rounded-xl overflow-hidden"><img src={photoUrl} alt="Preview" className="w-full h-full object-cover" /></div>
                 ))}
-                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex flex-col items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
+                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
               </div>
               <input type="file" accept="image/*" multiple ref={fileInputRef} onChange={handlePhotoSelectTrigger} className="hidden" />
               
@@ -499,14 +461,24 @@ export default function Home() {
                 <div className="space-y-1">
                   <label className="text-[11px] font-black text-slate-600 uppercase">Stock Area / Locality Name</label>
                   <input type="text" value={adLocationTextInput} onChange={(e) => setAdLocationTextInput(e.target.value)} placeholder="e.g., Model Town, Lahore" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none" />
-                  <span className="text-[9px] text-[#1a365d] font-black block">🚨 System locks your exact GPS coordinates ({currentLat.toFixed(3)}, {currentLng.toFixed(3)}) on submission to ensure nearby radius alignment.</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <input type="text" value={adWeight} onChange={(e) => setAdWeight(e.target.value)} placeholder="Weight (e.g. 10 Tons)" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none" />
-                  <input type="number" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} placeholder="Price per kg" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none" />
+                  
+                  {/* Price split grid with per kg, per mund, per ton categories */}
+                  <div className="flex gap-1">
+                    <input type="number" value={adPrice} onChange={(e) => setAdPrice(e.target.value)} placeholder="Price" className="flex-1 bg-white text-slate-900 border-2 border-slate-500 rounded-l-xl p-3.5 text-sm font-black outline-none" />
+                    <select value={adPriceUnit} onChange={(e) => setAdPriceUnit(e.target.value)} className="bg-slate-100 border-2 border-l-0 border-slate-500 rounded-r-xl text-xs font-black px-2 outline-none text-slate-800">
+                      <option value="kg">/ kg</option>
+                      <option value="mund">/ mund</option>
+                      <option value="ton">/ ton</option>
+                    </select>
+                  </div>
                 </div>
-                <button onClick={handlePostAdLiveSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-sm uppercase shadow-md mt-2 tracking-wider">Upload Live To Cloud ✓</button>
+
+                {/* Changed button phrase to 'Post Ad' securely */}
+                <button onClick={handlePostAdLiveSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-sm uppercase shadow-md mt-2 tracking-wider">Post Ad ✓</button>
               </div>
             </div>
           )}
