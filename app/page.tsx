@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { fetchAds } from './lib/api';
 import Header from './components/Header';
 import Ticker from './components/Ticker';
 import AdCard from './components/AdCard';
@@ -10,10 +11,11 @@ export default function Home() {
   const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
-    setAds([
-      { id: 1, title: 'Aluminum Scrap', price: '450', location_text: 'Gujranwala', image_url: '' },
-      { id: 2, title: 'Copper Wire', price: '8900', location_text: 'Lahore', image_url: '' }
-    ]);
+    const loadData = async () => {
+      const data = await fetchAds();
+      setAds(data);
+    };
+    loadData();
   }, []);
 
   return (
@@ -22,9 +24,13 @@ export default function Home() {
       <Ticker usdRate={278.50} />
       
       <div className="p-4 space-y-4">
-        {ads.map((ad) => (
-          <AdCard key={ad.id} ad={ad} onClick={() => console.log('Clicked')} />
-        ))}
+        {ads.length > 0 ? (
+          ads.map((ad) => (
+            <AdCard key={ad.id} ad={ad} onClick={() => console.log('Clicked', ad.id)} />
+          ))
+        ) : (
+          <p className="text-center text-slate-500 font-black pt-10">Loading scrap market...</p>
+        )}
       </div>
       
       <Nav />
