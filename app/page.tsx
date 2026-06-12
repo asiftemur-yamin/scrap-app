@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Ticker from './components/Ticker';
@@ -7,31 +6,23 @@ import AdCard from './components/AdCard';
 
 export default function Home() {
   const [ads, setAds] = useState<any[]>([]);
-  const [showHelp, setShowHelp] = useState(false);
 
+  // Yeh wohi purana logic hai jo ads ko fetch karta tha
   useEffect(() => {
-    setAds([
-      { id: 1, title: 'Aluminum Scrap', price: '450', location_text: 'Gujranwala', image_url: '' },
-      { id: 2, title: 'Copper Wire', price: '8900', location_text: 'Lahore', image_url: '' }
-    ]);
+    const fetchAds = async () => {
+      // Yahan aapka API ya Firestore ka call aayega
+      // const data = await getDocs(collection(db, "ads"));
+      // setAds(data);
+    };
+    fetchAds();
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
-      <Header setShowHelp={setShowHelp} />
+    <div className="pb-24">
+      <Header />
       <Ticker usdRate={278.50} />
-      
-      {showHelp && (
-        <div className="bg-amber-100 p-4 m-4 rounded-xl border border-amber-300 text-xs font-black text-amber-900">
-          <p>📧 Email: scrapworld92@gmail.com</p>
-          <p>💬 WhatsApp: 0300 8641994</p>
-        </div>
-      )}
-
-      <div className="space-y-4 p-4">
-        {ads.map((ad: any) => (
-          <AdCard key={ad.id} ad={ad} onClick={() => console.log("Ad clicked")} />
-        ))}
+      <div className="p-4 space-y-4">
+        {ads.map(ad => <AdCard key={ad.id} ad={ad} onClick={() => {}} />)}
       </div>
     </div>
   );
