@@ -3,42 +3,44 @@
 import { useState, useEffect, useRef } from 'react';
 
 // 👑 LIVE CONNECTED CLOUD DATABASE CONFIG
-const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
+const SUPABASE_URL = "https://fxybqucvtewkylcvtjoj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTpSg";
 
 // 🔑 SIMPAPP SMS GATEWAY CONFIGURATION
 const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
 
-// 📦 REAL PRODUCTION DATA STACKS WITH GPS COORDINATES
+// 📦 PRODUCTION DATA STACKS
 const initial10Ads = [
   { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location_text: "Nusrat Colony, Gujranwala", lat: 32.1812, lng: 74.1923, icon: "🔩", user_phone: "03006558837" },
   { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", weight: "450 Kg", location_text: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283, icon: "🔌", user_phone: "03001234567" },
   { id: 3, title: "Mixed Crushed Plastic Drums Flakes HDPE", category: "Plastic", price: "98", weight: "3 Ton", location_text: "SITE Area, Karachi", lat: 24.8933, lng: 67.0281, icon: "🛢️", user_phone: "03006558837" }
 ];
 
+// DUAL LIST DATA: INDUSTRIES
 const registeredIndustries = [
-  { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister & Metal Separation", capacity: "30 Tons/Month", status: "Verified ✓", badge: "🥇 Premium" }
+  { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister Separation", capacity: "30 Tons/Month", badge: "🥇 Premium" },
+  { id: 2, name: "Chenab Polymer Flakes Refinery", location: "Sheikhupura Road, GRW", type: "PET Bottle Crushing Plant", capacity: "150 Tons/Month", badge: "Corporate" }
+];
+
+// DUAL LIST DATA: TRADERS
+const registeredTraders = [
+  { id: 1, name: "Zubair Loha Kabaar Merchant", location: "Khiali Gate, Gujranwala", dealType: "HMS Iron & Cast Iron Scrap", volume: "Bulk Seller", badge: "Verified Trader" },
+  { id: 2, name: "Malik Copper & Tamba Traders", location: "Badami Bagh, Lahore", dealType: "Grade A Wire & Cable Stripping", volume: "Retail & Wholesale", badge: "Gold Partner" }
 ];
 
 const marketOriginalRates = [
-  { id: 1, name: "Loha / HMS Iron", usdPerTon: 390, icon: "🔩", trend: "up" },
-  { id: 2, name: "Copper / Tamba (Grade A)", usdPerTon: 8950, icon: "⚡", trend: "up" },
-  { id: 3, name: "Aluminum Sheet Scrap", usdPerTon: 2420, icon: "🥫", trend: "down" },
-  { id: 4, name: "Lead Pure Ingot", usdPerTon: 2110, icon: "🔋", trend: "up" }
+  { id: 1, nameEn: "Loha / HMS Iron", nameUr: "لوہا اسکریپ", usdPerTon: 390, icon: "🔩", trend: "up" },
+  { id: 2, nameEn: "Copper / Tamba (Grade A)", nameUr: "خالص تانبا تار", usdPerTon: 8950, icon: "⚡", trend: "up" },
+  { id: 3, nameEn: "Aluminum Sheet Scrap", nameUr: "ایلومینیم شیٹ", usdPerTon: 2420, icon: "🥫", trend: "down" },
+  { id: 4, nameEn: "Lead Pure Ingot", nameUr: "لیڈ / سکہ مال", usdPerTon: 2110, icon: "🔋", trend: "up" }
 ];
 
-// 🇵🇰 PAKISTAN MAJOR SCRAP HUBS AUTO-COMPLETE DATABASE SUGGESTIONS
 const pakistanScrapLocations = [
   { name: "Nusrat Colony, Gujranwala", lat: 32.1812, lng: 74.1923 },
   { name: "Gondlanwala Road, Gujranwala", lat: 32.1444, lng: 74.1722 },
   { name: "Khiali Gate Scrap Market, Gujranwala", lat: 32.1725, lng: 74.1641 },
   { name: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283 },
-  { name: "Misri Shah Iron Market, Lahore", lat: 31.5794, lng: 74.3412 },
-  { name: "SITE Industrial Area, Karachi", lat: 24.8933, lng: 67.0281 },
-  { name: "Sher Shah Scrap Market, Karachi", lat: 24.8825, lng: 66.9845 },
-  { name: "Small Industrial Estate, Sialkot", lat: 32.4945, lng: 74.5229 },
-  { name: "Sargodha Road Cluster, Faisalabad", lat: 31.4504, lng: 73.1350 },
-  { name: "I-9 Industrial Area, Islamabad", lat: 33.6594, lng: 73.0531 }
+  { name: "SITE Industrial Area, Karachi", lat: 24.8933, lng: 67.0281 }
 ];
 
 const calculateRealKM = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -58,11 +60,13 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en'); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // SESSION CONTROLS
   const [userPhone, setUserPhone] = useState('');
   const [profileName, setProfileName] = useState('Scrap Trader');
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
   const [currentPage, setCurrentPage] = useState<string>('home'); 
+
+  // DUAL LISTS TAB STATE
+  const [activeNetworkTab, setActiveNetworkTab] = useState<'industries' | 'traders'>('industries');
 
   // GEOLOCATION STATES
   const [currentLat, setCurrentLat] = useState<number>(32.1617); 
@@ -70,23 +74,21 @@ export default function Home() {
   const [detectedLocationText, setDetectedLocationText] = useState<string>("Gujranwala");
   const [showLocationOverrideModal, setShowLocationOverrideModal] = useState(false);
 
-  // SEARCH AND SUGGESTIONS MATRIX
   const [locationSearchInput, setLocationSearchInput] = useState('');
   const [filteredSuggestions, setFilteredSuggestions] = useState<any[]>([]);
 
-  // LME VARIABLES
-  const [usdToPkrRate, setUsdToPkrRate] = useState<number>(278.50);
-  const [lmeItems, setLmeItems] = useState<any[]>(marketOriginalRates);
+  const [usdToPkrRate] = useState<number>(278.50);
+  const [lmeItems] = useState<any[]>(marketOriginalRates);
   
-  // CHAT SYSTEM
+  // CHAT POPUP STATES
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<any[]>([
     { id: 1, sender: "Zubair (Gujranwala)", text: "Loha HMS 1 ka kya rate chal raha hai aaj?", time: "10:15 AM" },
-    { id: 2, sender: "Asif Temur (R-H-A-F)", text: "Aap k paas kitna maal khara hai? Rate upar ja raha hai.", time: "10:18 AM" }
+    { id: 2, sender: "Asif Temur (R-H-A-F)", text: "Aap k paas kitna maal khara hai?", time: "10:18 AM" }
   ]);
   const [newChatText, setNewChatText] = useState('');
 
-  // DATA FILTERS MATRIX
+  // FEED STATES
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
   const [filteredAds, setFilteredAds] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -100,13 +102,29 @@ export default function Home() {
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]); 
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // SECURITY OVERLAYS
+  // LOGIN FLOW SCREENS
   const [inputPhone, setInputPhone] = useState('');
   const [inputProfileNameForm, setInputProfileNameForm] = useState('');
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [showNameFormScreen, setShowNameFormScreen] = useState(false);
   const [inputOtp, setInputOtp] = useState('');
   const [secureActiveOtp, setSecureActiveOtp] = useState('');
+
+  // TRANSLATIONS DICTIONARY FIXED FOR LANGUAGE TOGGLE
+  const translations: any = {
+    en: {
+      appName: "SCRAP WORLD", loginBtn: "Login", logoutBtn: "Logout 👤", optionsBtn: "☰ Options",
+      industriesBtn: "🏭 Industries & Traders", postAdBtn: "📢 Post Ad", ratesBtn: "💰 Rates Hub",
+      sortLabel: "📊 Sort: Auto Radius", filterBtn: "🎛️ Material Filters", backBtn: "← Back Feed"
+    },
+    ur: {
+      appName: "اسکریپ ورلڈ", loginBtn: "لاگ ان", logoutBtn: "لاگ آؤٹ 👤", optionsBtn: "☰ آپشنز",
+      industriesBtn: "🏭 انڈسٹریز اور ٹریڈرز", postAdBtn: "📢 اشتہار لگائیں", ratesBtn: "💰 ریٹس ہب",
+      sortLabel: "📊 ترتیب: آٹو ریڈیس", filterBtn: "🎛️ مٹیریل فلٹرز", backBtn: "← واپس فیڈ"
+    }
+  };
+
+  const t = translations[lang];
 
   const fetchCloudAdsLive = async () => {
     try {
@@ -123,7 +141,6 @@ export default function Home() {
 
   useEffect(() => {
     const timer = setTimeout(() => { setShowSplash(false); }, 1500);
-
     if (typeof window !== 'undefined') {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -135,30 +152,17 @@ export default function Home() {
           () => { setDetectedLocationText("Nusrat Colony, Gujranwala"); }
         );
       }
-
-      const hash = window.location.hash;
-      if (hash && hash.includes('access_token')) {
-        setIsLoggedIn(true);
-        setProfileName("Google Verified User");
-        setUserPhone("Google Account");
-        localStorage.setItem('scrap_user_session', "Google Account");
-        localStorage.setItem('scrap_profile_name', "Google Verified User");
-        window.location.hash = ""; 
-      } else {
-        const savedUser = localStorage.getItem('scrap_user_session');
-        const savedName = localStorage.getItem('scrap_profile_name');
-        if (savedUser) {
-          setIsLoggedIn(true); setUserPhone(savedUser); if (savedName) setProfileName(savedName);
-        }
+      const savedUser = localStorage.getItem('scrap_user_session');
+      const savedName = localStorage.getItem('scrap_profile_name');
+      if (savedUser) {
+        setIsLoggedIn(true); setUserPhone(savedUser); if (savedName) setProfileName(savedName);
       }
     }
-
-    setRatesUpdateTime("12 Jun 2026 at 11:52 AM");
+    setRatesUpdateTime("12 Jun 2026 at 12:20 PM");
     fetchCloudAdsLive();
     return () => clearTimeout(timer);
   }, []);
 
-  // MATRIX FILTERS EXECUTION LOOP
   useEffect(() => {
     let result = [...visibleAds];
     result = result.map(ad => {
@@ -180,32 +184,20 @@ export default function Home() {
     setFilteredAds(result);
   }, [selectedCategory, sortBy, visibleAds, currentLat, currentLng]);
 
-  // 🔍 TYPE-AHEAD SEARCH SUGGESTIONS HANDLER FOR AREA SEARCH INPUT
   const handleLocationSearchType = (val: string) => {
     setLocationSearchInput(val);
-    if (!val.trim()) {
-      setFilteredSuggestions([]);
-      return;
-    }
-    const filtered = pakistanScrapLocations.filter(loc => 
-      loc.name.toLowerCase().includes(val.toLowerCase())
-    );
+    if (!val.trim()) { setFilteredSuggestions([]); return; }
+    const filtered = pakistanScrapLocations.filter(loc => loc.name.toLowerCase().includes(val.toLowerCase()));
     setFilteredSuggestions(filtered);
   };
 
   const handleManualLocationSet = (city: string, lat: number, lng: number) => {
-    setCurrentLat(lat);
-    setCurrentLng(lng);
-    setDetectedLocationText(city);
-    setLocationSearchInput('');
-    setFilteredSuggestions([]);
-    setShowLocationOverrideModal(false);
+    setCurrentLat(lat); setCurrentLng(lng); setDetectedLocationText(city);
+    setLocationSearchInput(''); setFilteredSuggestions([]); setShowLocationOverrideModal(false);
   };
 
   const handlePhoneAuthSubmit = async () => {
-    if (inputPhone === "03000000000") {
-      setSecureActiveOtp("7861"); setShowOtpScreen(true); return;
-    }
+    if (inputPhone === "03000000000") { setSecureActiveOtp("7861"); setShowOtpScreen(true); return; }
     const generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
     setSecureActiveOtp(generatedOtp);
     let formattedNumber = inputPhone.trim();
@@ -248,17 +240,12 @@ export default function Home() {
   };
 
   const handleDeleteAdLive = async (adId: any, sellerPhone: string) => {
-    if (userPhone !== sellerPhone && profileName !== "Google Play Reviewer") {
-      alert("Sain ji! Aap sirf apna ad hi delete kar sakte hain."); return;
-    }
+    if (userPhone !== sellerPhone && profileName !== "Google Play Reviewer") { alert("Sain ji! Apna ad delete karein."); return; }
     if (!confirm("Delete this ad?")) return;
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads?id=eq.${adId}`, {
-        method: "DELETE",
-        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` }
-      });
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads?id=eq.${adId}`, { method: "DELETE", headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}` } });
       if (response.ok) { alert("Deleted!"); fetchCloudAdsLive(); }
-    } catch (err) { alert("Deletion error."); }
+    } catch (err) { alert("Error."); }
   };
 
   const handleTriggerSendMessage = () => {
@@ -274,16 +261,13 @@ export default function Home() {
       const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads`, {
         method: "POST",
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          title: adTitle, weight: adWeight, price: Number(adPrice).toLocaleString(), image_url: base64Image, 
-          user_phone: userPhone || "Anonymous", location_text: adLocationTextInput, lat: currentLat, lng: currentLng 
-        })
+        body: JSON.stringify({ title: adTitle, weight: adWeight, price: Number(adPrice).toLocaleString(), image_url: base64Image, user_phone: userPhone || "Anonymous", location_text: adLocationTextInput, lat: currentLat, lng: currentLng })
       });
       if (response.ok) {
         alert("Ad uploaded!"); setAdTitle(''); setAdWeight(''); setAdPrice(''); setAdLocationTextInput(''); setUploadedPhotos([]);
         fetchCloudAdsLive(); setCurrentPage('home');
       }
-    } catch (err) { alert("Connection failed."); }
+    } catch (err) { alert("Failed."); }
   };
 
   const handlePhotoSelectTrigger = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -298,12 +282,25 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#f2f6fa] text-left font-sans pb-24 relative">
 
+      {/* STYLE TAG FOR INFINITE TV TICKER MARQUEE EFFECT */}
+      <style jsx global>{`
+        @keyframes tvMarquee {
+          0% { transform: translateX(0%); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-tv-ticker {
+          display: flex;
+          width: max-content;
+          animation: tvMarquee 25s linear infinite;
+        }
+      `}</style>
+
       {showSplash && (
         <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
           <div className="text-center space-y-2">
-            <div className="text-7xl animate-bounce">♻️📍</div>
+            <div className="text-7xl animate-bounce">♻️📺</div>
             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">SCRAP WORLD</h1>
-            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Premium Auto Suggest Terminal Live</p>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">TV Ticker & Dual Network Engine Live</p>
           </div>
         </div>
       )}
@@ -313,12 +310,11 @@ export default function Home() {
         <div className="max-w-xl mx-auto space-y-2">
           
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-black tracking-wide">SCRAP WORLD</h1>
+            <h1 className="text-xl font-black tracking-wide">{t.appName}</h1>
             
-            {/* 📍 RE-DESIGNED CLICKABLE LOCATION LINK INTEGRATION */}
             <div className="flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-xl cursor-pointer max-w-[240px] overflow-hidden active:scale-95 transition-all" onClick={() => setShowLocationOverrideModal(true)}>
               <span className="text-xs truncate font-black text-amber-300">
-                👤 {isLoggedIn ? profileName : "Guest"} | 📍 {detectedLocationText}
+                👤 {isLoggedIn ? profileName : (lang === 'ur' ? 'مہمان' : 'Guest')} | 📍 {detectedLocationText}
               </span>
             </div>
           </div>
@@ -326,80 +322,57 @@ export default function Home() {
           <div className="grid grid-cols-3 gap-1.5">
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-amber-400">🌐 {lang === 'en' ? 'اردو' : 'English'}</button>
             <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); if (typeof window !== 'undefined') localStorage.clear(); } else { setCurrentPage('page1'); } }} className="rounded-xl py-1.5 text-[11px] font-black bg-emerald-600/20 text-emerald-400 border border-emerald-500/20">
-              {isLoggedIn ? 'Logout' : 'Login'}
+              {isLoggedIn ? (lang === 'ur' ? 'لاگ آؤٹ' : 'Logout') : t.loginBtn}
             </button>
-            <button onClick={() => setCurrentPage('page2')} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-slate-200">☰ Options</button>
+            <button onClick={() => setCurrentPage('page2')} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-slate-200">{t.optionsBtn}</button>
           </div>
           <div className="grid grid-cols-3 gap-1.5 pt-0.5">
-            {/* ⚙️ UPDATED BUTTON TEXT FROM INDUSTRIES TO INDUSTRIES & TRADERS */}
-            <button onClick={() => setCurrentPage('page3')} className="bg-indigo-600/20 border border-indigo-500/20 text-indigo-400 rounded-xl py-1.5 text-[10px] font-black tracking-tighter truncate">🏭 Industries & Traders</button>
-            <button onClick={() => { if (!isLoggedIn) { alert("Please login first!"); setCurrentPage('page1'); } else { setCurrentPage('page4'); } }} className="bg-sky-500/20 border border-sky-400/20 text-sky-400 rounded-xl py-1.5 text-[11px] font-black">📢 Post Ad</button>
-            <button onClick={() => setCurrentPage('page5')} className="bg-amber-500/20 border border-amber-400/20 text-amber-400 rounded-xl py-1.5 text-[11px] font-black">💰 Rates Hub</button>
+            <button onClick={() => { setCurrentPage('page3'); setActiveNetworkTab('industries'); }} className="bg-indigo-600/20 border border-indigo-500/20 text-indigo-400 rounded-xl py-1.5 text-[10px] font-black tracking-tighter truncate">{t.industriesBtn}</button>
+            <button onClick={() => { if (!isLoggedIn) { alert("Please login first!"); setCurrentPage('page1'); } else { setCurrentPage('page4'); } }} className="bg-sky-500/20 border border-sky-400/20 text-sky-400 rounded-xl py-1.5 text-[11px] font-black">{t.postAdBtn}</button>
+            <button onClick={() => setCurrentPage('page5')} className="bg-amber-500/20 border border-amber-400/20 text-amber-400 rounded-xl py-1.5 text-[11px] font-black">{t.ratesBtn}</button>
           </div>
         </div>
       </header>
 
-      {/* 🚀 HIGH-END REAL-TIME LME METALS & USD-PKR TICKER MARQUEE */}
-      <div className="w-full bg-slate-900 border-b border-slate-800 text-white py-2 overflow-hidden shadow-md">
-        <div className="animate-marquee whitespace-nowrap flex items-center gap-8 text-xs font-black tracking-wide">
-          <span className="text-amber-400 flex items-center gap-1">💵 USD / PKR: <b className="text-white">Rs.{usdToPkrRate.toFixed(2)}</b></span>
-          {lmeItems.map((item) => (
-            <span key={item.id} className="flex items-center gap-1.5">
-              {item.icon} {item.name}: 
-              <b className="text-white">${item.usdPerTon.toLocaleString()} /Ton</b>
-              <span className={item.trend === 'up' ? 'text-emerald-400' : 'text-red-400'}>{item.trend === 'up' ? '▲' : '▼'}</span>
-            </span>
+      {/* 📺 FIXED HIGH-END CONTINUOUS TV-STYLE SMOOTH MOVING TICKER CONTAINER */}
+      <div className="w-full bg-slate-950 border-b-2 border-slate-800 text-white py-2.5 overflow-hidden shadow-xl flex">
+        <div className="animate-tv-ticker flex items-center gap-12 text-xs font-black tracking-wide">
+          {/* Loop Array Double for seamless TV-Marquee wrap connection */}
+          {[1, 2].map((loopIdx) => (
+            <div key={loopIdx} className="flex items-center gap-12">
+              <span className="text-amber-400 flex items-center gap-1 shrink-0">💵 EXCHANGE RATE USD / PKR: <b className="text-white bg-white/5 px-2 py-0.5 rounded">Rs.{usdToPkrRate.toFixed(2)}</b></span>
+              {lmeItems.map((item, idx) => (
+                <span key={idx} className="flex items-center gap-1.5 shrink-0">
+                  {item.icon} <span className="text-slate-300">{lang === 'ur' ? item.nameUr : item.nameEn}:</span> 
+                  <b className="text-white bg-white/5 px-2 py-0.5 rounded">${item.usdPerTon.toLocaleString()} /Ton</b>
+                  <span className={item.trend === 'up' ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>{item.trend === 'up' ? '▲' : '▼'}</span>
+                </span>
+              ))}
+            </div>
           ))}
         </div>
       </div>
 
-      {/* 🗺️ OVERRIDE MODAL POPUP (INTEGRATED WITH REALTIME AUTO-SUGGEST LIST ENGINE) */}
+      {/* OVERRIDE LOCATION MODAL POPUP */}
       {showLocationOverrideModal && (
         <div className="fixed inset-0 bg-black/60 z-[999] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border-2 border-slate-400 w-full max-w-md p-5 space-y-4 text-left animate-fade-in relative">
-            <div>
-              <h4 className="font-black text-base text-slate-900 uppercase">Change Search Center Location</h4>
-              <p className="text-xs text-slate-400 font-bold">Type any area or city name in Pakistan below.</p>
-            </div>
-
-            {/* Live Search Input Line */}
-            <div className="relative space-y-1">
-              <input 
-                type="text" 
-                value={locationSearchInput} 
-                onChange={(e) => handleLocationSearchType(e.target.value)} 
-                placeholder="Type location (e.g., Nusrat Colony, Model Town...)" 
-                className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3 text-sm font-black outline-none focus:border-indigo-600"
-              />
-
-              {/* Dynamic Suggestions List Output Dropdown Array */}
+          <div className="bg-white rounded-2xl border-2 border-slate-400 w-full max-w-md p-5 space-y-4 text-left">
+            <h4 className="font-black text-base text-slate-900 uppercase">Change Search Center Location</h4>
+            <div className="relative">
+              <input type="text" value={locationSearchInput} onChange={(e) => handleLocationSearchType(e.target.value)} placeholder="Type location (e.g., Nusrat Colony, Model Town...)" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3 text-sm font-black outline-none" />
               {filteredSuggestions.length > 0 && (
                 <div className="absolute top-12 left-0 right-0 bg-white border-2 border-slate-300 rounded-xl shadow-2xl max-h-48 overflow-y-auto z-50 divide-y">
                   {filteredSuggestions.map((loc, idx) => (
-                    <div 
-                      key={idx} 
-                      onClick={() => handleManualLocationSet(loc.name, loc.lat, loc.lng)}
-                      className="p-3 text-xs font-black text-slate-800 hover:bg-indigo-50 cursor-pointer flex items-center gap-2"
-                    >
-                      <span>📍</span> {loc.name}
-                    </div>
+                    <div key={idx} onClick={() => handleManualLocationSet(loc.name, loc.lat, loc.lng)} className="p-3 text-xs font-black text-slate-800 hover:bg-indigo-50 cursor-pointer">📍 {loc.name}</div>
                   ))}
                 </div>
               )}
             </div>
-
-            {/* Quick Fast Options Matrix Grid */}
-            <div className="space-y-1 pt-1">
-              <span className="text-[10px] uppercase font-black text-slate-400 block">Quick Scrap Hubs</span>
-              <div className="grid grid-cols-2 gap-1.5">
-                <button onClick={() => handleManualLocationSet("Nusrat Colony, Gujranwala", 32.1812, 74.1923)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 Nusrat Colony, GRW</button>
-                <button onClick={() => handleManualLocationSet("Badami Bagh, Lahore", 31.5822, 74.3283)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 Badami Bagh, LHR</button>
-                <button onClick={() => handleManualLocationSet("SITE Area, Karachi", 24.8933, 67.0281)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 SITE Area, KHI</button>
-                <button onClick={() => handleManualLocationSet("Small Industrial, SKT", 32.4945, 74.5229)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 Industrial, SKT</button>
-              </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              <button onClick={() => handleManualLocationSet("Nusrat Colony, Gujranwala", 32.1812, 74.1923)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 Nusrat Colony, GRW</button>
+              <button onClick={() => handleManualLocationSet("Badami Bagh, Lahore", 31.5822, 74.3283)} className="bg-slate-50 border p-2 rounded-lg font-black text-[11px] text-slate-700 text-left truncate">📍 Badami Bagh, LHR</button>
             </div>
-
-            <button onClick={() => { setShowLocationOverrideModal(false); setLocationSearchInput(''); setFilteredSuggestions([]); }} className="w-full bg-slate-900 text-white text-xs font-black py-2.5 rounded-xl">Cancel ✕</button>
+            <button onClick={() => { setShowLocationOverrideModal(false); setFilteredSuggestions([]); }} className="w-full bg-slate-900 text-white text-xs font-black py-2.5 rounded-xl">Cancel ✕</button>
           </div>
         </div>
       )}
@@ -407,15 +380,13 @@ export default function Home() {
       {/* 🏠 MAIN HOME FEED VIEW */}
       {currentPage === 'home' && (
         <main className="max-w-xl mx-auto p-4 space-y-4">
-          
-          {/* CONTROL SORT GRID */}
           <div className="grid grid-cols-2 gap-3">
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-white border-2 border-slate-300 font-black text-xs rounded-xl p-3 text-slate-700 outline-none shadow-sm">
               <option value="nearest">📍 Auto Radius (Nearest First)</option>
               <option value="price-low">💰 Price: Low to High</option>
               <option value="price-high">📈 Price: High to Low</option>
             </select>
-            <button onClick={() => setCurrentPage('page7')} className="bg-gradient-to-r from-[#1a365d] to-[#142d52] text-white rounded-xl py-3 px-4 text-xs font-black shadow-sm text-center">🎛️ Material Filters</button>
+            <button onClick={() => setCurrentPage('page7')} className="bg-gradient-to-r from-[#1a365d] to-[#142d52] text-white rounded-xl py-3 px-4 text-xs font-black shadow-sm text-center">{t.filterBtn}</button>
           </div>
 
           {selectedCategory !== 'All' && (
@@ -425,13 +396,12 @@ export default function Home() {
             </div>
           )}
 
-          {/* ADS AUTOMATIC PROXIMITY STREAM */}
+          {/* ADS STREAM */}
           <div className="space-y-4">
             {filteredAds.map((ad) => {
               const adDistanceKm = calculateRealKM(currentLat, currentLng, ad.lat || 32.1617, ad.lng || 74.1883);
               return (
                 <div key={ad.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-md flex flex-col gap-3 relative">
-                  
                   <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
                     <button onClick={() => alert(`Reported ${ad.title}`)} className="bg-amber-100 text-amber-800 border border-amber-300 rounded-md text-[10px] font-black px-2 py-0.5">Report ⚠️</button>
                     {(userPhone === ad.user_phone || profileName === "Google Play Reviewer") && (
@@ -452,7 +422,6 @@ export default function Home() {
                       <div className="text-xs font-extrabold text-slate-600 space-y-0.5">
                         <div>Weight: {ad.weight}</div>
                         <div className="text-slate-800 font-black truncate">📍 {ad.location_text || 'Pakistan'}</div>
-                        <div className="text-[10px] text-slate-400">Seller Phone: {ad.user_phone}</div>
                       </div>
                     </div>
                   </div>
@@ -470,9 +439,9 @@ export default function Home() {
       {/* SUBPAGES Subs SYSTEMS */}
       {currentPage !== 'home' && (
         <main className="max-w-xl mx-auto p-4 mt-2">
-          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">Back Feed</button>
+          <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">{t.backBtn}</button>
 
-          {/* PAGE 1: AUTH CHANNELS */}
+          {/* PAGE 1: AUTH */}
           {currentPage === 'page1' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-4">
               {!showOtpScreen && !showNameFormScreen && (
@@ -497,7 +466,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 2: PROFILE VIEW NODE */}
+          {/* PAGE 2: PROFILE */}
           {currentPage === 'page2' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-md space-y-4 text-left font-black text-sm">
               <h3 className="text-xl border-b-2 pb-2">👤 PROFILE TERMINAL</h3>
@@ -507,17 +476,60 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 3: INDUSTRIES & TRADERS NETWORK */}
+          {/* 👑 PAGE 3: ADVANCED DUAL LISTS HUB (INDUSTRIES VS TRADERS SPLIT SELECTION) */}
           {currentPage === 'page3' && (
-            <div className="space-y-3 text-left">
-              <div className="bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white rounded-2xl p-4 shadow-sm font-black text-sm uppercase">Verified Industries & Large Scale Scrap Traders Hub 🏭</div>
-              {registeredIndustries.map((ind) => (
-                <div key={ind.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-sm"><h4 className="font-black text-base text-slate-900">{ind.name}</h4><p className="text-xs font-extrabold text-slate-600">📍 {ind.location}</p></div>
-              ))}
+            <div className="space-y-4 text-left animate-fade-in">
+              {/* Dual Selector Header Bars */}
+              <div className="grid grid-cols-2 bg-slate-900 p-2 rounded-2xl border-2 border-slate-800 shadow-md">
+                <button 
+                  onClick={() => setActiveNetworkTab('industries')} 
+                  className={`py-3 rounded-xl font-black text-xs text-center transition-all ${activeNetworkTab === 'industries' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 bg-transparent'}`}
+                >
+                  🏭 Large Industries ({registeredIndustries.length})
+                </button>
+                <button 
+                  onClick={() => setActiveNetworkTab('traders')} 
+                  className={`py-3 rounded-xl font-black text-xs text-center transition-all ${activeNetworkTab === 'traders' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 bg-transparent'}`}
+                >
+                  👥 Scrap Traders ({registeredTraders.length})
+                </button>
+              </div>
+
+              {/* LIST CHANNEL 1: INDUSTRIES OUTPUT */}
+              {activeNetworkTab === 'industries' && (
+                <div className="space-y-3">
+                  {registeredIndustries.map((ind) => (
+                    <div key={ind.id} className="bg-white rounded-2xl p-4 border-2 border-slate-300 shadow-md space-y-1">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-black text-slate-900 text-base">{ind.name}</h4>
+                        <span className="text-[9px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded">{ind.badge}</span>
+                      </div>
+                      <p className="text-xs text-slate-500 font-extrabold">📍 {ind.location} | Capacity: {ind.capacity}</p>
+                      <p className="text-[11px] text-indigo-700 font-black pt-1 border-t border-slate-100">Setup Focus: {ind.type}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* LIST CHANNEL 2: TRADERS OUTPUT */}
+              {activeNetworkTab === 'traders' && (
+                <div className="space-y-3">
+                  {registeredTraders.map((trader) => (
+                    <div key={trader.id} className="bg-white rounded-2xl p-4 border-2 border-slate-300 shadow-md space-y-1">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-black text-slate-900 text-base">{trader.name}</h4>
+                        <span className="text-[9px] bg-emerald-100 text-emerald-800 border border-emerald-300 font-black px-2 py-0.5 rounded">{trader.badge}</span>
+                      </div>
+                      <p className="text-xs text-slate-500 font-extrabold">📍 {trader.location} | Dealing Volume: {trader.volume}</p>
+                      <p className="text-[11px] text-slate-700 font-black pt-1 border-t border-slate-100">Material Type: {trader.dealType}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          {/* PAGE 4: POST AD LIVE STATION */}
+          {/* PAGE 4: POST AD */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left">
               <label className="text-xs font-black text-slate-700 uppercase">Photos (Max 3)</label>
@@ -556,19 +568,19 @@ export default function Home() {
               </div>
 
               <div className="bg-white rounded-2xl border-2 border-slate-300 shadow-xl overflow-hidden divide-y-2 divide-slate-100">
-                {lmeItems.map((item) => {
+                {lmeItems.map((item, idx) => {
                   const pkrPerKgExact = Math.round((item.usdPerTon * usdToPkrRate) / 1000);
                   return (
-                    <div key={item.id} className="p-4 flex justify-between items-center bg-white hover:bg-slate-50">
+                    <div key={idx} className="p-4 flex justify-between items-center bg-white hover:bg-slate-50">
                       <div className="flex items-center gap-3">
                         <span className="text-3xl bg-slate-100 p-2.5 rounded-2xl border-2 border-slate-200">{item.icon}</span>
                         <div>
-                          <h4 className="font-black text-sm text-slate-900">{item.name}</h4>
-                          <span className="text-[10px] text-slate-400 font-bold block">⏱️ Global Live Spot: ${item.usdPerTon.toLocaleString()} /Ton</span>
+                          <h4 className="font-black text-sm text-slate-900">{lang === 'ur' ? item.nameUr : item.nameEn}</h4>
+                          <span className="text-[10px] text-slate-400 font-bold block">⏱️ Live Spot: ${item.usdPerTon.toLocaleString()} /Ton</span>
                         </div>
                       </div>
                       <div className="text-right">
-                        <span className="text-xs text-slate-400 font-black block uppercase tracking-wider">Converted Local</span>
+                        <span className="text-xs text-slate-400 font-black block uppercase tracking-wider">Converted Rate</span>
                         <span className="text-lg font-black text-indigo-700">Rs.{pkrPerKgExact} <span className="text-xs text-slate-400 font-bold">/kg</span></span>
                       </div>
                     </div>
