@@ -28,7 +28,11 @@ export default function Home() {
     }
   }, []);
 
-  const handleSendOtp = () => {
+  {const handleSendOtp = () => {
+    // SMS API integration yahan aayegi
+    console.log("Sending OTP to:", inputPhone);
+    setShowOtpScreen(true); // Ye screen badalne ke liye hai
+  };
     alert("OTP sent to " + inputPhone);
     setShowOtpScreen(true);
   };
