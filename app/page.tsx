@@ -47,7 +47,7 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en'); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // USER PROFILE & OPTIONS CONTEXT
+  // USER PROFILE STATES
   const [userPhone, setUserPhone] = useState('');
   const [profileName, setProfileName] = useState('Scrap Trader');
   const [profileImage, setProfileImage] = useState<string>(''); 
@@ -95,6 +95,13 @@ export default function Home() {
   const [showNameFormScreen, setShowNameFormScreen] = useState(false);
   const [inputOtp, setInputOtp] = useState('');
   const [secureActiveOtp, setSecureActiveOtp] = useState('');
+
+  const translations: any = {
+    en: { appName: "SCRAP WORLD", filterSimple: "Filters 🎛️", backBtn: "← Back to Feed" },
+    ur: { appName: "اسکریپ ورلڈ", filterSimple: "فلٹرز 🎛️", backBtn: "← واپس ہوم فیڈ" }
+  };
+
+  const t = translations[lang];
 
   const fetchCloudAdsLive = async () => {
     try {
@@ -284,13 +291,13 @@ export default function Home() {
       {/* 🚀 INJECT GOOGLE NOTO NASTALIQ URDU PREMIUM FONT ENGINE */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" />
 
-      {/* FIXED NEXT.JS COMPATIBLE STYLES FOR THE NASTALIQ FONTS & MARQUEE ANIMATION */}
+      {/* STYLES OBJECT INSIDE REGUARDED INLINE MATRIX */}
       <style>{`
         .urdu-text { font-family: 'Noto Nastaliq Urdu', serif !important; line-height: 2.6 !important; text-align: right; }
         @keyframes ticker-scroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
-        .ticker-wrap { width: 100%; overflow: hidden; background: #0b192e; border-bottom: 2px solid #1e293b; padding: 12px 0; display: flex; align-items: center; }
-        .ticker-content { display: inline-block; white-space: nowrap; padding-left: 100%; animation: ticker-scroll 25s linear infinite; font-size: 13px; font-weight: 900; color: #fff; }
-        .ticker-item { margin-right: 2.5rem; display: inline-flex; align-items: center; gap: 6px; }
+        .ticker-wrap { width: 100%; overflow: hidden; background: #0b192e; border-bottom: 2px solid #1e293b; padding: 14px 0; display: flex; align-items: center; position: relative; }
+        .ticker-content { display: inline-block; white-space: nowrap; padding-left: 100%; animation: ticker-scroll 30s linear infinite; font-size: 13px; font-weight: 900; color: #fff; }
+        .ticker-item { margin-right: 3rem; display: inline-flex; align-items: center; gap: 8px; vertical-align: middle; }
       `}</style>
 
       {showSplash && (
@@ -298,7 +305,7 @@ export default function Home() {
           <div className="text-center space-y-2">
             <div className="text-7xl animate-bounce">♻️📍</div>
             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">SCRAP WORLD</h1>
-            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Premium Urdu Nastaliq UI Terminal Active</p>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Premium Uncut Master Sandbox Live</p>
           </div>
         </div>
       )}
@@ -331,7 +338,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 🚀 FIXED SEAMLESS TICKER */}
+      {/* 🚀 FIXED LIVE SCROLLING TICKER (NO CHARHING AT ALL) */}
       <div className="ticker-wrap shadow-xl">
         <div className="ticker-content">
           <span className="ticker-item text-amber-400">💵 EXCHANGE RATE: USD/PKR: Rs.{usdToPkrRate.toFixed(2)}</span>
@@ -390,7 +397,7 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="flex-1 space-y-1 overflow-hidden">
-                      {/* Premium Nastaliq Selector Check */}
+                      {/* Premium Nastaliq Conditional Styling */}
                       <h4 className={`text-base font-black text-slate-900 leading-snug truncate pr-16 ${lang === 'ur' ? 'urdu-text' : ''}`}>{ad.title}</h4>
                       <div className="text-[10px] bg-indigo-100 text-indigo-900 font-black px-2 py-0.5 rounded inline-block">{ad.category || 'Material'}</div>
                       <div className="text-xs font-extrabold text-slate-600 space-y-0.5">
@@ -506,12 +513,12 @@ export default function Home() {
             </div>
           )}
 
-          {/* 🏭 PAGE 3: INDUSTRIES & TRADERS HUB STATION (RESTORED!) */}
+          {/* 🏭 PAGE 3: INDUSTRIES & TRADERS HUB STATION (RESTORED PERFECTLY) */}
           {currentPage === 'page3' && (
             <div className="space-y-4 text-left animate-fade-in">
               <div className="bg-gradient-to-r from-[#1a365d] to-[#0f2444] rounded-2xl p-4 text-white shadow-xl border border-white/10">
                 <h3 className="font-black text-base uppercase tracking-wide">Registered Industries Hub 🏭</h3>
-                <p className="text-[11px] text-slate-300 font-bold mt-0.5">Verified recycling recycling units & processing foundries across Pakistan.</p>
+                <p className="text-[11px] text-slate-300 font-bold mt-0.5">Verified recycling units & processing foundries across Pakistan.</p>
               </div>
 
               <div className="space-y-3">
