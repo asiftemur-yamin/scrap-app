@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { fetchAds } from './lib/api';
+import { fetchAds, getGoogleLoginUrl } from './lib/api';
 import Header from './components/Header';
 import Ticker from './components/Ticker';
 import AdCard from './components/AdCard';
@@ -8,7 +8,8 @@ import Nav from './components/Nav';
 
 export default function Home() {
   const [ads, setAds] = useState<any[]>([]);
-  const [showHelp, setShowHelp] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentPage, setCurrentPage] = useState('home');
 
   useEffect(() => {
     const loadData = async () => {
@@ -18,20 +19,30 @@ export default function Home() {
     loadData();
   }, []);
 
+  const handleGoogleLogin = () => {
+    window.location.href = getGoogleLoginUrl(window.location.origin);
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 pb-20">
-      <Header setShowHelp={setShowHelp} />
+      <Header />
       <Ticker usdRate={278.50} />
       
-      <div className="p-4 space-y-4">
-        {ads.length > 0 ? (
-          ads.map((ad) => (
-            <AdCard key={ad.id} ad={ad} onClick={() => console.log('Clicked', ad.id)} />
-          ))
-        ) : (
-          <p className="text-center text-slate-500 font-black pt-10">Loading scrap market...</p>
-        )}
-      </div>
+      {/* Login View */}
+      {currentPage === 'login' ? (
+        <div className="p-6 text-center space-y-4">
+          <button onClick={handleGoogleLogin} className="w-full bg-white border-2 border-slate-300 py-3 rounded-xl font-black">
+            🌐 Login with Google
+          </button>
+          <button onClick={() => setCurrentPage('home')} className="text-sm font-black underline">Back</button>
+        </div>
+      ) : (
+        <div className="p-4 space-y-4">
+          {ads.map((ad) => (
+            <AdCard key={ad.id} ad={ad} onClick={() => {}} />
+          ))}
+        </div>
+      )}
       
       <Nav />
     </main>
