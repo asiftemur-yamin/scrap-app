@@ -119,7 +119,7 @@ export default function Home() {
   useEffect(() => {
     const timer = setTimeout(() => { setShowSplash(false); }, 1500);
 
-    if (typeof window !== 'undefined') {
+    if (typeof window !== undefined) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -206,7 +206,7 @@ export default function Home() {
   const handleCompleteNameRegistration = () => {
     if (!inputProfileNameForm.trim()) { alert("Enter Name!"); return; }
     setIsLoggedIn(true); setUserPhone(inputPhone); setProfileName(inputProfileNameForm);
-    if (typeof window !== 'undefined') {
+    if (typeof window !== undefined) {
       localStorage.setItem('scrap_user_session', inputPhone);
       localStorage.setItem('scrap_profile_name', inputProfileNameForm);
     }
@@ -214,7 +214,7 @@ export default function Home() {
   };
 
   const handleGoogleLoginReal = () => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== undefined) {
       const oauthUrl = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
       window.location.href = oauthUrl;
     }
@@ -227,7 +227,7 @@ export default function Home() {
     reader.onloadend = () => {
       if (reader.result) {
         setProfileImage(reader.result as string);
-        if (typeof window !== 'undefined') localStorage.setItem('scrap_profile_pic', reader.result as string);
+        if (typeof window !== undefined) localStorage.setItem('scrap_profile_pic', reader.result as string);
       }
     };
     reader.readAsDataURL(file);
@@ -291,7 +291,7 @@ export default function Home() {
       {/* 🚀 INJECT GOOGLE NOTO NASTALIQ URDU PREMIUM FONT ENGINE */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" />
 
-      {/* STYLES OBJECT INSIDE REGUARDED INLINE MATRIX */}
+      {/* FIXED NEXT.JS COMPATIBLE STYLES FOR THE NASTALIQ FONTS & MARQUEE ANIMATION */}
       <style>{`
         .urdu-text { font-family: 'Noto Nastaliq Urdu', serif !important; line-height: 2.6 !important; text-align: right; }
         @keyframes ticker-scroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
@@ -325,7 +325,7 @@ export default function Home() {
           
           <div className="grid grid-cols-3 gap-1.5">
             <button onClick={() => setLang(lang === 'en' ? 'ur' : 'en')} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-amber-400">🌐 {lang === 'en' ? 'اردو' : 'English'}</button>
-            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); setProfileImage(''); if (typeof window !== 'undefined') localStorage.clear(); } else { setCurrentPage('page1'); } }} className="rounded-xl py-1.5 text-[11px] font-black bg-emerald-600/20 text-emerald-400 border border-emerald-500/20">
+            <button onClick={() => { if (isLoggedIn) { setIsLoggedIn(false); setUserPhone(''); setProfileImage(''); if (typeof window !== undefined) localStorage.clear(); } else { setCurrentPage('page1'); } }} className="rounded-xl py-1.5 text-[11px] font-black bg-emerald-600/20 text-emerald-400 border border-emerald-500/20">
               {isLoggedIn ? 'Logout' : 'Login'}
             </button>
             <button onClick={() => { setCurrentPage('page2'); setOptionsActiveTab('profile'); }} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-slate-200">☰ Options</button>
@@ -338,7 +338,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 🚀 FIXED LIVE SCROLLING TICKER (NO CHARHING AT ALL) */}
+      {/* 🚀 FIXED LIVE SCROLLING TICKER */}
       <div className="ticker-wrap shadow-xl">
         <div className="ticker-content">
           <span className="ticker-item text-amber-400">💵 EXCHANGE RATE: USD/PKR: Rs.{usdToPkrRate.toFixed(2)}</span>
@@ -397,7 +397,6 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="flex-1 space-y-1 overflow-hidden">
-                      {/* Premium Nastaliq Conditional Styling */}
                       <h4 className={`text-base font-black text-slate-900 leading-snug truncate pr-16 ${lang === 'ur' ? 'urdu-text' : ''}`}>{ad.title}</h4>
                       <div className="text-[10px] bg-indigo-100 text-indigo-900 font-black px-2 py-0.5 rounded inline-block">{ad.category || 'Material'}</div>
                       <div className="text-xs font-extrabold text-slate-600 space-y-0.5">
@@ -513,7 +512,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* 🏭 PAGE 3: INDUSTRIES & TRADERS HUB STATION (RESTORED PERFECTLY) */}
+          {/* 🏭 PAGE 3: INDUSTRIES & TRADERS HUB STATION */}
           {currentPage === 'page3' && (
             <div className="space-y-4 text-left animate-fade-in">
               <div className="bg-gradient-to-r from-[#1a365d] to-[#0f2444] rounded-2xl p-4 text-white shadow-xl border border-white/10">
@@ -547,7 +546,7 @@ export default function Home() {
                 {uploadedPhotos.map((photoUrl, index) => (
                   <div key={index} className="relative aspect-square bg-slate-100 border-2 border-slate-300 rounded-xl overflow-hidden"><img src={photoUrl} alt="Preview" className="w-full h-full object-cover" /></div>
                 ))}
-                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
+                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex flex-col items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
               </div>
               <input type="file" accept="image/*" multiple ref={fileInputRef} onChange={handlePhotoSelectTrigger} className="hidden" />
               
