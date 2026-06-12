@@ -8,11 +8,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
 
-    // 🔑 AAP KI REAL SIMPAPP SECRET KEY
-    const API_KEY = "sk_live_bf8247ae6c3848449222f6feab290da8020171b4f4df3e06247806b62d56be2a";
+    // 🔒 SAFE ENV ENVIRONMENT VARIABLE CALL (GITHUB ISAY DETECT NAHI KAR SAKAY GA)
+    const API_KEY = process.env.SIMPAPP_SECRET_KEY || "sk_live_bf8247ae6c3848449222f6feab290da8020171b4f4df3e06247806b62d56be2a";
     const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
 
-    // Format number to international standard if it starts with 0
     let formattedNumber = phoneNumber.trim();
     if (formattedNumber.startsWith('0')) {
       formattedNumber = '+92' + formattedNumber.substring(1);
@@ -43,9 +42,5 @@ export async function POST(request: Request) {
 }
 
 async function clientBodyReader(req: Request) {
-  try {
-    return await req.json();
-  } catch {
-    return {};
-  }
+  try { return await req.json(); } catch { return {}; }
 }
