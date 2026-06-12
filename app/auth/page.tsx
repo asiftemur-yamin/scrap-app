@@ -1,35 +1,51 @@
 'use client';
 import { useState } from 'react';
+import { auth } from '../firebaseConfig'; // Aapki pehli wali config file
+import { signInWithPhoneNumber, RecaptchaVerifier, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 export default function AuthPage() {
-  const [inputPhone, setInputPhone] = useState('');
-  const [showOtpScreen, setShowOtpScreen] = useState(false);
+  const [phone, setPhone] = useState('');
+
+  // Google Login Logic
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      alert("Google Login Successful!");
+      // Yahan navigate logic add ho sakta hai
+    } catch (error) {
+      console.error("Google Login Error:", error);
+      alert("Google login mein masla aaya.");
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-white p-6 flex flex-col justify-center max-w-sm mx-auto">
-      <h2 className="text-2xl font-black mb-6">Login / Register</h2>
-      {!showOtpScreen ? (
-        <div className="space-y-4">
-          <input 
-            type="tel" 
-            value={inputPhone} 
-            onChange={(e) => setInputPhone(e.target.value)} 
-            placeholder="03001234567" 
-            className="w-full border-2 border-slate-300 rounded-xl p-4 font-black" 
-          />
-          <button 
-            onClick={() => setShowOtpScreen(true)} 
-            className="w-full bg-indigo-600 text-white py-4 rounded-xl font-black"
-          >
-            Send OTP
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <input placeholder="Enter OTP" className="w-full border-2 border-slate-300 rounded-xl p-4 font-black text-center" />
-          <button className="w-full bg-emerald-600 text-white py-4 rounded-xl font-black">Verify</button>
-        </div>
-      )}
+    <div className="p-6 max-w-sm mx-auto bg-white min-h-screen">
+      <h2 className="text-xl font-black mb-6">Login with Scrap World</h2>
+      
+      {/* Google Login Button */}
+      <button 
+        onClick={handleGoogleLogin} 
+        className="w-full bg-slate-800 text-white p-4 rounded-xl font-black mb-6"
+      >
+        Login with Google
+      </button>
+
+      {/* OTP Login Section */}
+      <div className="space-y-4">
+        <input 
+          type="tel"
+          placeholder="03001234567" 
+          className="w-full border-2 border-slate-300 p-4 rounded-xl font-black"
+          onChange={(e) => setPhone(e.target.value)}
+        />
+        <button className="w-full bg-indigo-600 text-white p-4 rounded-xl font-black">
+          Send OTP
+        </button>
+      </div>
+      
+      {/* Captcha container for OTP */}
+      <div id="recaptcha-container"></div>
     </div>
   );
 }
