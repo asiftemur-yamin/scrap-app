@@ -1,15 +1,5 @@
 'use client';
-import { useState, useE// page.tsx mein ye add karein
-const [currentPage, setCurrentPage] = useState('home');
-
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('page') === 'login') {
-    setCurrentPage('login');
-  } else {
-    setCurrentPage('home');
-  }
-}, []);ffect } from 'react';
+import { useState, useEffect } from 'react';
 import { fetchAds } from './lib/api';
 import Header from './components/Header';
 import Ticker from './components/Ticker';
@@ -18,33 +8,35 @@ import Nav from './components/Nav';
 
 export default function Home() {
   const [ads, setAds] = useState<any[]>([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [inputPhone, setInputPhone] = useState('');
   const [inputOtp, setInputOtp] = useState('');
   const [showOtpScreen, setShowOtpScreen] = useState(false);
 
   useEffect(() => {
+    // 1. Data load karein
     const loadData = async () => {
       const data = await fetchAds();
       setAds(data);
     };
     loadData();
+
+    // 2. URL check karein
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('page') === 'login') {
+      setCurrentPage('login');
+    }
   }, []);
 
-  // OTP Login Logic
   const handleSendOtp = () => {
-    // Yahan SMS API logic call hoga
     alert("OTP sent to " + inputPhone);
     setShowOtpScreen(true);
   };
 
   const handleVerifyOtp = () => {
-    if (inputOtp === "7861") { // Testing code
-      setIsLoggedIn(true);
-      setCurrentPage('home');
-      setShowOtpScreen(false);
+    if (inputOtp === "7861") {
       alert("Login Successful!");
+      window.location.href = '/'; // Home par wapis
     } else {
       alert("Invalid Code!");
     }
@@ -61,7 +53,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* LOGIN VIEW */}
       {currentPage === 'login' && (
         <div className="p-6 space-y-4">
           {!showOtpScreen ? (
