@@ -9,15 +9,18 @@ const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTpSg";
 // 🔑 SIMPAPP SMS GATEWAY CONFIGURATION
 const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
 
-// 📦 PRODUCTION INITIAL DATA STACKS WITH GPS COORDINATES
+// 📦 PRODUCTION DATA STACKS WITH GPS COORDINATES
 const initial10Ads = [
   { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location_text: "Gujranwala Scrap Market", lat: 32.1617, lng: 74.1883, icon: "🔩", user_phone: "03006558837" },
   { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", weight: "450 Kg", location_text: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283, icon: "🔌", user_phone: "03001234567" },
   { id: 3, title: "Mixed Crushed Plastic Drums Flakes HDPE", category: "Plastic", price: "98", weight: "3 Ton", location_text: "SITE Area, Karachi", lat: 24.8933, lng: 67.0281, icon: "🛢️", user_phone: "03006558837" }
 ];
 
+// 🏭 REGISTERED INDUSTRIES HUB DATA
 const registeredIndustries = [
-  { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister & Metal Separation", capacity: "30 Tons/Month", status: "Verified ✓", badge: "🥇 Premium" }
+  { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister & Metal Separation", capacity: "30 Tons/Month", status: "Verified ✓", badge: "🥇 Premium" },
+  { id: 2, name: "Chenab Polymer Flakes Refinery", location: "Sheikhupura Road, Gujranwala", type: "PET Bottle & HDPE Crushing Plant", capacity: "150 Tons/Month", status: "Verified ✓", badge: "Corporate" },
+  { id: 3, name: "Pak Copper Melting & Wire Industries", location: "Small Industrial Estate, Gujranwala", type: "Copper Ingot & Grade A Wire Extraction", capacity: "80 Tons/Month", status: "Verified ✓", badge: "Gold Member" }
 ];
 
 const initialLmeItems = [
@@ -92,13 +95,6 @@ export default function Home() {
   const [showNameFormScreen, setShowNameFormScreen] = useState(false);
   const [inputOtp, setInputOtp] = useState('');
   const [secureActiveOtp, setSecureActiveOtp] = useState('');
-
-  const translations: any = {
-    en: { appName: "SCRAP WORLD", filterSimple: "Filters 🎛️", backBtn: "← Back to Feed" },
-    ur: { appName: "اسکریپ ورلڈ", filterSimple: "فلٹرز 🎛️", backBtn: "← واپس ہوم فیڈ" }
-  };
-
-  const t = translations[lang];
 
   const fetchCloudAdsLive = async () => {
     try {
@@ -290,7 +286,7 @@ export default function Home() {
 
       {/* FIXED NEXT.JS COMPATIBLE STYLES FOR THE NASTALIQ FONTS & MARQUEE ANIMATION */}
       <style>{`
-        .urdu-text { font-family: 'Noto Nastaliq Urdu', serif !important; line-height: 2.4 !important; text-align: right; }
+        .urdu-text { font-family: 'Noto Nastaliq Urdu', serif !important; line-height: 2.6 !important; text-align: right; }
         @keyframes ticker-scroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
         .ticker-wrap { width: 100%; overflow: hidden; background: #0b192e; border-bottom: 2px solid #1e293b; padding: 12px 0; display: flex; align-items: center; }
         .ticker-content { display: inline-block; white-space: nowrap; padding-left: 100%; animation: ticker-scroll 25s linear infinite; font-size: 13px; font-weight: 900; color: #fff; }
@@ -328,7 +324,7 @@ export default function Home() {
             <button onClick={() => { setCurrentPage('page2'); setOptionsActiveTab('profile'); }} className="bg-white/5 border border-white/10 rounded-xl py-1.5 text-[11px] font-black text-slate-200">☰ Options</button>
           </div>
           <div className="grid grid-cols-3 gap-1.5 pt-0.5">
-            <button onClick={() => setCurrentPage('page3')} className="bg-indigo-600/20 border border-indigo-500/20 text-indigo-400 rounded-xl py-1.5 text-[11px] font-black">🏭 Industries & Traders</button>
+            <button onClick={() => setCurrentPage('page3')} className={`rounded-xl py-1.5 text-[11px] font-black border transition-all ${currentPage === 'page3' ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-indigo-600/20 border-indigo-500/20 text-indigo-400'}`}>🏭 Industries & Traders</button>
             <button onClick={() => { if (!isLoggedIn) { alert("Please login first!"); setCurrentPage('page1'); } else { setCurrentPage('page4'); } }} className="bg-sky-500/20 border border-sky-400/20 text-sky-400 rounded-xl py-1.5 text-[11px] font-black">📢 Post Ad</button>
             <button onClick={() => setCurrentPage('page5')} className="bg-amber-500/20 border border-amber-400/20 text-amber-400 rounded-xl py-1.5 text-[11px] font-black">💰 Rates Hub</button>
           </div>
@@ -394,7 +390,7 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="flex-1 space-y-1 overflow-hidden">
-                      {/* Premium Nastaliq Loader */}
+                      {/* Premium Nastaliq Selector Check */}
                       <h4 className={`text-base font-black text-slate-900 leading-snug truncate pr-16 ${lang === 'ur' ? 'urdu-text' : ''}`}>{ad.title}</h4>
                       <div className="text-[10px] bg-indigo-100 text-indigo-900 font-black px-2 py-0.5 rounded inline-block">{ad.category || 'Material'}</div>
                       <div className="text-xs font-extrabold text-slate-600 space-y-0.5">
@@ -447,7 +443,6 @@ export default function Home() {
           {/* ☰ 👤 PAGE 2: OPTIONS CONTROLLER */}
           {currentPage === 'page2' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 shadow-xl overflow-hidden flex flex-col min-h-[450px]">
-              
               <div className="bg-slate-900 grid grid-cols-4 p-2 gap-1 border-b border-slate-700">
                 <button onClick={() => setOptionsActiveTab('profile')} className={`py-2 text-center rounded-xl font-black text-xs transition-all ${optionsActiveTab === 'profile' ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-white/5'}`}>👤 Profile</button>
                 <button onClick={() => setOptionsActiveTab('myads')} className={`py-2 text-center rounded-xl font-black text-xs transition-all ${optionsActiveTab === 'myads' ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-white/5'}`}>📋 My Ads</button>
@@ -456,7 +451,6 @@ export default function Home() {
               </div>
 
               <div className="p-5 flex-1 text-left space-y-4">
-                
                 {optionsActiveTab === 'profile' && (
                   <div className="space-y-4 text-center">
                     <div className="relative w-28 h-28 mx-auto group">
@@ -466,11 +460,9 @@ export default function Home() {
                       <button onClick={() => profilePicRef.current?.click()} className="absolute bottom-0 right-0 bg-indigo-600 text-white w-8 h-8 rounded-full border border-white text-xs font-black flex items-center justify-center shadow-md">📸</button>
                       <input type="file" accept="image/*" ref={profilePicRef} onChange={handleProfilePicChange} className="hidden" />
                     </div>
-
                     <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-4 text-xs font-black text-slate-700 space-y-2 text-left">
                       <div>👤 Trader Profile: <span className="text-slate-900">{profileName}</span></div>
                       <div>📱 Secure Token ID: <span className="text-slate-900">{userPhone || "Not Logged In"}</span></div>
-                      <div>🏆 Member Tier: <span className="text-amber-600">R-H-A-F Verified Associate</span></div>
                     </div>
                   </div>
                 )}
@@ -507,20 +499,36 @@ export default function Home() {
                   <div className="text-center space-y-3 py-6 bg-slate-950 rounded-2xl text-white border-2 border-slate-800">
                     <div className="text-5xl animate-pulse">🥇</div>
                     <h2 className="text-xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">R-H-A-F RECYCLING</h2>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-6">Industrial Raw Materials & Blister Metal Separation Plant Processing Hub</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-6">Industrial Raw Materials Processing Hub, Gujranwala</p>
                   </div>
                 )}
-
               </div>
             </div>
           )}
 
-          {/* PAGE 3: INDUSTRIES */}
+          {/* 🏭 PAGE 3: INDUSTRIES & TRADERS HUB STATION (RESTORED!) */}
           {currentPage === 'page3' && (
-            <div className="space-y-3 text-left">
-              {registeredIndustries.map((ind) => (
-                <div key={ind.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-sm"><h4 className="font-black text-base text-slate-900">{ind.name}</h4><p className="text-xs font-extrabold text-slate-600">📍 {ind.location}</p></div>
-              ))}
+            <div className="space-y-4 text-left animate-fade-in">
+              <div className="bg-gradient-to-r from-[#1a365d] to-[#0f2444] rounded-2xl p-4 text-white shadow-xl border border-white/10">
+                <h3 className="font-black text-base uppercase tracking-wide">Registered Industries Hub 🏭</h3>
+                <p className="text-[11px] text-slate-300 font-bold mt-0.5">Verified recycling recycling units & processing foundries across Pakistan.</p>
+              </div>
+
+              <div className="space-y-3">
+                {registeredIndustries.map((ind) => (
+                  <div key={ind.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-md space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-black text-base text-slate-900 leading-snug">{ind.name}</h4>
+                      <span className="text-[9px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded-md uppercase tracking-wider shadow-sm">{ind.badge}</span>
+                    </div>
+                    <p className="text-xs font-black text-indigo-700">📍 {ind.location}</p>
+                    <div className="pt-2 border-t border-slate-100 flex flex-col gap-1 text-[11px] font-extrabold text-slate-600">
+                      <div><span className="text-slate-400">Process Type:</span> {ind.type}</div>
+                      <div><span className="text-slate-400">Monthly Cap:</span> {ind.capacity} | <span className="text-emerald-600">{ind.status}</span></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
