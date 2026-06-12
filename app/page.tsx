@@ -9,37 +9,33 @@ const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTpSg";
 // 🔑 SIMPAPP SMS GATEWAY CONFIGURATION
 const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
 
-// 📦 PRODUCTION INITIAL DATA STACKS (WITH LIVE LOCATION NODES FOR RADIUS CALC)
+// 📦 REAL PRODUCTION DATA STACKS (WITH EXACT HUB COORDINATES)
 const initial10Ads = [
-  { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location: "Gujranwala", icon: "🔩", user_phone: "03006558837" },
-  { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", weight: "450 Kg", location: "Sheikhupura", icon: "🔌", user_phone: "03001234567" },
-  { id: 3, title: "Chaaloo Industrial Air Compressor 200L", category: "Chaaloo Maal", price: "45,000", weight: "1 Unit", location: "Gujranwala", icon: "💨", user_phone: "03217654321" },
-  { id: 4, title: "Bundled Pure Aluminum Beverage Cans", category: "Aluminum", price: "465", weight: "35 Mund", location: "Lahore", icon: "🥫", user_phone: "03339876543" },
-  { id: 5, title: "Mixed Crushed Plastic Drums Flakes HDPE", category: "Plastic", price: "98", weight: "3 Ton", location: "Sialkot", icon: "🛢️", user_phone: "03006558837" },
-  { id: 6, title: "Electronic Server Green Motherboards Grade B", category: "Electronic", price: "850", weight: "120 Pieces", location: "Karachi", icon: "💻", user_phone: "03125556677" }
+  { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location_text: "Gujranwala Scrap Market", lat: 32.1617, lng: 74.1883, icon: "🔩", user_phone: "03006558837" },
+  { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", weight: "450 Kg", location_text: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283, icon: "🔌", user_phone: "03001234567" },
+  { id: 3, title: "Mixed Crushed Plastic Drums Flakes HDPE", category: "Plastic", price: "98", weight: "3 Ton", location_text: "SITE Area, Karachi", lat: 24.8933, lng: 67.0281, icon: "🛢️", user_phone: "03006558837" },
+  { id: 4, title: "Pure Aluminum Section Scrap Lot", category: "Aluminum", price: "465", weight: "1.5 Ton", location_text: "Small Industrial Estate, Sialkot", lat: 32.4945, lng: 74.5229, icon: "🥫", user_phone: "03217654321" }
 ];
 
 const registeredIndustries = [
-  { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister & Metal Separation", capacity: "30 Tons/Month", status: "Verified ✓", badge: "🥇 Premium" },
-  { id: 2, name: "Chenab Polymer Flakes Refinery", location: "Sheikhupura Road, Gujranwala", type: "PET Bottle & HDPE Crushing Plant", capacity: "150 Tons/Month", status: "Verified ✓", badge: "Corporate" }
+  { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister & Metal Separation", capacity: "30 Tons/Month", status: "Verified ✓", badge: "🥇 Premium" }
 ];
 
 const marketRateItems = [
-  { id: 1, type: "metal", nameEn: "Pure Copper Wire (Grade A)", nameUr: "خالص تانبا تار گریڈ اے", icon: "🔌" },
-  { id: 2, type: "metal", nameEn: "Iron Scrap (HMS 1 & 2)", nameUr: "لوہا اسکریپ HMS", icon: "🔩" }
+  { id: 1, type: "metal", nameEn: "Pure Copper Wire (Grade A)", nameUr: "خالص تانبا تار گریڈ اے", icon: "🔌" }
 ];
 
-// 🗺️ PAKISTAN SCRAP HUBS DISTANCE MATRIX FROM GUJRANWALA (KM)
-const getDistanceFromGujranwala = (city: string): number => {
-  const cityName = city ? city.toLowerCase().trim() : '';
-  if (cityName === 'gujranwala') return 0;
-  if (cityName === 'sialkot') return 48;
-  if (cityName === 'sheikhupura') return 80;
-  if (cityName === 'lahore') return 96;
-  if (cityName === 'faisalabad') return 220;
-  if (cityName === 'rawalpindi' || cityName === 'islamabad') return 240;
-  if (cityName === 'karachi') return 1250;
-  return 150; // Default distance fallback for other cities
+// 🗺️ HAVERSINE FORMULA: Calculates exact ground distance in KM between any two GPS points
+const calculateRealKM = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
+  const R = 6371; 
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c);
 };
 
 export default function Home() {
@@ -47,13 +43,19 @@ export default function Home() {
   const [lang, setLang] = useState<'en' | 'ur'>('en'); 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // USER SESSION PROFILE CORES
+  // USER PROFILE & ROUTING
   const [userPhone, setUserPhone] = useState('');
   const [profileName, setProfileName] = useState('Scrap Trader');
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
   const [currentPage, setCurrentPage] = useState<string>('home'); 
+
+  // DYNAMIC GEOLOCATION STATES (No fixed center, adapts to user)
+  const [currentLat, setCurrentLat] = useState<number>(32.1617); // Gujranwala fallback
+  const [currentLng, setCurrentLng] = useState<number>(74.1883);
+  const [detectedLocationText, setDetectedLocationText] = useState<string>("Detecting your live location...");
+  const [showLocationOverrideModal, setShowLocationOverrideModal] = useState(false);
   
-  // FLOATING TRADER CHAT CONTEXTS
+  // CHAT BOX POPUP STATES
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<any[]>([
     { id: 1, sender: "Zubair (Gujranwala)", text: "Loha HMS 1 ka kya rate chal raha hai aaj?", time: "10:15 AM" },
@@ -61,22 +63,21 @@ export default function Home() {
   ]);
   const [newChatText, setNewChatText] = useState('');
 
-  // RADIUS CONTROL AND FILTERS MATRIX
+  // FILTERS AND FEEDS ENGINE
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
   const [filteredAds, setFilteredAds] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [maxRadius, setMaxRadius] = useState<number>(500); // Default 500km radius filter
-  const [sortBy, setSortBy] = useState<string>('nearest'); // Default: Nearest Ads First!
+  const [sortBy, setSortBy] = useState<string>('nearest'); // Always defaults to Nearest First!
 
   // FORM INPUTS
   const [adTitle, setAdTitle] = useState('');
   const [adWeight, setAdWeight] = useState('');
   const [adPrice, setAdPrice] = useState('');
-  const [adLocation, setAdLocation] = useState('Gujranwala'); // Form location input
+  const [adLocationTextInput, setAdLocationTextInput] = useState('');
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]); 
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  // SECURITY STATE SCREENS
+  // SECURITY & LOGIN STATES
   const [inputPhone, setInputPhone] = useState('');
   const [inputProfileNameForm, setInputProfileNameForm] = useState('');
   const [showOtpScreen, setShowOtpScreen] = useState(false);
@@ -84,11 +85,47 @@ export default function Home() {
   const [inputOtp, setInputOtp] = useState('');
   const [secureActiveOtp, setSecureActiveOtp] = useState('');
 
-  // 🔄 READ TOKENS AND LOAD REAL DATABASE
+  const t = translations[lang];
+
+  // 🔄 FETCH ADS FROM LIVE SUPABASE CLOUD
+  const fetchCloudAdsLive = async () => {
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads?select=*&order=created_at.desc`, {
+        method: "GET",
+        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const combined = data.length > 0 ? data : initial10Ads;
+        setVisibleAds(combined);
+      } else {
+        setVisibleAds(initial10Ads);
+      }
+    } catch (err) {
+      setVisibleAds(initial10Ads);
+    }
+  };
+
+  // 📍 AUTO-DETECT DEVICE GPS CORE ON LOAD
   useEffect(() => {
     const timer = setTimeout(() => { setShowSplash(false); }, 1500);
 
     if (typeof window !== 'undefined') {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setCurrentLat(position.coords.latitude);
+            setCurrentLng(position.coords.longitude);
+            setDetectedLocationText(`Live Coordinates (${position.coords.latitude.toFixed(3)}, ${position.coords.longitude.toFixed(3)})`);
+          },
+          () => {
+            setDetectedLocationText("Nusrat Colony, Gujranwala");
+          }
+        );
+      } else {
+        setDetectedLocationText("Nusrat Colony, Gujranwala");
+      }
+
       const hash = window.location.hash;
       if (hash && hash.includes('access_token')) {
         setIsLoggedIn(true);
@@ -107,42 +144,23 @@ export default function Home() {
         }
       }
     }
-    setRatesUpdateTime("12 Jun 2026 at 08:30 AM");
-    fetchCloudAdsLive();
 
+    setRatesUpdateTime("12 Jun 2026 at 08:37 AM");
+    fetchCloudAdsLive();
     return () => clearTimeout(timer);
   }, []);
 
-  const fetchCloudAdsLive = async () => {
-    try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads?select=*&order=created_at.desc`, {
-        method: "GET",
-        headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const combined = data.length > 0 ? data : initial10Ads;
-        setVisibleAds(combined);
-        setFilteredAds(combined);
-      } else {
-        setVisibleAds(initial10Ads); setFilteredAds(initial10Ads);
-      }
-    } catch (err) {
-      setVisibleAds(initial10Ads); setFilteredAds(initial10Ads);
-    }
-  };
-
-  // 🗺️ 🔥 RADIUS SEARCH ENGINE & LIVE SORT LOGIC
+  // 🗺️ DYNAMIC PROXIMITY SORT & SCROLL MATRIX
   useEffect(() => {
     let result = [...visibleAds];
 
-    // Inject Distance properties dynamically into each ad object
+    // Compute direct distance dynamically from user's current center
     result = result.map(ad => {
-      const distance = getDistanceFromGujranwala(ad.location || 'Gujranwala');
+      const distance = calculateRealKM(currentLat, currentLng, ad.lat || 32.1617, ad.lng || 74.1883);
       return { ...ad, distance };
     });
 
-    // Step 1: Category Filter
+    // Category Filter Setup
     if (selectedCategory !== 'All') {
       result = result.filter(ad => 
         (ad.title || '').toLowerCase().includes(selectedCategory.toLowerCase()) ||
@@ -150,12 +168,9 @@ export default function Home() {
       );
     }
 
-    // Step 2: Radius Distance Filter Boundary
-    result = result.filter(ad => ad.distance <= maxRadius);
-
-    // Step 3: Sorting Matrix Triggers
+    // OLX Nearest First Engine: Arranges list from 0km to maximum automatically
     if (sortBy === 'nearest') {
-      result.sort((a, b) => a.distance - b.distance); // Closest KM location first!
+      result.sort((a, b) => a.distance - b.distance); 
     } else if (sortBy === 'price-low') {
       result.sort((a, b) => parseFloat(String(a.price).replace(/,/g, '')) - parseFloat(String(b.price).replace(/,/g, '')));
     } else if (sortBy === 'price-high') {
@@ -163,7 +178,15 @@ export default function Home() {
     }
 
     setFilteredAds(result);
-  }, [selectedCategory, sortBy, maxRadius, visibleAds]);
+  }, [selectedCategory, sortBy, visibleAds, currentLat, currentLng]);
+
+  // Handle Manual City Override Selection
+  const handleManualLocationSet = (city: string, lat: number, lng: number) => {
+    setCurrentLat(lat);
+    setCurrentLng(lng);
+    setDetectedLocationText(city);
+    setShowLocationOverrideModal(false);
+  };
 
   const handlePhotoSelectTrigger = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -223,17 +246,26 @@ export default function Home() {
   };
 
   const handlePostAdLiveSubmit = async () => {
-    if (!adTitle || !adWeight || !adPrice) { alert("Fill fields!"); return; }
+    if (!adTitle || !adWeight || !adPrice || !adLocationTextInput) { alert("Fill all fields including area name!"); return; }
     const base64Image = uploadedPhotos.length > 0 ? uploadedPhotos[0] : null;
     try {
       const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads`, {
         method: "POST",
         headers: { "apikey": SUPABASE_KEY, "Authorization": `Bearer ${SUPABASE_KEY}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ title: adTitle, weight: adWeight, price: Number(adPrice).toLocaleString(), image_url: base64Image, user_phone: userPhone || "Anonymous", location: adLocation })
+        body: JSON.stringify({ 
+          title: adTitle, 
+          weight: adWeight, 
+          price: Number(adPrice).toLocaleString(), 
+          image_url: base64Image, 
+          user_phone: userPhone || "Anonymous", 
+          location_text: adLocationTextInput,
+          lat: currentLat, 
+          lng: currentLng 
+        })
       });
       if (response.ok) {
-        alert("Ad live on Cloud!");
-        setAdTitle(''); setAdWeight(''); setAdPrice(''); setUploadedPhotos([]);
+        alert("Ad live with your real GPS coordinates on Cloud!");
+        setAdTitle(''); setAdWeight(''); setAdPrice(''); setAdLocationTextInput(''); setUploadedPhotos([]);
         fetchCloudAdsLive(); setCurrentPage('home');
       }
     } catch (err) { alert("Database connection error."); }
@@ -246,14 +278,14 @@ export default function Home() {
       {showSplash && (
         <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
           <div className="text-center space-y-2">
-            <div className="text-7xl animate-bounce">🏭♻️</div>
+            <div className="text-7xl animate-bounce">♻️📍</div>
             <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400 tracking-wider">SCRAP WORLD</h1>
-            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Maps Radius Search Terminal Live</p>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">OLX-Style Auto Proximity Tracking Active</p>
           </div>
         </div>
       )}
 
-      {/* TOP COMPACT NAVIGATION HEADER */}
+      {/* TOP NAVIGATION HEADER */}
       <header className="bg-gradient-to-b from-[#1a365d] to-[#0f2444] text-white px-4 py-3 shadow-xl sticky top-0 z-50 rounded-b-2xl">
         <div className="max-w-xl mx-auto space-y-2">
           <div className="flex items-center justify-between">
@@ -276,31 +308,47 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 🏠 MAIN HOME FEED VIEW WITH DISTANCE RADIUS INTERFACE */}
+      {/* 🏠 MAIN HOME FEED VIEW */}
       {currentPage === 'home' && (
         <main className="max-w-xl mx-auto p-4 space-y-4">
           
-          {/* MAPS CONTROL RADIUS FILTER HEADER BLOCK */}
-          <div className="bg-white border-2 border-slate-300 rounded-2xl p-4 shadow-sm space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-slate-700 uppercase tracking-wider">📍 Map Search Range</span>
-              <span className="text-xs font-black bg-indigo-100 text-indigo-900 px-2.5 py-1 rounded-lg">Max: {maxRadius} KM</span>
+          {/* 👀 OLX-STYLE LOCATION DETECTION ALERT BANNER WITH OVERRIDE */}
+          <div className="bg-slate-900 text-white rounded-xl p-3 flex items-center justify-between shadow-md border border-slate-700">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <span className="text-xl">📍</span>
+              <div className="overflow-hidden">
+                <p className="text-[9px] uppercase font-black text-amber-400 tracking-wider">Current Marketplace Base</p>
+                <p className="text-xs font-black text-slate-100 truncate">{detectedLocationText}</p>
+              </div>
             </div>
-            
-            {/* Radius Slider Matrix Channel */}
-            <input type="range" min="10" max="1500" value={maxRadius} onChange={(e) => setMaxRadius(Number(e.target.value))} className="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 rounded-lg" />
-            
-            <div className="flex justify-between text-[10px] text-slate-400 font-black uppercase">
-              <span>Local (10km)</span>
-              <span>Punjab Hubs (150km)</span>
-              <span>All Pakistan (1500km)</span>
-            </div>
+            <button onClick={() => setShowLocationOverrideModal(true)} className="bg-indigo-600 text-white font-black text-[10px] uppercase px-2.5 py-1.5 rounded-lg border border-indigo-400 active:scale-95 shrink-0 ml-2">Change 🔄</button>
           </div>
 
-          {/* ADVANCE SORT ROW CHANNEL */}
+          {/* 🗺️ LOCATION OVERRIDE MODAL POPUP */}
+          {showLocationOverrideModal && (
+            <div className="fixed inset-0 bg-black/60 z-[999] flex items-center justify-center p-4">
+              <div className="bg-white rounded-2xl border-2 border-slate-400 w-full max-w-sm p-5 space-y-4 text-left animate-fade-in">
+                <div>
+                  <h4 className="font-black text-base text-slate-900 uppercase">Select Target City</h4>
+                  <p className="text-xs text-slate-400 font-bold">Choose a base to filter nearby ads first.</p>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <button onClick={() => handleManualLocationSet("Gujranwala Hub", 32.1617, 74.1883)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Gujranwala</button>
+                  <button onClick={() => handleManualLocationSet("Lahore Center", 31.5204, 74.3587)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Lahore</button>
+                  <button onClick={() => handleManualLocationSet("Karachi Terminal", 24.8607, 67.0011)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Karachi</button>
+                  <button onClick={() => handleManualLocationSet("Sialkot Sector", 32.4945, 74.5229)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Sialkot</button>
+                  <button onClick={() => handleManualLocationSet("Faisalabad Node", 31.4504, 73.1350)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Faisalabad</button>
+                  <button onClick={() => handleManualLocationSet("Rawalpindi Station", 33.5651, 73.0169)} className="bg-slate-100 border p-3 rounded-xl font-black text-xs text-slate-800">Rawalpindi</button>
+                </div>
+                <button onClick={() => setShowLocationOverrideModal(false)} className="w-full bg-slate-900 text-white text-xs font-black py-2.5 rounded-xl">Cancel ✕</button>
+              </div>
+            </div>
+          )}
+
+          {/* CONTROL SORT GRID */}
           <div className="grid grid-cols-2 gap-3">
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="bg-white border-2 border-slate-300 font-black text-xs rounded-xl p-3 text-slate-700 outline-none shadow-sm">
-              <option value="nearest">📍 Nearest First (Fasla)</option>
+              <option value="nearest">📍 Auto Radius (Nearest First)</option>
               <option value="price-low">💰 Price: Low to High</option>
               <option value="price-high">📈 Price: High to Low</option>
             </select>
@@ -312,23 +360,24 @@ export default function Home() {
 
           {selectedCategory !== 'All' && (
             <div className="flex items-center justify-between bg-indigo-50 border border-indigo-200 p-2.5 rounded-xl text-xs font-black text-indigo-900">
-              <span>Category Filter: <b>{selectedCategory}</b></span>
+              <span>Filter Material: <b>{selectedCategory}</b></span>
               <button onClick={() => setSelectedCategory('All')} className="text-red-600 bg-white border px-2 py-0.5 rounded-md">✕</button>
             </div>
           )}
 
-          {/* STREAM TERMINAL OUTPUT */}
+          {/* ADS AUTOMATIC PROXIMITY FEED */}
           <div className="space-y-4">
             {filteredAds.map((ad) => {
-              const distanceKm = getDistanceFromGujranwala(ad.location || 'Gujranwala');
+              const adDistanceKm = calculateRealKM(currentLat, currentLng, ad.lat || 32.1617, ad.lng || 74.1883);
               return (
                 <div key={ad.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-md flex flex-col gap-3">
                   <div className="flex items-center gap-4 text-left">
                     <div className="w-32 h-32 bg-slate-100 rounded-2xl flex items-center justify-center text-5xl shrink-0 border-2 border-slate-200 relative">
                       {ad.image_url ? <img src={ad.image_url} alt="Scrap" className="w-full h-full object-cover rounded-2xl" /> : (ad.icon || "🔩")}
-                      {/* Live Proximity KM Tag Badge */}
-                      <span className="absolute bottom-1 right-1 bg-slate-900/80 text-white font-black text-[9px] px-1.5 py-0.5 rounded">
-                        {distanceKm === 0 ? "Local" : `${distanceKm} km`}
+                      
+                      {/* Dynamic Proximity Distance KM Tag Output */}
+                      <span className="absolute bottom-1 right-1 bg-indigo-600 text-white font-black text-[9px] px-2 py-0.5 rounded shadow-md">
+                        {adDistanceKm <= 2 ? "🟢 Nearby" : `${adDistanceKm} KM`}
                       </span>
                     </div>
                     <div className="flex-1 space-y-1 overflow-hidden">
@@ -336,8 +385,8 @@ export default function Home() {
                       <div className="text-[10px] bg-indigo-100 text-indigo-900 font-black px-2 py-0.5 rounded inline-block">{ad.category || 'Material'}</div>
                       <div className="text-xs font-extrabold text-slate-600 space-y-0.5">
                         <div>Weight: {ad.weight}</div>
-                        <div className="text-indigo-700 font-black">📍 Location: {ad.location || 'Gujranwala'}</div>
-                        <div className="text-[10px] text-slate-400">By: {ad.user_phone}</div>
+                        <div className="text-slate-800 font-black truncate">📍 {ad.location_text || 'Pakistan'}</div>
+                        <div className="text-[10px] text-slate-400">Seller Phone: {ad.user_phone}</div>
                       </div>
                     </div>
                   </div>
@@ -352,7 +401,7 @@ export default function Home() {
         </main>
       )}
 
-      {/* SUBPAGES SUB MODULE SUBSYSTEMS */}
+      {/* SUBPAGES Subs SYSTEMS */}
       {currentPage !== 'home' && (
         <main className="max-w-xl mx-auto p-4 mt-2">
           <button onClick={() => setCurrentPage('home')} className="mb-4 bg-[#1a365d] text-white font-black text-xs px-5 py-3 rounded-xl shadow-md">Back Feed</button>
@@ -362,21 +411,21 @@ export default function Home() {
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-4">
               {!showOtpScreen && !showNameFormScreen && (
                 <div className="space-y-4">
-                  <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-4 text-base font-black outline-none" />
+                  <input type="tel" value={inputPhone} onChange={(e) => setInputPhone(e.target.value)} placeholder="03001234567" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-4 text-base font-black outline-none shadow-sm" />
                   <button onClick={handlePhoneAuthSubmit} className="w-full bg-gradient-to-r from-[#1a365d] to-[#0f2444] text-white font-black py-4 rounded-xl text-xs uppercase">Send Secure OTP 📲</button>
                   <button onClick={handleGoogleLoginReal} className="w-full bg-white text-slate-800 border-2 border-slate-500 font-black py-3.5 rounded-xl text-xs uppercase flex items-center justify-center gap-2">🌐 Connect via Google</button>
                 </div>
               )}
               {showOtpScreen && (
                 <div className="space-y-4 text-center">
-                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-white text-slate-900 border-2 border-slate-500 text-center font-black text-2xl p-4 rounded-xl outline-none tracking-widest text-indigo-700" />
+                  <input type="number" value={inputOtp} onChange={(e) => setInputOtp(e.target.value)} placeholder="XXXX" className="w-full bg-white text-slate-900 border-2 border-slate-500 text-center font-black text-2xl p-4 rounded-xl outline-none" />
                   <button onClick={handleVerifyOtpCode} className="w-full bg-emerald-600 text-white font-black py-4 rounded-xl text-xs uppercase">Verify Code ✓</button>
                 </div>
               )}
               {showNameFormScreen && (
                 <div className="space-y-4 text-left">
                   <input type="text" value={inputProfileNameForm} onChange={(e) => setInputProfileNameForm(e.target.value)} placeholder="e.g., Muhammad Asif" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none" />
-                  <button onClick={handleCompleteNameRegistration} className="w-full bg-indigo-600 text-white font-black py-4 rounded-xl text-xs uppercase">Save & Enter✓</button>
+                  <button onClick={handleCompleteNameRegistration} className="w-full bg-indigo-600 text-white font-black py-4 rounded-xl text-xs uppercase">Save & Enter ✓</button>
                 </div>
               )}
             </div>
@@ -401,7 +450,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 4: POST AD LIVE WITH SPECIFIC LOCATION ASSIGNMENT SELECTOR */}
+          {/* PAGE 4: POST AD WITH REAL DYNAMIC OVERLAY */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left">
               <label className="text-xs font-black text-slate-700 uppercase">Photos (Max 3)</label>
@@ -416,17 +465,10 @@ export default function Home() {
               <div className="space-y-4 pt-2">
                 <input type="text" value={adTitle} onChange={(e) => setAdTitle(e.target.value)} placeholder="Scrap Title (e.g. Loha HMS 1)" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none" />
                 
-                {/* City Target Selector Node for Radius Calculation */}
                 <div className="space-y-1">
-                  <label className="text-[11px] font-black text-slate-600 uppercase">Select Stock City (For Map Radius Search)</label>
-                  <select value={adLocation} onChange={(e) => setAdLocation(e.target.value)} className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none">
-                    <option value="Gujranwala">Gujranwala (Local)</option>
-                    <option value="Sialkot">Sialkot (48km)</option>
-                    <option value="Sheikhupura">Sheikhupura (80km)</option>
-                    <option value="Lahore">Lahore (96km)</option>
-                    <option value="Faisalabad">Faisalabad (220km)</option>
-                    <option value="Karachi">Karachi (1250km)</option>
-                  </select>
+                  <label className="text-[11px] font-black text-slate-600 uppercase">Stock Area / Locality Name</label>
+                  <input type="text" value={adLocationTextInput} onChange={(e) => setAdLocationTextInput(e.target.value)} placeholder="e.g., Model Town, Lahore" className="w-full bg-white text-slate-900 border-2 border-slate-500 rounded-xl p-3.5 text-sm font-black outline-none" />
+                  <span className="text-[9px] text-[#1a365d] font-black block">🚨 System locks your exact GPS coordinates ({currentLat.toFixed(3)}, {currentLng.toFixed(3)}) on submission to ensure nearby radius alignment.</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -438,7 +480,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 5: RATES HUB */}
+          {/* PAGE 5: RATES */}
           {currentPage === 'page5' && (
             <div className="bg-white rounded-2xl border-2 border-slate-200 p-4 shadow-md divide-y-2 divide-slate-100 text-left">
               {marketRateItems.map((item) => (
@@ -450,7 +492,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 7: MATERIAL FILTER FLOATING PANEL CHANNELS */}
+          {/* PAGE 7: FILTER HUB */}
           {currentPage === 'page7' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left">
               <h3 className="font-black text-lg text-[#1a365d] uppercase">Select Scrap Category</h3>
@@ -475,7 +517,7 @@ export default function Home() {
         </main>
       )}
 
-      {/* 💬 FLOATING TRADER CHAT POPUP SYSTEM */}
+      {/* 💬 FLOATING CHAT POPUP */}
       <div className="fixed bottom-6 left-6 z-[99]">
         {!isChatOpen ? (
           <button onClick={() => setIsChatOpen(true)} className="bg-gradient-to-r from-indigo-600 to-blue-700 text-white rounded-full p-4 shadow-2xl flex items-center justify-center gap-2 border-2 border-white animate-pulse">
