@@ -9,7 +9,10 @@ const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTpSg";
 // 🔑 SIMPAPP SMS GATEWAY CONFIGURATION
 const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
 
-// 📦 REAL PRODUCTION DATA STACKS (WITH EXACT HUB COORDINATES)
+// 🗺️ LIVE GOOGLE MAPS PRODUCTION API KEY (INTEGRATED!)
+const GOOGLE_MAPS_API_KEY = "AIzaSyBckidZX7NHOkm_gQjyuApVliO3xpvysFQ";
+
+// 📦 REAL PRODUCTION DATA STACKS (WITH EXACT GPS COORDINATES)
 const initial10Ads = [
   { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location_text: "Gujranwala Scrap Market", lat: 32.1617, lng: 74.1883, icon: "🔩", user_phone: "03006558837" },
   { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", weight: "450 Kg", location_text: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283, icon: "🔌", user_phone: "03001234567" },
@@ -65,7 +68,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState<string>('home'); 
 
   // DYNAMIC GEOLOCATION STATES (No fixed center, adapts to user)
-  const [currentLat, setCurrentLat] = useState<number>(32.1617); // Fallback to Gujranwala
+  const [currentLat, setCurrentLat] = useState<number>(32.1617); 
   const [currentLng, setCurrentLng] = useState<number>(74.1883);
   const [detectedLocationText, setDetectedLocationText] = useState<string>("Detecting your live location...");
   const [showLocationOverrideModal, setShowLocationOverrideModal] = useState(false);
@@ -82,8 +85,8 @@ export default function Home() {
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
   const [filteredAds, setFilteredAds] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [maxRadius, setMaxRadius] = useState<number>(150); // Default radius filter max 150KM
-  const [sortBy, setSortBy] = useState<string>('nearest'); // Always defaults to Nearest First!
+  const [maxRadius, setMaxRadius] = useState<number>(150); 
+  const [sortBy, setSortBy] = useState<string>('nearest'); 
 
   // FORM INPUTS
   const [adTitle, setAdTitle] = useState('');
@@ -161,7 +164,7 @@ export default function Home() {
       }
     }
 
-    setRatesUpdateTime("12 Jun 2026 at 08:37 AM");
+    setRatesUpdateTime("12 Jun 2026 at 09:20 AM");
     fetchCloudAdsLive();
     return () => clearTimeout(timer);
   }, []);
@@ -170,13 +173,11 @@ export default function Home() {
   useEffect(() => {
     let result = [...visibleAds];
 
-    // Compute direct distance dynamically from user's current center
     result = result.map(ad => {
       const distance = calculateRealKM(currentLat, currentLng, ad.lat || 32.1617, ad.lng || 74.1883);
       return { ...ad, distance };
     });
 
-    // Category Filter Setup
     if (selectedCategory !== 'All') {
       result = result.filter(ad => 
         (ad.title || '').toLowerCase().includes(selectedCategory.toLowerCase()) ||
@@ -184,10 +185,8 @@ export default function Home() {
       );
     }
 
-    // Radius Distance Filter Boundary
     result = result.filter(ad => ad.distance <= maxRadius);
 
-    // OLX Nearest First Engine: Arranges list from 0km to maximum automatically
     if (sortBy === 'nearest') {
       result.sort((a, b) => a.distance - b.distance); 
     } else if (sortBy === 'price-low') {
@@ -199,7 +198,6 @@ export default function Home() {
     setFilteredAds(result);
   }, [selectedCategory, sortBy, maxRadius, visibleAds, currentLat, currentLng]);
 
-  // Handle Manual City Override Selection
   const handleManualLocationSet = (city: string, lat: number, lng: number) => {
     setCurrentLat(lat);
     setCurrentLng(lng);
@@ -491,7 +489,7 @@ export default function Home() {
                 {uploadedPhotos.map((photoUrl, index) => (
                   <div key={index} className="relative aspect-square bg-slate-100 border-2 border-slate-300 rounded-xl overflow-hidden"><img src={photoUrl} alt="Preview" className="w-full h-full object-cover" /></div>
                 ))}
-                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
+                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex flex-col items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
               </div>
               <input type="file" accept="image/*" multiple ref={fileInputRef} onChange={handlePhotoSelectTrigger} className="hidden" />
               
