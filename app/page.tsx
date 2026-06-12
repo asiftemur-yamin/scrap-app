@@ -3,29 +3,27 @@
 import { useState, useEffect, useRef } from 'react';
 
 // 👑 LIVE CONNECTED CLOUD DATABASE CONFIG
-const SUPABASE_URL = "https://fxybqucvtewkylcvtjoj.supabase.co";
+const SUPABASE_URL = "https://fxybqucvtewkylctxjoj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTpSg";
 
 // 🔑 SIMPAPP SMS GATEWAY CONFIGURATION
 const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
 
-// 📦 PRODUCTION DATA STACKS
+// 📦 REAL PRODUCTION DATA STACKS
 const initial10Ads = [
   { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location_text: "Nusrat Colony, Gujranwala", lat: 32.1812, lng: 74.1923, icon: "🔩", user_phone: "03006558837" },
   { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", weight: "450 Kg", location_text: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283, icon: "🔌", user_phone: "03001234567" },
   { id: 3, title: "Mixed Crushed Plastic Drums Flakes HDPE", category: "Plastic", price: "98", weight: "3 Ton", location_text: "SITE Area, Karachi", lat: 24.8933, lng: 67.0281, icon: "🛢️", user_phone: "03006558837" }
 ];
 
-// DUAL LIST DATA: INDUSTRIES
-const registeredIndustries = [
-  { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister Separation", capacity: "30 Tons/Month", badge: "🥇 Premium" },
-  { id: 2, name: "Chenab Polymer Flakes Refinery", location: "Sheikhupura Road, GRW", type: "PET Bottle Crushing Plant", capacity: "150 Tons/Month", badge: "Corporate" }
+const initialIndustries = [
+  { id: 1, name: "R-H-A-F Recycling & Aluminum Smelter", location: "Gujranwala, Punjab", type: "Pharmaceutical Blister Separation", capacity: "30 Tons/Month", badge: "🥇 Premium Verified" },
+  { id: 2, name: "Chenab Polymer Flakes Refinery", location: "Sheikhupura Road, GRW", type: "PET Bottle Crushing Plant", capacity: "150 Tons/Month", badge: "Verified Industry" }
 ];
 
-// DUAL LIST DATA: TRADERS
-const registeredTraders = [
+const initialTraders = [
   { id: 1, name: "Zubair Loha Kabaar Merchant", location: "Khiali Gate, Gujranwala", dealType: "HMS Iron & Cast Iron Scrap", volume: "Bulk Seller", badge: "Verified Trader" },
-  { id: 2, name: "Malik Copper & Tamba Traders", location: "Badami Bagh, Lahore", dealType: "Grade A Wire & Cable Stripping", volume: "Retail & Wholesale", badge: "Gold Partner" }
+  { id: 2, name: "Malik Copper & Tamba Traders", location: "Badami Bagh, Lahore", dealType: "Grade A Wire Bundle", volume: "Wholesale", badge: "Verified Trader" }
 ];
 
 const marketOriginalRates = [
@@ -65,8 +63,20 @@ export default function Home() {
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
   const [currentPage, setCurrentPage] = useState<string>('home'); 
 
-  // DUAL LISTS TAB STATE
+  // DUAL LISTS STATES
   const [activeNetworkTab, setActiveNetworkTab] = useState<'industries' | 'traders'>('industries');
+  const [registeredIndustries, setRegisteredIndustries] = useState<any[]>(initialIndustries);
+  const [registeredTraders, setRegisteredTraders] = useState<any[]>(initialTraders);
+
+  // REGISTRATION FORM STATES
+  const [regIndName, setRegIndName] = useState('');
+  const [regIndLocation, setRegIndLocation] = useState('');
+  const [regIndType, setRegIndType] = useState('');
+  const [regIndCapacity, setRegIndCapacity] = useState('');
+
+  const [regTraderName, setRegTraderName] = useState('');
+  const [regTraderLocation, setRegTraderLocation] = useState('');
+  const [regTraderMaterial, setRegTraderMaterial] = useState('');
 
   // GEOLOCATION STATES
   const [currentLat, setCurrentLat] = useState<number>(32.1617); 
@@ -110,7 +120,6 @@ export default function Home() {
   const [inputOtp, setInputOtp] = useState('');
   const [secureActiveOtp, setSecureActiveOtp] = useState('');
 
-  // TRANSLATIONS DICTIONARY FIXED FOR LANGUAGE TOGGLE
   const translations: any = {
     en: {
       appName: "SCRAP WORLD", loginBtn: "Login", logoutBtn: "Logout 👤", optionsBtn: "☰ Options",
@@ -126,6 +135,7 @@ export default function Home() {
 
   const t = translations[lang];
 
+  // 🔄 RESTORE ADS LOGIC WITH COLUMNS FALLBACK (Ghaib Ads Fix)
   const fetchCloudAdsLive = async () => {
     try {
       const response = await fetch(`${SUPABASE_URL}/rest/v1/market_ads?select=*&order=created_at.desc`, {
@@ -134,7 +144,14 @@ export default function Home() {
       });
       if (response.ok) {
         const data = await response.json();
-        setVisibleAds(data.length > 0 ? data : initial10Ads);
+        // Fallback checks to map data safely if keys vary
+        const parsedData = data.map((ad: any) => ({
+          ...ad,
+          title: ad.title || ad.titleEn || "Scrap Load",
+          location_text: ad.location_text || ad.location || "Pakistan",
+          category: ad.category || ad.categoryEn || "Material"
+        }));
+        setVisibleAds(parsedData.length > 0 ? parsedData : initial10Ads);
       } else { setVisibleAds(initial10Ads); }
     } catch (err) { setVisibleAds(initial10Ads); }
   };
@@ -270,6 +287,40 @@ export default function Home() {
     } catch (err) { alert("Failed."); }
   };
 
+  // Industry Form Submit Function
+  const handleRegisterIndustry = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regIndName || !regIndLocation) { alert("Please fill zaroori fields"); return; }
+    const newInd = {
+      id: registeredIndustries.length + 1,
+      name: regIndName,
+      location: regIndLocation,
+      type: regIndType || "General Processing",
+      capacity: regIndCapacity || "Contact for info",
+      badge: "Pending Verification ⏳"
+    };
+    setRegisteredIndustries([newInd, ...registeredIndustries]);
+    alert("Mubarak! Industry registration request forwarded for Verification check.");
+    setRegIndName(''); setRegIndLocation(''); setRegIndType(''); setRegIndCapacity('');
+  };
+
+  // Trader Form Submit Function
+  const handleRegisterTrader = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regTraderName || !regTraderLocation) { alert("Please fill fields"); return; }
+    const newTrader = {
+      id: registeredTraders.length + 1,
+      name: regTraderName,
+      location: regTraderLocation,
+      dealType: regTraderMaterial || "All Commercial Scrap",
+      volume: "Verified Merchant Cluster",
+      badge: "Pending Verification ⏳"
+    };
+    setRegisteredTraders([newTrader, ...registeredTraders]);
+    alert("Mubarak! Trader profile request generated for Verification check.");
+    setRegTraderName(''); setRegTraderLocation(''); setRegTraderMaterial('');
+  };
+
   const handlePhotoSelectTrigger = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files; if (!files) return;
     for (let i = 0; i < files.length; i++) {
@@ -280,27 +331,31 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f2f6fa] text-left font-sans pb-24 relative">
+    <div className="min-h-screen bg-[#f2f6fa] text-left relative" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif' }}>
 
-      {/* STYLE TAG FOR INFINITE TV TICKER MARQUEE EFFECT */}
+      {/* CLEAN IPHONE-STYLE GLOBAL TEXT AND ANIMATION EFFECTS */}
       <style jsx global>{`
         @keyframes tvMarquee {
-          0% { transform: translateX(0%); }
+          0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
         .animate-tv-ticker {
           display: flex;
           width: max-content;
-          animation: tvMarquee 25s linear infinite;
+          animation: tvMarquee 30s linear infinite;
+        }
+        body, input, button, select {
+          font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif !important;
+          letter-spacing: -0.01em;
         }
       `}</style>
 
       {showSplash && (
         <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
           <div className="text-center space-y-2">
-            <div className="text-7xl animate-bounce">♻️📺</div>
-            <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">SCRAP WORLD</h1>
-            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">TV Ticker & Dual Network Engine Live</p>
+            <div className="text-7xl animate-bounce">♻️📱</div>
+            <h1 className="text-4xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-emerald-400">SCRAP WORLD</h1>
+            <p className="text-xs font-bold text-slate-300 uppercase tracking-widest">Premium Clean Interface Matrix</p>
           </div>
         </div>
       )}
@@ -310,7 +365,7 @@ export default function Home() {
         <div className="max-w-xl mx-auto space-y-2">
           
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-black tracking-wide">{t.appName}</h1>
+            <h1 className="text-xl font-black tracking-tight">{t.appName}</h1>
             
             <div className="flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-xl cursor-pointer max-w-[240px] overflow-hidden active:scale-95 transition-all" onClick={() => setShowLocationOverrideModal(true)}>
               <span className="text-xs truncate font-black text-amber-300">
@@ -334,22 +389,30 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 📺 FIXED HIGH-END CONTINUOUS TV-STYLE SMOOTH MOVING TICKER CONTAINER */}
+      {/* 📺 FIXED SEAMLESS REAL-TIME TV TICKER EFFECT */}
       <div className="w-full bg-slate-950 border-b-2 border-slate-800 text-white py-2.5 overflow-hidden shadow-xl flex">
-        <div className="animate-tv-ticker flex items-center gap-12 text-xs font-black tracking-wide">
-          {/* Loop Array Double for seamless TV-Marquee wrap connection */}
-          {[1, 2].map((loopIdx) => (
-            <div key={loopIdx} className="flex items-center gap-12">
-              <span className="text-amber-400 flex items-center gap-1 shrink-0">💵 EXCHANGE RATE USD / PKR: <b className="text-white bg-white/5 px-2 py-0.5 rounded">Rs.{usdToPkrRate.toFixed(2)}</b></span>
-              {lmeItems.map((item, idx) => (
-                <span key={idx} className="flex items-center gap-1.5 shrink-0">
-                  {item.icon} <span className="text-slate-300">{lang === 'ur' ? item.nameUr : item.nameEn}:</span> 
-                  <b className="text-white bg-white/5 px-2 py-0.5 rounded">${item.usdPerTon.toLocaleString()} /Ton</b>
-                  <span className={item.trend === 'up' ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>{item.trend === 'up' ? '▲' : '▼'}</span>
-                </span>
-              ))}
-            </div>
-          ))}
+        <div className="animate-tv-ticker flex items-center text-xs font-black tracking-wide">
+          <div className="flex items-center gap-12 pr-12">
+            <span className="text-amber-400 flex items-center gap-1 shrink-0">💵 EXCHANGE RATE USD / PKR: <b className="text-white bg-white/5 px-2 py-0.5 rounded">Rs.{usdToPkrRate.toFixed(2)}</b></span>
+            {lmeItems.map((item, idx) => (
+              <span key={idx} className="flex items-center gap-1.5 shrink-0">
+                {item.icon} <span className="text-slate-300">{lang === 'ur' ? item.nameUr : item.nameEn}:</span> 
+                <b className="text-white bg-white/5 px-2 py-0.5 rounded">${item.usdPerTon.toLocaleString()} /Ton</b>
+                <span className={item.trend === 'up' ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>{item.trend === 'up' ? '▲' : '▼'}</span>
+              </span>
+            ))}
+          </div>
+          {/* Duplicate Copy Segment for Seamless Overwrite Fix Hook Loop */}
+          <div className="flex items-center gap-12 pr-12">
+            <span className="text-amber-400 flex items-center gap-1 shrink-0">💵 EXCHANGE RATE USD / PKR: <b className="text-white bg-white/5 px-2 py-0.5 rounded">Rs.{usdToPkrRate.toFixed(2)}</b></span>
+            {lmeItems.map((item, idx) => (
+              <span key={idx} className="flex items-center gap-1.5 shrink-0">
+                {item.icon} <span className="text-slate-300">{lang === 'ur' ? item.nameUr : item.nameEn}:</span> 
+                <b className="text-white bg-white/5 px-2 py-0.5 rounded">${item.usdPerTon.toLocaleString()} /Ton</b>
+                <span className={item.trend === 'up' ? 'text-emerald-400 font-bold' : 'text-red-400 font-bold'}>{item.trend === 'up' ? '▲' : '▼'}</span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -396,7 +459,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* ADS STREAM */}
+          {/* ADS STREAM (RESTORED SAFELY WITH SYSTEM FALLBACK ENGINE) */}
           <div className="space-y-4">
             {filteredAds.map((ad) => {
               const adDistanceKm = calculateRealKM(currentLat, currentLng, ad.lat || 32.1617, ad.lng || 74.1883);
@@ -476,54 +539,86 @@ export default function Home() {
             </div>
           )}
 
-          {/* 👑 PAGE 3: ADVANCED DUAL LISTS HUB (INDUSTRIES VS TRADERS SPLIT SELECTION) */}
+          {/* 👑 PAGE 3: DUAL LISTS HUB WITH INTERNAL REGISTRATION REGISTRY ACTIONS */}
           {currentPage === 'page3' && (
-            <div className="space-y-4 text-left animate-fade-in">
-              {/* Dual Selector Header Bars */}
+            <div className="space-y-4 text-left animate-fade-in pb-12">
               <div className="grid grid-cols-2 bg-slate-900 p-2 rounded-2xl border-2 border-slate-800 shadow-md">
-                <button 
-                  onClick={() => setActiveNetworkTab('industries')} 
-                  className={`py-3 rounded-xl font-black text-xs text-center transition-all ${activeNetworkTab === 'industries' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 bg-transparent'}`}
-                >
+                <button onClick={() => setActiveNetworkTab('industries')} className={`py-3 rounded-xl font-black text-xs text-center transition-all ${activeNetworkTab === 'industries' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 bg-transparent'}`}>
                   🏭 Large Industries ({registeredIndustries.length})
                 </button>
-                <button 
-                  onClick={() => setActiveNetworkTab('traders')} 
-                  className={`py-3 rounded-xl font-black text-xs text-center transition-all ${activeNetworkTab === 'traders' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 bg-transparent'}`}
-                >
+                <button onClick={() => setActiveNetworkTab('traders')} className={`py-3 rounded-xl font-black text-xs text-center transition-all ${activeNetworkTab === 'traders' ? 'bg-indigo-600 text-white shadow-lg' : 'text-slate-400 bg-transparent'}`}>
                   👥 Scrap Traders ({registeredTraders.length})
                 </button>
               </div>
 
-              {/* LIST CHANNEL 1: INDUSTRIES OUTPUT */}
+              {/* LIST MODE 1: INDUSTRIES AND THEIR REGISTRATION FORM */}
               {activeNetworkTab === 'industries' && (
-                <div className="space-y-3">
-                  {registeredIndustries.map((ind) => (
-                    <div key={ind.id} className="bg-white rounded-2xl p-4 border-2 border-slate-300 shadow-md space-y-1">
-                      <div className="flex justify-between items-center">
-                        <h4 className="font-black text-slate-900 text-base">{ind.name}</h4>
-                        <span className="text-[9px] bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded">{ind.badge}</span>
-                      </div>
-                      <p className="text-xs text-slate-500 font-extrabold">📍 {ind.location} | Capacity: {ind.capacity}</p>
-                      <p className="text-[11px] text-indigo-700 font-black pt-1 border-t border-slate-100">Setup Focus: {ind.type}</p>
+                <div className="space-y-4">
+                  
+                  {/* 📝 INDUSTRY REGISTRATION SUB-FORM MODULE */}
+                  <form onSubmit={handleRegisterIndustry} className="bg-gradient-to-br from-[#1a365d] to-[#11254a] rounded-2xl p-5 text-white border border-slate-700 shadow-xl space-y-3">
+                    <div>
+                      <h4 className="font-black text-sm text-amber-400 uppercase tracking-wide">Register Your Industry & Get Verified ✓</h4>
+                      <p className="text-[10px] text-slate-300 font-medium">Add your plant to the official corporate network directory.</p>
                     </div>
-                  ))}
+                    <div className="grid grid-cols-2 gap-2">
+                      <input type="text" value={regIndName} onChange={(e) => setRegIndName(e.target.value)} placeholder="Factory Title Name" className="bg-white text-slate-900 font-black rounded-xl p-2.5 text-xs outline-none" required />
+                      <input type="text" value={regIndLocation} onChange={(e) => setRegIndLocation(e.target.value)} placeholder="Location / City" className="bg-white text-slate-900 font-black rounded-xl p-2.5 text-xs outline-none" required />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input type="text" value={regIndType} onChange={(e) => setRegIndType(e.target.value)} placeholder="Processing Type (e.g., PET)" className="bg-white text-slate-900 font-black rounded-xl p-2.5 text-xs outline-none" />
+                      <input type="text" value={regIndCapacity} onChange={(e) => setRegIndCapacity(e.target.value)} placeholder="Monthly Capacity Tons" className="bg-white text-slate-900 font-black rounded-xl p-2.5 text-xs outline-none" />
+                    </div>
+                    <button type="submit" className="w-full bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs py-3 rounded-xl uppercase tracking-wider transition-all">Submit Industry For Review 🚀</button>
+                  </form>
+
+                  {/* INDUSTRIES LOOP STACK */}
+                  <div className="space-y-3">
+                    {registeredIndustries.map((ind) => (
+                      <div key={ind.id} className="bg-white rounded-2xl p-4 border-2 border-slate-300 shadow-md space-y-1">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-black text-slate-900 text-base">{ind.name}</h4>
+                          <span className="text-[9px] bg-indigo-600 text-white border font-black px-2 py-0.5 rounded shadow-sm">{ind.badge}</span>
+                        </div>
+                        <p className="text-xs text-slate-500 font-extrabold">📍 {ind.location} | Capacity: {ind.capacity}</p>
+                        <p className="text-[11px] text-indigo-700 font-black pt-1 border-t border-slate-100">Setup Focus: {ind.type}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {/* LIST CHANNEL 2: TRADERS OUTPUT */}
+              {/* LIST MODE 2: TRADERS AND THEIR REGISTRATION FORM */}
               {activeNetworkTab === 'traders' && (
-                <div className="space-y-3">
-                  {registeredTraders.map((trader) => (
-                    <div key={trader.id} className="bg-white rounded-2xl p-4 border-2 border-slate-300 shadow-md space-y-1">
-                      <div className="flex justify-between items-center">
-                        <h4 className="font-black text-slate-900 text-base">{trader.name}</h4>
-                        <span className="text-[9px] bg-emerald-100 text-emerald-800 border border-emerald-300 font-black px-2 py-0.5 rounded">{trader.badge}</span>
-                      </div>
-                      <p className="text-xs text-slate-500 font-extrabold">📍 {trader.location} | Dealing Volume: {trader.volume}</p>
-                      <p className="text-[11px] text-slate-700 font-black pt-1 border-t border-slate-100">Material Type: {trader.dealType}</p>
+                <div className="space-y-4">
+
+                  {/* 📝 TRADER REGISTRATION SUB-FORM MODULE */}
+                  <form onSubmit={handleRegisterTrader} className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 text-white border border-slate-700 shadow-xl space-y-3">
+                    <div>
+                      <h4 className="font-black text-sm text-emerald-400 uppercase tracking-wide">Register You As Trader & Get Verified ✓</h4>
+                      <p className="text-[10px] text-slate-300 font-medium">Publish your scrap commercial yard entity live.</p>
                     </div>
-                  ))}
+                    <div className="grid grid-cols-2 gap-2">
+                      <input type="text" value={regTraderName} onChange={(e) => setRegTraderName(e.target.value)} placeholder="Trader Yard Name" className="bg-white text-slate-900 font-black rounded-xl p-2.5 text-xs outline-none" required />
+                      <input type="text" value={regTraderLocation} onChange={(e) => setRegTraderLocation(e.target.value)} placeholder="Yard City Location" className="bg-white text-slate-900 font-black rounded-xl p-2.5 text-xs outline-none" required />
+                    </div>
+                    <input type="text" value={regTraderMaterial} onChange={(e) => setRegTraderMaterial(e.target.value)} placeholder="Primary Materials Traded (e.g., Loha, Copper)" className="w-full bg-white text-slate-900 font-black rounded-xl p-2.5 text-xs outline-none" />
+                    <button type="submit" className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-3 rounded-xl uppercase tracking-wider transition-all">Submit Trader Registry Node 🚀</button>
+                  </form>
+
+                  {/* TRADERS LOOP STACK */}
+                  <div className="space-y-3">
+                    {registeredTraders.map((trader) => (
+                      <div key={trader.id} className="bg-white rounded-2xl p-4 border-2 border-slate-300 shadow-md space-y-1">
+                        <div className="flex justify-between items-center">
+                          <h4 className="font-black text-slate-900 text-base">{trader.name}</h4>
+                          <span className="text-[9px] bg-emerald-100 text-emerald-800 border border-emerald-300 font-black px-2 py-0.5 rounded">{trader.badge}</span>
+                        </div>
+                        <p className="text-xs text-slate-500 font-extrabold">📍 {trader.location} | Dealing Volume: {trader.volume}</p>
+                        <p className="text-[11px] text-slate-700 font-black pt-1 border-t border-slate-100">Material Type: {trader.dealType}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -537,7 +632,7 @@ export default function Home() {
                 {uploadedPhotos.map((photoUrl, index) => (
                   <div key={index} className="relative aspect-square bg-slate-100 border-2 border-slate-300 rounded-xl overflow-hidden"><img src={photoUrl} alt="Preview" className="w-full h-full object-cover" /></div>
                 ))}
-                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
+                {uploadedPhotos.length < 3 && <div onClick={() => fileInputRef.current?.click()} className="aspect-square bg-slate-50 border-2 border-dashed border-slate-400 rounded-xl flex flex-col items-center justify-center cursor-pointer"><span className="text-3xl">📸</span></div>}
               </div>
               <input type="file" accept="image/*" multiple ref={fileInputRef} onChange={handlePhotoSelectTrigger} className="hidden" />
               
