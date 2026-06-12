@@ -25,6 +25,21 @@ const marketRateItems = [
   { id: 1, type: "metal", nameEn: "Pure Copper Wire (Grade A)", nameUr: "خالص تانبا تار گریڈ اے", icon: "🔌" }
 ];
 
+const translations: any = {
+  en: {
+    appName: "SCRAP WORLD", loginBtn: "Login", logoutBtn: "Logout 👤", moreBtn: "More Options", currentLang: "اردو",
+    priceLabel: "Price:", weightLabel: "Qty/Weight:", locLabel: "Location:", catLabel: "Category:",
+    postAdBtn: "Post Ad 📢", ratesBtn: "Rates 💰", sortSimple: "Sort 📊", filterSimple: "Filters 🎛️", industriesBtn: "Industries 🏭",
+    backBtn: "← Back to Feed"
+  },
+  ur: {
+    appName: "اسکریپ ورلڈ", loginBtn: "لاگ ان", logoutBtn: "لاگ آؤٹ 👤", moreBtn: "مزید آپشنز", currentLang: "English",
+    priceLabel: "قیمت:", weightLabel: "وزن / تعداد:", locLabel: "لوکیشن:", catLabel: "کیٹیگری:",
+    postAdBtn: "اشتہار 📢", ratesBtn: "ریٹس 💰", sortSimple: "ترتیب 📊", filterSimple: "فلٹرز 🎛️", industriesBtn: "انڈسٹریز 🏭",
+    backBtn: "← واپس ہوم فیڈ"
+  }
+};
+
 // 🗺️ HAVERSINE FORMULA: Calculates exact ground distance in KM between any two GPS points
 const calculateRealKM = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
@@ -50,7 +65,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState<string>('home'); 
 
   // DYNAMIC GEOLOCATION STATES (No fixed center, adapts to user)
-  const [currentLat, setCurrentLat] = useState<number>(32.1617); // Gujranwala fallback
+  const [currentLat, setCurrentLat] = useState<number>(32.1617); // Fallback to Gujranwala
   const [currentLng, setCurrentLng] = useState<number>(74.1883);
   const [detectedLocationText, setDetectedLocationText] = useState<string>("Detecting your live location...");
   const [showLocationOverrideModal, setShowLocationOverrideModal] = useState(false);
@@ -67,6 +82,7 @@ export default function Home() {
   const [visibleAds, setVisibleAds] = useState<any[]>([]);
   const [filteredAds, setFilteredAds] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [maxRadius, setMaxRadius] = useState<number>(150); // Default radius filter max 150KM
   const [sortBy, setSortBy] = useState<string>('nearest'); // Always defaults to Nearest First!
 
   // FORM INPUTS
@@ -168,6 +184,9 @@ export default function Home() {
       );
     }
 
+    // Radius Distance Filter Boundary
+    result = result.filter(ad => ad.distance <= maxRadius);
+
     // OLX Nearest First Engine: Arranges list from 0km to maximum automatically
     if (sortBy === 'nearest') {
       result.sort((a, b) => a.distance - b.distance); 
@@ -178,7 +197,7 @@ export default function Home() {
     }
 
     setFilteredAds(result);
-  }, [selectedCategory, sortBy, visibleAds, currentLat, currentLng]);
+  }, [selectedCategory, sortBy, maxRadius, visibleAds, currentLat, currentLng]);
 
   // Handle Manual City Override Selection
   const handleManualLocationSet = (city: string, lat: number, lng: number) => {
@@ -327,7 +346,7 @@ export default function Home() {
           {/* 🗺️ LOCATION OVERRIDE MODAL POPUP */}
           {showLocationOverrideModal && (
             <div className="fixed inset-0 bg-black/60 z-[999] flex items-center justify-center p-4">
-              <div className="bg-white rounded-2xl border-2 border-slate-400 w-full max-w-sm p-5 space-y-4 text-left animate-fade-in">
+              <div className="bg-white rounded-2xl border-2 border-slate-400 w-full max-w-sm p-5 space-y-4 text-left">
                 <div>
                   <h4 className="font-black text-base text-slate-900 uppercase">Select Target City</h4>
                   <p className="text-xs text-slate-400 font-bold">Choose a base to filter nearby ads first.</p>
@@ -344,6 +363,20 @@ export default function Home() {
               </div>
             </div>
           )}
+
+          {/* MAPS CONTROL RADIUS RANGE SLIDER */}
+          <div className="bg-white border-2 border-slate-300 rounded-2xl p-4 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-slate-700 uppercase tracking-wider">🎛️ Radius Range Filter</span>
+              <span className="text-xs font-black bg-indigo-100 text-indigo-900 px-2.5 py-1 rounded-lg">{maxRadius} KM Range</span>
+            </div>
+            <input type="range" min="5" max="1500" value={maxRadius} onChange={(e) => setMaxRadius(Number(e.target.value))} className="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 rounded-lg" />
+            <div className="flex justify-between text-[9px] text-slate-400 font-black uppercase">
+              <span>Nearby (5km)</span>
+              <span>City Limits (50km)</span>
+              <span>All Pakistan (1500km)</span>
+            </div>
+          </div>
 
           {/* CONTROL SORT GRID */}
           <div className="grid grid-cols-2 gap-3">
@@ -368,7 +401,7 @@ export default function Home() {
           {/* ADS AUTOMATIC PROXIMITY FEED */}
           <div className="space-y-4">
             {filteredAds.map((ad) => {
-              const adDistanceKm = calculateRealKM(currentLat, currentLng, ad.lat || 32.1617, ad.lng || 74.1883);
+              const adDistanceKM = calculateRealKM(currentLat, currentLng, ad.lat || 32.1617, ad.lng || 74.1883);
               return (
                 <div key={ad.id} className="bg-white rounded-2xl p-4 border-2 border-slate-200 shadow-md flex flex-col gap-3">
                   <div className="flex items-center gap-4 text-left">
@@ -377,7 +410,7 @@ export default function Home() {
                       
                       {/* Dynamic Proximity Distance KM Tag Output */}
                       <span className="absolute bottom-1 right-1 bg-indigo-600 text-white font-black text-[9px] px-2 py-0.5 rounded shadow-md">
-                        {adDistanceKm <= 2 ? "🟢 Nearby" : `${adDistanceKm} KM`}
+                        {adDistanceKM <= 2 ? "🟢 Nearby" : `${adDistanceKM} KM`}
                       </span>
                     </div>
                     <div className="flex-1 space-y-1 overflow-hidden">
@@ -450,7 +483,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* PAGE 4: POST AD WITH REAL DYNAMIC OVERLAY */}
+          {/* PAGE 4: POST AD LIVE WITH REAL GPS EMBEDDING */}
           {currentPage === 'page4' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 p-6 shadow-lg space-y-5 text-left">
               <label className="text-xs font-black text-slate-700 uppercase">Photos (Max 3)</label>
