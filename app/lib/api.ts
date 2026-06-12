@@ -10,3 +10,8 @@ export const fetchAds = async () => {
     return response.ok ? await response.json() : [];
   } catch (e) { return []; }
 };
+
+// Auth helper for Google Login
+export const getGoogleLoginUrl = (origin: string) => {
+  return `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(origin)}`;
+};
