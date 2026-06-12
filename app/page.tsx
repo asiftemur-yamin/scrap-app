@@ -1,5 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useE// page.tsx mein ye add karein
+const [currentPage, setCurrentPage] = useState('home');
+
+useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('page') === 'login') {
+    setCurrentPage('login');
+  } else {
+    setCurrentPage('home');
+  }
+}, []);ffect } from 'react';
 import { fetchAds } from './lib/api';
 import Header from './components/Header';
 import Ticker from './components/Ticker';
