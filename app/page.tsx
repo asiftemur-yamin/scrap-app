@@ -9,7 +9,7 @@ const SUPABASE_KEY = "sb_publishable_drme4BfnnvyMX1gkyfCyrA_s9chTpSg";
 // 🔑 SIMPAPP SMS GATEWAY CONFIGURATION
 const SMS_API_URL = "https://europe-west1-sms-gateway-api-simpapp.cloudfunctions.net/api_v2_sms_send";
 
-// 📦 PRODUCTION INITIAL DATA STACKS WITH COORDINATES
+// 📦 PRODUCTION INITIAL DATA STACKS WITH GPS COORDINATES
 const initial10Ads = [
   { id: 1, title: "Heavy Industrial HMS 1 Melting Iron", category: "Iron", price: "125", weight: "12 Ton", location_text: "Gujranwala Scrap Market", lat: 32.1617, lng: 74.1883, icon: "🔩", user_phone: "03006558837" },
   { id: 2, title: "Pure Copper Cable Wire Scrap Grade A", category: "Copper", price: "1,870", weight: "450 Kg", location_text: "Badami Bagh, Lahore", lat: 31.5822, lng: 74.3283, icon: "🔌", user_phone: "03001234567" },
@@ -47,7 +47,7 @@ export default function Home() {
   // USER PROFILE & OPTIONS CONTEXT
   const [userPhone, setUserPhone] = useState('');
   const [profileName, setProfileName] = useState('Scrap Trader');
-  const [profileImage, setProfileImage] = useState<string>(''); // Base64 profile pic
+  const [profileImage, setProfileImage] = useState<string>(''); 
   const [ratesUpdateTime, setRatesUpdateTime] = useState('');
   const [currentPage, setCurrentPage] = useState<string>('home'); 
   const [optionsActiveTab, setOptionsActiveTab] = useState<string>('profile');
@@ -92,6 +92,13 @@ export default function Home() {
   const [showNameFormScreen, setShowNameFormScreen] = useState(false);
   const [inputOtp, setInputOtp] = useState('');
   const [secureActiveOtp, setSecureActiveOtp] = useState('');
+
+  const translations: any = {
+    en: { appName: "SCRAP WORLD", filterSimple: "Filters 🎛️", backBtn: "← Back to Feed" },
+    ur: { appName: "اسکریپ ورلڈ", filterSimple: "فلٹرز 🎛️", backBtn: "← واپس ہوم فیڈ" }
+  };
+
+  const t = translations[lang];
 
   const fetchCloudAdsLive = async () => {
     try {
@@ -262,20 +269,33 @@ export default function Home() {
     } catch (err) { alert("Connection failed."); }
   };
 
+  const handleManualLocationSet = (city: string, lat: number, lng: number) => {
+    setCurrentLat(lat); setCurrentLng(lng); setDetectedLocationText(city); setShowLocationOverrideModal(false);
+  };
+
+  const handlePhotoSelectTrigger = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files; if (!files) return;
+    for (let i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      reader.onloadend = () => { if (reader.result) setUploadedPhotos((prev) => [...prev, reader.result as string]); };
+      reader.readAsDataURL(files[i]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f2f6fa] text-left font-sans pb-24 relative selection:bg-indigo-500 selection:text-white">
       
       {/* 🚀 INJECT GOOGLE NOTO NASTALIQ URDU PREMIUM FONT ENGINE */}
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" />
 
-      {/* STYLES OBJECT FOR THE FONTS & MARQUEE FIXED CONTROL */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .urdu-text { font-family: 'Noto Nastaliq Urdu', serif !important; line-height: 2.2 !important; text-align: right; }
+      {/* FIXED NEXT.JS COMPATIBLE STYLES FOR THE NASTALIQ FONTS & MARQUEE ANIMATION */}
+      <style>{`
+        .urdu-text { font-family: 'Noto Nastaliq Urdu', serif !important; line-height: 2.4 !important; text-align: right; }
         @keyframes ticker-scroll { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
-        .ticker-wrap { width: 100%; overflow: hidden; background: #0b192e; border-bottom: 2px solid #1e293b; padding: 10px 0; display: flex; align-items: center; }
+        .ticker-wrap { width: 100%; overflow: hidden; background: #0b192e; border-bottom: 2px solid #1e293b; padding: 12px 0; display: flex; align-items: center; }
         .ticker-content { display: inline-block; white-space: nowrap; padding-left: 100%; animation: ticker-scroll 25s linear infinite; font-size: 13px; font-weight: 900; color: #fff; }
         .ticker-item { margin-right: 2.5rem; display: inline-flex; align-items: center; gap: 6px; }
-      `}} />
+      `}</style>
 
       {showSplash && (
         <div className="fixed inset-0 bg-[#1a365d] z-[999] flex flex-col items-center justify-center text-white p-6">
@@ -315,17 +335,16 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 🚀 FIXED LIVE SCROLLING PREMIUM LME METALS TICKER */}
+      {/* 🚀 FIXED SEAMLESS TICKER */}
       <div className="ticker-wrap shadow-xl">
         <div className="ticker-content">
-          <span className="ticker-item text-amber-400">💵 EXCHANGE RATE: EXCHANGE RATE: USD/PKR: Rs.{usdToPkrRate.toFixed(2)}</span>
+          <span className="ticker-item text-amber-400">💵 EXCHANGE RATE: USD/PKR: Rs.{usdToPkrRate.toFixed(2)}</span>
           {lmeItems.map((item) => (
             <span key={item.id} className="ticker-item">
               {item.icon} {item.name}: <b className="text-amber-300">${item.usdPerTon.toLocaleString()}/Ton</b>
               <span className={item.trend === 'up' ? 'text-emerald-400' : 'text-red-400 font-sans'}>{item.trend === 'up' ? '▲' : '▼'}</span>
             </span>
           ))}
-          {/* Double paste mapping to ensure absolute seamless scrolling infinite loop */}
           <span className="ticker-item text-amber-400">💵 EXCHANGE RATE: USD/PKR: Rs.{usdToPkrRate.toFixed(2)}</span>
           {lmeItems.map((item) => (
             <span key={`dup-${item.id}`} className="ticker-item">
@@ -353,7 +372,7 @@ export default function Home() {
             </div>
           )}
 
-          {/* ADS STREAM AUTOMATIC MATRIX PROXIMITY SCROLL */}
+          {/* ADS STREAM */}
           <div className="space-y-4">
             {filteredAds.map((ad) => {
               const adDistanceKm = calculateRealKM(currentLat, currentLng, ad.lat || 32.1617, ad.lng || 74.1883);
@@ -375,7 +394,7 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="flex-1 space-y-1 overflow-hidden">
-                      {/* Premium Nastaliq Conditional Loader */}
+                      {/* Premium Nastaliq Loader */}
                       <h4 className={`text-base font-black text-slate-900 leading-snug truncate pr-16 ${lang === 'ur' ? 'urdu-text' : ''}`}>{ad.title}</h4>
                       <div className="text-[10px] bg-indigo-100 text-indigo-900 font-black px-2 py-0.5 rounded inline-block">{ad.category || 'Material'}</div>
                       <div className="text-xs font-extrabold text-slate-600 space-y-0.5">
@@ -425,11 +444,10 @@ export default function Home() {
             </div>
           )}
 
-          {/* ☰ 👤 PAGE 2: HIGH-END OPTIONS MULTI-TAB CONTROLLER MODULE */}
+          {/* ☰ 👤 PAGE 2: OPTIONS CONTROLLER */}
           {currentPage === 'page2' && (
             <div className="bg-white rounded-2xl border-2 border-slate-300 shadow-xl overflow-hidden flex flex-col min-h-[450px]">
               
-              {/* Vertical Sidebar Options Tabs */}
               <div className="bg-slate-900 grid grid-cols-4 p-2 gap-1 border-b border-slate-700">
                 <button onClick={() => setOptionsActiveTab('profile')} className={`py-2 text-center rounded-xl font-black text-xs transition-all ${optionsActiveTab === 'profile' ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-white/5'}`}>👤 Profile</button>
                 <button onClick={() => setOptionsActiveTab('myads')} className={`py-2 text-center rounded-xl font-black text-xs transition-all ${optionsActiveTab === 'myads' ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-white/5'}`}>📋 My Ads</button>
@@ -437,10 +455,8 @@ export default function Home() {
                 <button onClick={() => setOptionsActiveTab('rhaf')} className={`py-2 text-center rounded-xl font-black text-xs transition-all ${optionsActiveTab === 'rhaf' ? 'bg-indigo-600 text-white' : 'text-slate-400 bg-white/5'}`}>🥇 R-H-A-F</button>
               </div>
 
-              {/* Dynamic Content Renderer Panels */}
               <div className="p-5 flex-1 text-left space-y-4">
                 
-                {/* TAB 1: PROFILE WITH AVATAR CAMERA REAL PHOTO LOAD ATTACHMENT */}
                 {optionsActiveTab === 'profile' && (
                   <div className="space-y-4 text-center">
                     <div className="relative w-28 h-28 mx-auto group">
@@ -459,7 +475,6 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* TAB 2: MY ADS STATION */}
                 {optionsActiveTab === 'myads' && (
                   <div className="space-y-3">
                     <h4 className="font-black text-xs text-slate-400 uppercase tracking-wider">Your Live Active Listings</h4>
@@ -476,7 +491,6 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* TAB 3: CHATS NODE HUB */}
                 {optionsActiveTab === 'chats' && (
                   <div className="space-y-3">
                     <h4 className="font-black text-xs text-slate-400 uppercase tracking-wider">Active Traders Channels</h4>
@@ -489,7 +503,6 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* TAB 4: R-H-A-F CORPORATE BRAND LOGO BLOCK */}
                 {optionsActiveTab === 'rhaf' && (
                   <div className="text-center space-y-3 py-6 bg-slate-950 rounded-2xl text-white border-2 border-slate-800">
                     <div className="text-5xl animate-pulse">🥇</div>
